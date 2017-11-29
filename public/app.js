@@ -26,7 +26,7 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
 
   $scope.transfer = function() {
 
-      var bulk = create_bulk(jsonData);
+      var bulk = create_bulk(jsonData.data);
       bulk.forEach(function(split_bulk){
         $http.post('../api/xlxs_import/xlxs/doc/_bulk', split_bulk)
         .then((response) => {
@@ -84,10 +84,12 @@ function convert_data(reader, message) {
   var fileData = reader.result;
 
   var wb = XLSX.read(fileData, {type : 'binary'});
+  jsonData = new Object();
 
   wb.SheetNames.forEach(function(sheetName){
     update_sheet_range(wb.Sheets[sheetName]);
-    jsonData = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
+    jsonData.header = get_header_row(wb.Sheets[sheetName]);
+    jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
   })
 }
 
@@ -95,7 +97,7 @@ function display_data(message) {
       if(message)
       document.getElementById("warn_message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
 
-    document.getElementById("json_container").innerHTML = '<pre>'+ angular.toJson(jsonData.slice(0,10), 2) +'</pre>';
+    document.getElementById("json_container").innerHTML = '<pre>'+ angular.toJson(jsonData.data.slice(0,10), 2) +'</pre>';
 }
 
 //Mise à jour du fichier en cas d'ouverture avec d'autres logiciel... (libreoffice)
@@ -106,6 +108,23 @@ function update_sheet_range(ws) {
     range.e.c = Math.max(range.e.c, x.c); range.e.r = Math.max(range.e.r, x.r);
   });
   ws['!ref'] = XLSX.utils.encode_range(range);
+}
+
+//Recupère le header de la feuille excel
+function get_header_row(sheet) {
+    var headers = [];
+    var range = XLSX.utils.decode_range(sheet['!ref']);
+    var C, R = range.s.r; /* start in the first row */
+    /* walk every column in the range */
+    for(C = range.s.c; C <= range.e.c; ++C) {
+        var cell = sheet[XLSX.utils.encode_cell({c:C, r:R})] /* find the cell in the first row */
+
+        var hdr = "UNKNOWN " + C; // <-- replace with your desired default 
+        if(cell && cell.t) hdr = XLSX.utils.format_cell(cell);
+
+        headers.push(hdr);
+    }
+    return headers;
 }
 
 //Permet de rendre compatible les données JSON avec le format bulk de ES
