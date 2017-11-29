@@ -31,7 +31,7 @@ export default function (server, adminCluster, dataCluster) {
     	}
     });	
 
-    //Perform mutli POST for creating / adding to an index
+    //Perform BULK for creating / adding multiple documents to an index
     server.route({
     	path: '/api/xlxs_import/{index}/{document}/_bulk',
         method: 'POST',

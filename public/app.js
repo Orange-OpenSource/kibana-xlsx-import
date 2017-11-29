@@ -23,6 +23,7 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
   $scope.title = 'Xlxs Import';
   $scope.description = 'Import XLXS to JSON';
 
+
   $scope.transfer = function() {
 
       var bulk = create_bulk(jsonData);
@@ -56,7 +57,8 @@ app.directive('importSheetJs', function() {
             if(size > maxFileSize) {
 
               if(confirm(message)) {
-                convert_data(reader, "l'affichage est limité à 10 resultats");
+                convert_data(reader);
+                display_data("l'affichage est limité à 10 resultats");
               }
               else {
                 return;
@@ -64,7 +66,8 @@ app.directive('importSheetJs', function() {
 
             }
             else {
-              convert_data(reader, "");
+              convert_data(reader);
+              display_data("");
             }
           }
         }; 
@@ -85,13 +88,14 @@ function convert_data(reader, message) {
   wb.SheetNames.forEach(function(sheetName){
     update_sheet_range(wb.Sheets[sheetName]);
     jsonData = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
+  })
+}
 
-    if(message)
+function display_data(message) {
+      if(message)
       document.getElementById("warn_message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
 
     document.getElementById("json_container").innerHTML = '<pre>'+ angular.toJson(jsonData.slice(0,10), 2) +'</pre>';
-
-  })
 }
 
 //Mise à jour du fichier en cas d'ouverture avec d'autres logiciel... (libreoffice)
