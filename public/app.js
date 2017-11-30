@@ -5,10 +5,13 @@ import uiRoutes from 'ui/routes';
 import 'ui/autoload/styles';
 import './less/main.less';
 import template from './templates/index.html';
+import datatable from 'angular-data-table';
 
-let jsonData;
-const maxFileSize = 4;
-const bulkSize = 3000;
+let jsonData;                       // Contient les données de conversion du xlxs 
+
+const maxFileSize = 4;              // Taille du fichier xlxs avant warning 
+const bulkSize = 3000;              // Taille maximal des paquets du bulk 
+const maxDisplayableElement = 5;   // Nombre d'element afficher dans la previs des données
 
 var app = uiModules.get('app/xlxs_import', []);
 
@@ -20,7 +23,7 @@ uiRoutes
 
 
 app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
-  $scope.title = 'Xlxs Import';
+  $scope.title = 'XLXS Import';
   $scope.description = 'Import XLXS to JSON';
 
 
@@ -43,7 +46,6 @@ app.directive('importSheetJs', function() {
     scope: { opts: '=' },
     link: function ($scope, $elm, $attrs) {
       $elm.on('change', function (changeEvent) {
-
         var reader = new FileReader();
 
         reader.onload = function (e) {
@@ -58,7 +60,7 @@ app.directive('importSheetJs', function() {
 
               if(confirm(message)) {
                 convert_data(reader);
-                display_data("l'affichage est limité à 10 resultats");
+                display_data("L'affichage a été limité aux premiers resultats");
               }
               else {
                 return;
@@ -94,10 +96,30 @@ function convert_data(reader, message) {
 }
 
 function display_data(message) {
+    var headers = '';
+    var body = '';
+
       if(message)
       document.getElementById("warn_message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
 
-    document.getElementById("json_container").innerHTML = '<pre>'+ angular.toJson(jsonData.data.slice(0,10), 2) +'</pre>';
+    jsonData.header.forEach(function(str) {
+      headers += '<th style="text-align:center">' + str + '</th>'; 
+    })
+
+    for(var i = 0; i < jsonData.data.length; i++) {
+      body += '<tr>';
+      for(var j = 0; j < jsonData.header.length; j++) {
+        body += '<td style="text-align:center">' + jsonData.data[i][jsonData.header[j]] + '</td>';
+      }
+      body += '</tr>';
+
+      if(i > maxDisplayableElement)
+        break;
+    }
+
+    document.getElementById("json_container").innerHTML =
+      '<pre><table style="width:100%; border-collapse:separate; border-spacing:15px;">' + headers + body + '</table></pre>';
+
 }
 
 //Mise à jour du fichier en cas d'ouverture avec d'autres logiciel... (libreoffice)
