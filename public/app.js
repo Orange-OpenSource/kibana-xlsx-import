@@ -107,24 +107,6 @@ function display_data(message) {
       if(message)
       document.getElementById("warn_message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
 
-    jsonData.header.forEach(function(str) {
-      headers += '<th style="text-align:center">' + str + '</th>'; 
-    })
-
-    for(var i = 0; i < jsonData.data.length; i++) {
-      body += '<tr>';
-      for(var j = 0; j < jsonData.header.length; j++) {
-        body += '<td style="text-align:center">' + jsonData.data[i][jsonData.header[j]] + '</td>';
-      }
-      body += '</tr>';
-
-      if(i > maxDisplayableElement)
-        break;
-    }
-
-    /*document.getElementById("json_container").innerHTML =
-      '<pre><table style="width:100%; border-collapse:separate; border-spacing:15px;">' + headers + body + '</table></pre>';*/
-
     ReactDOM.render(
       <MyTable data={jsonData}/>,
       document.getElementById("react_preview")
