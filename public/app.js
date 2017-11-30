@@ -1,17 +1,21 @@
 import moment from 'moment';
 import { uiModules } from 'ui/modules';
 import uiRoutes from 'ui/routes';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import MyTable from './components/compo.js';
 
 import 'ui/autoload/styles';
 import './less/main.less';
+import 'fixed-data-table-2/dist/fixed-data-table.min.css';
 import template from './templates/index.html';
-import datatable from 'angular-data-table';
+
 
 let jsonData;                       // Contient les données de conversion du xlxs 
 
 const maxFileSize = 4;              // Taille du fichier xlxs avant warning 
 const bulkSize = 3000;              // Taille maximal des paquets du bulk 
-const maxDisplayableElement = 5;   // Nombre d'element afficher dans la previs des données
+const maxDisplayableElement = 5;    // Nombre d'element afficher dans la previs des données
 
 var app = uiModules.get('app/xlxs_import', []);
 
@@ -95,6 +99,7 @@ function convert_data(reader, message) {
   })
 }
 
+//Affichage des données dans une table html après conversion
 function display_data(message) {
     var headers = '';
     var body = '';
@@ -117,8 +122,13 @@ function display_data(message) {
         break;
     }
 
-    document.getElementById("json_container").innerHTML =
-      '<pre><table style="width:100%; border-collapse:separate; border-spacing:15px;">' + headers + body + '</table></pre>';
+    /*document.getElementById("json_container").innerHTML =
+      '<pre><table style="width:100%; border-collapse:separate; border-spacing:15px;">' + headers + body + '</table></pre>';*/
+
+    ReactDOM.render(
+      <MyTable data={jsonData}/>,
+      document.getElementById("react_preview")
+    ); 
 
 }
 
