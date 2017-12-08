@@ -29,17 +29,33 @@ uiRoutes
 app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
   $scope.title = 'XLXS Import';
   $scope.description = 'Import XLXS to JSON';
+  $scope.indexName = 'xlsx';
 
 
   $scope.transfer = function() {
 
-      var bulk = create_bulk(jsonData.data);
-      bulk.forEach(function(split_bulk){
-        $http.post('../api/xlxs_import/xlxs/doc/_bulk', split_bulk)
+    var bulk_request = [];
+    var bulk_package = [];
+
+    $scope.indexName = angular.element('#indexName').val();
+
+    for(var i = 0; i < jsonData.data.length; i++) {
+      bulk_package.push({index: { _index: $scope.indexName, _type: 'doc' } });
+      bulk_package.push(jsonData.data[i]);
+
+      if(bulk_package.length >= bulkSize) {
+        bulk_request.push(bulk_package);
+        bulk_package = [];
+      }
+    }
+    bulk_request.push(bulk_package);
+
+    bulk_request.forEach(function(split_bulk){
+      $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
         .then((response) => {
           console.log(response);
-        });
-      })  
+      });
+    })  
   }
 
 });
@@ -108,7 +124,7 @@ function display_data(message) {
       document.getElementById("warn_message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
 
     ReactDOM.render(
-      <MyTable data={jsonData}/>,
+      <MyTable data={jsonData} maxElement={maxDisplayableElement}/>,
       document.getElementById("react_preview")
     ); 
 
