@@ -1,14 +1,21 @@
 import moment from 'moment';
 import { uiModules } from 'ui/modules';
 import uiRoutes from 'ui/routes';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import MyTable from './components/compo.js';
 
 import 'ui/autoload/styles';
 import './less/main.less';
+import 'fixed-data-table-2/dist/fixed-data-table.min.css';
 import template from './templates/index.html';
 
-let jsonData;
-const maxFileSize = 4;
-const bulkSize = 3000;
+
+let jsonData;                       // Contient les données de conversion du xlxs 
+
+const maxFileSize = 4;              // Taille du fichier xlxs avant warning 
+const bulkSize = 3000;              // Taille maximal des paquets du bulk 
+const maxDisplayableElement = 5;    // Nombre d'element afficher dans la previs des données
 
 var app = uiModules.get('app/xlxs_import', []);
 
@@ -20,7 +27,7 @@ uiRoutes
 
 
 app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
-  $scope.title = 'Xlxs Import';
+  $scope.title = 'XLXS Import';
   $scope.description = 'Import XLXS to JSON';
 
 
@@ -43,7 +50,6 @@ app.directive('importSheetJs', function() {
     scope: { opts: '=' },
     link: function ($scope, $elm, $attrs) {
       $elm.on('change', function (changeEvent) {
-
         var reader = new FileReader();
 
         reader.onload = function (e) {
@@ -58,7 +64,7 @@ app.directive('importSheetJs', function() {
 
               if(confirm(message)) {
                 convert_data(reader);
-                display_data("l'affichage est limité à 10 resultats");
+                display_data("L'affichage a été limité aux premiers resultats");
               }
               else {
                 return;
@@ -93,11 +99,19 @@ function convert_data(reader, message) {
   })
 }
 
+//Affichage des données dans une table html après conversion
 function display_data(message) {
+    var headers = '';
+    var body = '';
+
       if(message)
       document.getElementById("warn_message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
 
-    document.getElementById("json_container").innerHTML = '<pre>'+ angular.toJson(jsonData.data.slice(0,10), 2) +'</pre>';
+    ReactDOM.render(
+      <MyTable data={jsonData}/>,
+      document.getElementById("react_preview")
+    ); 
+
 }
 
 //Mise à jour du fichier en cas d'ouverture avec d'autres logiciel... (libreoffice)
