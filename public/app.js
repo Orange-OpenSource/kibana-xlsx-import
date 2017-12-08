@@ -63,7 +63,7 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
         .then((response) => {
           console.log(response);
       });
-    }) 
+    })
   }
 
 });
@@ -168,6 +168,10 @@ function get_header_row(sheet) {
     return headers;
 }
 
+//Formate le nom du fichier pour le transformer en nom d'index ES correct
 function setESIndexName(name) {
+  
+  var name = name.split('.')[0];                //on enlève l'extension du fichier
+  var name = name.replace(/[^a-zA-Z ]/g, "");   //on enlève aussi les charactères speciaux (modif possible avec UTF?)
   return name;
 }
