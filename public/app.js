@@ -8,6 +8,7 @@ import MyTable from './components/compo.js';
 import 'ui/autoload/styles';
 import './less/main.less';
 import 'fixed-data-table-2/dist/fixed-data-table.min.css';
+import 'angular-spinner';
 import template from './templates/index.html';
 
 
@@ -17,7 +18,7 @@ const maxFileSize = 4;              // Taille du fichier xlxs avant warning
 const bulkSize = 3000;              // Taille maximal des paquets du bulk 
 const maxDisplayableElement = 5;    // Nombre d'element afficher dans la previs des données
 
-var app = uiModules.get('app/xlxs_import', []);
+var app = uiModules.get('app/xlxs_import', ['angularSpinner']);
 
 uiRoutes.enable();
 uiRoutes
@@ -26,10 +27,17 @@ uiRoutes
 });
 
 
+app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
+    usSpinnerConfigProvider.setDefaults({color: 'black'});
+}]);
+
+
 app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
-  $scope.title = 'XLXS Import';
-  $scope.description = 'Import XLXS to JSON';
-  $scope.indexName = 'xlsx';
+  $scope.title = 'XLSX Import';
+  $scope.description = 'Import XLSX to JSON';
+  $scope.readOnlyIndexName = true;
+  $scope.indexName = '';
+  $scope.showSpinner = false;
 
 
   $scope.transfer = function() {
@@ -55,7 +63,7 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
         .then((response) => {
           console.log(response);
       });
-    })  
+    }) 
   }
 
 });
@@ -68,8 +76,7 @@ app.directive('importSheetJs', function() {
       $elm.on('change', function (changeEvent) {
         var reader = new FileReader();
 
-        reader.onload = function (e) {
-          
+        reader.onload = function (file) {
           if (typeof FileReader !== "undefined") {
 
             var size = (changeEvent.target.files[0].size)/1000000;
@@ -94,6 +101,10 @@ app.directive('importSheetJs', function() {
           }
         }; 
         reader.readAsBinaryString(changeEvent.target.files[0]);
+
+        $scope.$parent.readOnlyIndexName = false;
+        $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);
+        $scope.$parent.$apply();
       });
     }
   };
@@ -121,7 +132,7 @@ function display_data(message) {
     var body = '';
 
       if(message)
-      document.getElementById("warn_message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
+      document.getElementById("message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
 
     ReactDOM.render(
       <MyTable data={jsonData} maxElement={maxDisplayableElement}/>,
@@ -157,21 +168,6 @@ function get_header_row(sheet) {
     return headers;
 }
 
-//Permet de rendre compatible les données JSON avec le format bulk de ES
-function create_bulk(json) {
-  var bulk_request = [];
-  var bulk_package = [];
-
-  for(var i = 0; i < json.length; i++) {
-    bulk_package.push({index: { _index: 'xlxs', _type: 'doc' } });
-    bulk_package.push(json[i]);
-
-    if(bulk_package.length >= bulkSize) {
-      bulk_request.push(bulk_package);
-      bulk_package = [];
-    }
-  }
-  bulk_request.push(bulk_package);
-
-  return bulk_request;
+function setESIndexName(name) {
+  return name;
 }
