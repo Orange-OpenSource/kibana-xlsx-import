@@ -38,6 +38,7 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
   $scope.readOnlyIndexName = true;
   $scope.indexName = '';
   $scope.showSpinner = false;
+  $scope.showTButton = false;
 
 
   $scope.transfer = function() {
@@ -115,8 +116,9 @@ app.directive('importSheetJs', function() {
         }; 
         reader.readAsBinaryString(changeEvent.target.files[0]);
 
-        $scope.$parent.readOnlyIndexName = false;
-        $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);
+        $scope.$parent.readOnlyIndexName = false;                                     //On rend le champ index editable
+        $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté
+        $scope.$parent.showTButton = true;                                            //On affiche le bouton de transfert
         $scope.$parent.$apply();
       });
     }
