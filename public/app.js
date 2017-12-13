@@ -42,6 +42,7 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
 
   $scope.transfer = function() {
 
+    var promises = [];
     var bulk_request = [];
     var bulk_package = [];
 
@@ -59,9 +60,21 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
     bulk_request.push(bulk_package);
 
     bulk_request.forEach(function(split_bulk){
+      $scope.showSpinner = true;                          //On affiche le spinner
+
       $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
         .then((response) => {
           console.log(response);
+          promises.push(Promise.resolve(response));
+      }).then(function(){
+          if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
+            $scope.showSpinner = false                    //On arrete le spinner
+            Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
+              alert("Transfert des données terminé");
+            }).catch(reason => {
+              alert("une erreur est survenue : " + reason);
+            });
+          }
       });
     })
   }
