@@ -31,7 +31,7 @@ class MyTable extends React.Component {
 
     this.state = {
     	myTableHeader: this.props.data.header, 
-    	myTableData: this.props.data.data.slice(0,10)
+    	myTableData: this.props.data.data.slice(0, this.props.maxElement)
     };
   }
 
