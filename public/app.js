@@ -35,7 +35,7 @@ app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
 app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
   $scope.title = 'XLSX Import';
   $scope.description = 'Import XLSX to JSON';
-  $scope.readOnlyIndexName = true;
+  $scope.showIndexName = false;
   $scope.indexName = '';
   $scope.showSpinner = false;
   $scope.showTButton = false;
@@ -87,6 +87,7 @@ app.directive('importSheetJs', function() {
   return {
     scope: { opts: '=' },
     link: function ($scope, $elm, $attrs) {
+
       $elm.on('change', function (changeEvent) {
         var reader = new FileReader();
 
@@ -100,23 +101,35 @@ app.directive('importSheetJs', function() {
             if(size > maxFileSize) {
 
               if(confirm(message)) {
-                convert_data(reader);
+                convert_data(reader, function(){
+                  $scope.$parent.showSpinner = false;
+                  $scope.$parent.$apply();
+                });
                 display_data("L'affichage a été limité aux premiers resultats");
               }
               else {
+                //On enleve l'affichage des champs et du spinner si la conversion est annulée
+                $scope.$parent.showSpinner = false;
+                $scope.$parent.showIndexName = false;
+                $scope.$parent.showTButton = false;
+                $scope.$parent.$apply();
                 return;
               }
 
             }
             else {
-              convert_data(reader);
+              convert_data(reader, function(){
+                $scope.$parent.showSpinner = false;
+                $scope.$parent.$apply();
+              });
               display_data("");
             }
           }
         }; 
         reader.readAsBinaryString(changeEvent.target.files[0]);
 
-        $scope.$parent.readOnlyIndexName = false;                                     //On rend le champ index editable
+        $scope.$parent.showSpinner = true;                                            //On affiche le spinner
+        $scope.$parent.showIndexName = true;                                          //On rend le champ index editable
         $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté
         $scope.$parent.showTButton = true;                                            //On affiche le bouton de transfert
         $scope.$parent.$apply();
@@ -128,7 +141,7 @@ app.directive('importSheetJs', function() {
 
 
 //Traitement du fichier XLSX -> JSON
-function convert_data(reader, message) {
+function convert_data(reader, callback) {
   var fileData = reader.result;
 
   var wb = XLSX.read(fileData, {type : 'binary'});
@@ -139,6 +152,9 @@ function convert_data(reader, message) {
     jsonData.header = get_header_row(wb.Sheets[sheetName]);
     jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
   })
+
+  if (typeof callback === "function")
+    callback();
 }
 
 //Affichage des données dans une table html après conversion

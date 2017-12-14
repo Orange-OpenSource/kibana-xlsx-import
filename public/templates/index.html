@@ -6,13 +6,15 @@
       <h1>{{ title }}</h1>
     </div>
     <form>
-      <label>Nom de l'index ES : <input type="text" ng-model="indexName" ng-readonly="readOnlyIndexName" id="indexName"></label>
       <input import-sheet-js type="file" id="file"><br/>
     </form>
     <div id="message"></div>
     <div id="react_preview"></div> <br/>
     <div>
-      <button type="button" ng-show="showTButton" ng-click="transfer()">Transferer dans ES</button>
+      <form>
+        <label ng-show="showIndexName">Nom de l'index ES : <input type="text" ng-model="indexName" id="indexName"></label>
+        <button type="button" ng-show="showTButton" ng-click="transfer()">Transferer dans ES</button>
+      </form>
       <span us-spinner="{radius:30, width:8, length: 16}" spinner-on="showSpinner"></span>
     </div>
   </div>
