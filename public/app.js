@@ -48,6 +48,7 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
     var bulk_package = [];
 
     $scope.indexName = angular.element('#indexName').val();
+    $scope.showSpinner = true;                          //On affiche le spinner
 
     for(var i = 0; i < jsonData.data.length; i++) {
       bulk_package.push({index: { _index: $scope.indexName, _type: 'doc' } });
@@ -61,7 +62,6 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
     bulk_request.push(bulk_package);
 
     bulk_request.forEach(function(split_bulk){
-      $scope.showSpinner = true;                          //On affiche le spinner
 
       $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
         .then((response) => {
