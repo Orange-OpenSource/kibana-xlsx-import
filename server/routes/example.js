@@ -49,6 +49,21 @@ export default function (server, adminCluster, dataCluster) {
     	}
     });	
 
-
+    //Create a mapping for a selected index and document
+    server.route({
+        path: '/api/xlxs_import/{index}/_mapping/{document}',
+        method: 'POST',
+        handler(req, reply) {
+            dataCluster.callWithRequest(req, 'indices.putMapping', {
+                body: req.payload
+            })
+            .then(function (err, response) {
+                if(err)
+                    reply(err);
+                else
+                    reply(response);
+            });
+        }
+    });
 
 }

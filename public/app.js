@@ -33,7 +33,7 @@ app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
 }]);
 
 
-app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
+app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
   $scope.title = 'XLSX Import';
   $scope.description = 'Import XLSX to JSON';
   $scope.showUploadOptions = false;
@@ -53,6 +53,7 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
     }
   }
 
+
   $scope.transfer = function() {
 
     var promises = [];
@@ -61,6 +62,10 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
 
     $scope.indexName = angular.element('#indexName').val();
     $scope.showSpinner = true;                          //On affiche le spinner
+
+    if($scope.mappingCheck){
+      //do the mapping
+    }
 
     for(var i = 0; i < jsonData.data.length; i++) {
       bulk_package.push({index: { _index: $scope.indexName, _type: 'doc' } });
