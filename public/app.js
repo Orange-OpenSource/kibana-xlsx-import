@@ -1,15 +1,16 @@
 import moment from 'moment';
 import { uiModules } from 'ui/modules';
 import uiRoutes from 'ui/routes';
+import template from './templates/index.html';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MyTable from './components/compo.js';
+import MyTable from './components/mytable.js';
+import MyMapping from './components/mymapping.js';
 
 import 'ui/autoload/styles';
 import './less/main.less';
 import 'fixed-data-table-2/dist/fixed-data-table.min.css';
 import 'angular-spinner';
-import template from './templates/index.html';
 
 
 let jsonData;                       // Contient les données de conversion du xlxs 
@@ -35,11 +36,22 @@ app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
 app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
   $scope.title = 'XLSX Import';
   $scope.description = 'Import XLSX to JSON';
-  $scope.showIndexName = false;
+  $scope.showUploadOptions = false;
   $scope.indexName = '';
   $scope.showSpinner = false;
-  $scope.showTButton = false;
 
+
+  $scope.mappingCheckChange = function(){
+
+    if($scope.mappingCheck) {
+      ReactDOM.render(
+        <MyMapping data={jsonData} />,
+        document.getElementById("mapping")
+      );
+    } else {
+        document.getElementById("mapping").innerHTML = '';
+    }
+  }
 
   $scope.transfer = function() {
 
@@ -110,8 +122,7 @@ app.directive('importSheetJs', function() {
               else {
                 //On enleve l'affichage des champs et du spinner si la conversion est annulée
                 $scope.$parent.showSpinner = false;
-                $scope.$parent.showIndexName = false;
-                $scope.$parent.showTButton = false;
+                $scope.$parent.showUploadOptions = false;
                 $scope.$parent.$apply();
                 return;
               }
@@ -129,9 +140,8 @@ app.directive('importSheetJs', function() {
         reader.readAsBinaryString(changeEvent.target.files[0]);
 
         $scope.$parent.showSpinner = true;                                            //On affiche le spinner
-        $scope.$parent.showIndexName = true;                                          //On rend le champ index editable
-        $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté
-        $scope.$parent.showTButton = true;                                            //On affiche le bouton de transfert
+        $scope.$parent.showUploadOptions = true;                                          //On rend le champ index editable
+        $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
         $scope.$parent.$apply();
       });
     }
