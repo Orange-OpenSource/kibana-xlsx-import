@@ -55,6 +55,8 @@ export default function (server, adminCluster, dataCluster) {
         method: 'POST',
         handler(req, reply) {
             dataCluster.callWithRequest(req, 'indices.putMapping', {
+                index: req.params.index,
+                type: req.params.document,
                 body: req.payload
             })
             .then(function (err, response) {
@@ -65,5 +67,24 @@ export default function (server, adminCluster, dataCluster) {
             });
         }
     });
+
+
+    //creating index
+    server.route({
+        path: '/api/xlxs_import/{index}',
+        method: 'POST',
+        handler(req, reply) {
+            dataCluster.callWithRequest(req, 'indices.create', {
+                index: req.params.index,
+                body: req.payload
+            })
+            .then(function (err, response) {
+                if(err)
+                    reply(err);
+                else
+                    reply(response);
+            });
+        }
+    }); 
 
 }

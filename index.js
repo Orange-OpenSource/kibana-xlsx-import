@@ -9,8 +9,8 @@ export default function (kibana) {
     uiExports: {
       
       app: {
-        title: 'Data XLXS Import',
-        description: 'Import XLXS to JSON',
+        title: 'Data XLSX Import',
+        description: 'Import XLSX to JSON',
         main: 'plugins/xlxs-import/app'
       },
       

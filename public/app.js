@@ -60,41 +60,97 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
     var bulk_request = [];
     var bulk_package = [];
 
+
     $scope.indexName = angular.element('#indexName').val();
     $scope.showSpinner = true;                          //On affiche le spinner
 
+
     if($scope.mappingCheck){
-      //do the mapping
-    }
 
-    for(var i = 0; i < jsonData.data.length; i++) {
-      bulk_package.push({index: { _index: $scope.indexName, _type: 'doc' } });
-      bulk_package.push(jsonData.data[i]);
+      var mapping_request = '';
 
-      if(bulk_package.length >= bulkSize) {
-        bulk_request.push(bulk_package);
-        bulk_package = [];
+      mapping_request = '{ "properties": {';
+
+      for(var i = 0; i < jsonData.header.length; i++) {
+        if(i < jsonData.header.length -1)
+          mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }, ';
+        else
+          mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }';
       }
-    }
-    bulk_request.push(bulk_package);
+      mapping_request += '} }';
 
-    bulk_request.forEach(function(split_bulk){
+      console.log(mapping_request);
 
-      $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
+      $http.post('../api/xlxs_import/'+ $scope.indexName)
         .then((response) => {
           console.log(response);
-          promises.push(Promise.resolve(response));
-      }).then(function(){
-          if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
-            $scope.showSpinner = false                    //On arrete le spinner
-            Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-              alert("Transfert des données terminé");
-            }).catch(reason => {
-              alert("une erreur est survenue : " + reason);
+
+          $http.post('../api/xlxs_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)
+            .then((response) => {
+              console.log(response);
+
+              for(var i = 0; i < jsonData.data.length; i++) {
+                bulk_package.push({index: { _index: $scope.indexName, _type: 'doc' } });
+                bulk_package.push(jsonData.data[i]);
+
+                if(bulk_package.length >= bulkSize) {
+                  bulk_request.push(bulk_package);
+                  bulk_package = [];
+                }
+              }
+              bulk_request.push(bulk_package);
+
+              bulk_request.forEach(function(split_bulk){
+
+              $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
+                .then((response) => {
+                  console.log(response);
+                  promises.push(Promise.resolve(response));
+                }).then(function(){
+                  if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
+                    $scope.showSpinner = false                    //On arrete le spinner
+                    Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
+                      alert("Transfert des données terminé");
+                    }).catch(reason => {
+                      alert("une erreur est survenue : " + reason);
+                    });
+                  }
+                });
+              })
             });
-          }
-      });
-    })
+        });
+    }
+    else 
+    {
+      for(var i = 0; i < jsonData.data.length; i++) {
+        bulk_package.push({index: { _index: $scope.indexName, _type: 'doc' } });
+        bulk_package.push(jsonData.data[i]);
+
+        if(bulk_package.length >= bulkSize) {
+          bulk_request.push(bulk_package);
+          bulk_package = [];
+        }
+      }
+      bulk_request.push(bulk_package);
+
+      bulk_request.forEach(function(split_bulk){
+
+        $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
+          .then((response) => {
+            console.log(response);
+            promises.push(Promise.resolve(response));
+        }).then(function(){
+            if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
+              $scope.showSpinner = false                    //On arrete le spinner
+              Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
+                alert("Transfert des données terminé");
+              }).catch(reason => {
+                alert("une erreur est survenue : " + reason);
+              });
+            }
+        });
+      })
+    }
   }
 
 });
