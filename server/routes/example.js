@@ -68,7 +68,6 @@ export default function (server, adminCluster, dataCluster) {
         }
     });
 
-
     //creating index
     server.route({
         path: '/api/xlxs_import/{index}',
@@ -85,6 +84,24 @@ export default function (server, adminCluster, dataCluster) {
                     reply(response);
             });
         }
-    }); 
+    });
 
+    //checking index
+    server.route({
+        path: '/api/xlxs_import/{index}/_exists',
+        method: 'GET',
+        handler(req, reply) {
+            dataCluster.callWithRequest(req, 'indices.get', {
+                index: req.params.index,
+                body: req.payload,
+                ignore: [404]
+            })
+            .then(function (err, response) {
+                if(err)
+                    reply(err);
+                else
+                    reply(response);
+            });
+        }
+    }); 
 }

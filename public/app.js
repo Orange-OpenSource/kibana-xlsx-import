@@ -65,36 +65,49 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
 
     if($scope.mappingCheck){    //Si l'utilisateur souhaite choisir son propre mapping
 
-      var mapping_request = createMappingJson();
-
-      $http.post('../api/xlxs_import/'+ $scope.indexName)  //On crée l'index dans ES
+      $http.get('../api/xlxs_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
         .then((response) => {
           console.log(response);
+          if(response.data.status != 404) {
+            alert("l'index choisit existe déjà, impossible de redefinir un mapping, veuillez choisir un autre index ou ne pas redefinir le mapping");
+            $scope.showSpinner = false;
+            return;
+          }
+          else {
 
-          $http.post('../api/xlxs_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)  //On attribut le mapping dynamique
-            .then((response) => {
-              console.log(response);
+            var mapping_request = createMappingJson();
 
-              bulk_request = createBulk($scope.indexName);
+            $http.post('../api/xlxs_import/'+ $scope.indexName)  //On crée l'index dans ES
+              .then((response) => {
+                console.log(response);
 
-              bulk_request.forEach(function(split_bulk){
+                $http.post('../api/xlxs_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)  //On attribut le mapping dynamique
+                  .then((response) => {
+                    console.log(response);
 
-              $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)   //On push les data avec le bulk
-                .then((response) => {
-                  console.log(response);
-                  promises.push(Promise.resolve(response));
-                }).then(function(){
-                  if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
-                    $scope.showSpinner = false                    //On arrete le spinner
-                    Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                      alert("Transfert des données terminé");
-                    }).catch(reason => {
-                      alert("une erreur est survenue : " + reason);
-                    });
-                  }
-                });
-              })
-            });
+                    bulk_request = createBulk($scope.indexName);
+
+                    bulk_request.forEach(function(split_bulk){
+
+                    $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)   //On push les data avec le bulk
+                      .then((response) => {
+                        console.log(response);
+                        promises.push(Promise.resolve(response));
+                      }).then(function(){
+                        if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
+                          $scope.showSpinner = false                    //On arrete le spinner
+                          Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
+                            alert("Transfert des données terminé");
+                          }).catch(reason => {
+                            alert("une erreur est survenue : " + reason);
+                          });
+                        }
+                      });
+                    })
+                  });
+              });
+
+          }
         });
     }
     else {    //Si l'utilisateur ne souhaite pas de mapping perso, on push juste les données
