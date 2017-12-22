@@ -58,51 +58,28 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
 
     var promises = [];
     var bulk_request = [];
-    var bulk_package = [];
-
 
     $scope.indexName = angular.element('#indexName').val();
-    $scope.showSpinner = true;                          //On affiche le spinner
+    $scope.showSpinner = true;    //On affiche le spinner
 
 
-    if($scope.mappingCheck){
+    if($scope.mappingCheck){    //Si l'utilisateur souhaite choisir son propre mapping
 
-      var mapping_request = '';
+      var mapping_request = createMappingJson();
 
-      mapping_request = '{ "properties": {';
-
-      for(var i = 0; i < jsonData.header.length; i++) {
-        if(i < jsonData.header.length -1)
-          mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }, ';
-        else
-          mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }';
-      }
-      mapping_request += '} }';
-
-      console.log(mapping_request);
-
-      $http.post('../api/xlxs_import/'+ $scope.indexName)
+      $http.post('../api/xlxs_import/'+ $scope.indexName)  //On crée l'index dans ES
         .then((response) => {
           console.log(response);
 
-          $http.post('../api/xlxs_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)
+          $http.post('../api/xlxs_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)  //On attribut le mapping dynamique
             .then((response) => {
               console.log(response);
 
-              for(var i = 0; i < jsonData.data.length; i++) {
-                bulk_package.push({index: { _index: $scope.indexName, _type: 'doc' } });
-                bulk_package.push(jsonData.data[i]);
-
-                if(bulk_package.length >= bulkSize) {
-                  bulk_request.push(bulk_package);
-                  bulk_package = [];
-                }
-              }
-              bulk_request.push(bulk_package);
+              bulk_request = createBulk($scope.indexName);
 
               bulk_request.forEach(function(split_bulk){
 
-              $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
+              $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)   //On push les data avec le bulk
                 .then((response) => {
                   console.log(response);
                   promises.push(Promise.resolve(response));
@@ -120,18 +97,9 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
             });
         });
     }
-    else 
-    {
-      for(var i = 0; i < jsonData.data.length; i++) {
-        bulk_package.push({index: { _index: $scope.indexName, _type: 'doc' } });
-        bulk_package.push(jsonData.data[i]);
+    else {    //Si l'utilisateur ne souhaite pas de mapping perso, on push juste les données
 
-        if(bulk_package.length >= bulkSize) {
-          bulk_request.push(bulk_package);
-          bulk_package = [];
-        }
-      }
-      bulk_request.push(bulk_package);
+      bulk_request = createBulk($scope.indexName);
 
       bulk_request.forEach(function(split_bulk){
 
@@ -276,4 +244,38 @@ function setESIndexName(name) {
   var name = name.split('.')[0];                //on enlève l'extension du fichier
   var name = name.replace(/[^a-zA-Z ]/g, "");   //on enlève aussi les charactères speciaux (modif possible avec UTF?)
   return name;
+}
+
+//Crée les données JSON pour le mapping dynamique
+function createMappingJson() {
+  var mapping_request = '{ "properties": {';
+
+  for(var i = 0; i < jsonData.header.length; i++) {
+    if(i < jsonData.header.length -1)
+      mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }, ';
+    else
+      mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }';
+    }
+    mapping_request += '} }';
+
+    return mapping_request;
+}
+
+//Crée les données JSON pour le bulk
+function createBulk(indexName) {
+  var bulk_request = [];
+  var bulk_package = [];
+
+  for(var i = 0; i < jsonData.data.length; i++) {
+    bulk_package.push({index: { _index: indexName, _type: 'doc' } });
+    bulk_package.push(jsonData.data[i]);
+
+    if(bulk_package.length >= bulkSize) {
+      bulk_request.push(bulk_package);
+      bulk_package = [];
+    }
+  }
+  bulk_request.push(bulk_package);
+
+  return bulk_request;
 }
