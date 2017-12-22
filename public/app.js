@@ -68,7 +68,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
       $http.get('../api/xlxs_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
         .then((response) => {
           console.log(response);
-          if(response.data.status != 404) {
+          if(response.data.status != 404) {   //Si l'index existe déjà, on envoi un message et on annule le push
             alert("l'index choisit existe déjà, impossible de redefinir un mapping, veuillez choisir un autre index ou ne pas redefinir le mapping");
             $scope.showSpinner = false;
             return;

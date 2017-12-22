@@ -1,5 +1,5 @@
 
-import exampleRoute from './server/routes/example';
+import serverRoute from './server/routes/routing';
 
 export default function (kibana) {
   return new kibana.Plugin({
@@ -30,7 +30,7 @@ export default function (kibana) {
       const adminCluster = server.plugins.elasticsearch.getCluster('admin');
       const dataCluster = server.plugins.elasticsearch.getCluster('data');
 
-      exampleRoute(server, adminCluster, dataCluster);
+      serverRoute(server, adminCluster, dataCluster);
     }
     
 
