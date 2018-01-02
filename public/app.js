@@ -182,7 +182,7 @@ app.directive('importSheetJs', function() {
         reader.readAsBinaryString(changeEvent.target.files[0]);
 
         $scope.$parent.showSpinner = true;                                            //On affiche le spinner
-        $scope.$parent.showUploadOptions = true;                                          //On rend le champ index editable
+        $scope.$parent.showUploadOptions = true;                                      //On rend le champ index editable
         $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
         $scope.$parent.$apply();
       });
