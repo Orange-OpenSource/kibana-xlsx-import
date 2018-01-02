@@ -68,17 +68,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
       $http.get('../api/xlxs_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
         .then((response) => {
           console.log(response);
-          promises.push(Promise.resolve(response));
-      }).then(function(){
-          if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
-            $scope.showSpinner = false                    //On arrete le spinner
-            Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-              alert("Data transfer complete");
-            }).catch(reason => {
-              alert("Something wrong happened : " + reason);
-            });
           if(response.data.status != 404) {   //Si l'index existe déjà, on envoi un message et on annule le push
-            alert("l'index choisit existe déjà, impossible de redefinir un mapping, veuillez choisir un autre index ou ne pas redefinir le mapping");
+            alert("index already exist, please choose a new one or don't change the mapping");
             $scope.showSpinner = false;
             return;
           }
@@ -106,9 +97,9 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
                         if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
                           $scope.showSpinner = false                    //On arrete le spinner
                           Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                            alert("Transfert des données terminé");
+                            alert("Data transfer completed");
                           }).catch(reason => {
-                            alert("une erreur est survenue : " + reason);
+                            alert("Something wrong happened : " + reason);
                           });
                         }
                       });
@@ -133,9 +124,9 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
             if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
               $scope.showSpinner = false                    //On arrete le spinner
               Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                alert("Transfert des données terminé");
+                alert("Data transfer completed");
               }).catch(reason => {
-                alert("une erreur est survenue : " + reason);
+                alert("Something wrong happened : " + reason);
               });
             }
         });
@@ -158,7 +149,7 @@ app.directive('importSheetJs', function() {
           if (typeof FileReader !== "undefined") {
 
             var size = (changeEvent.target.files[0].size)/1000000;
-            var message = "File size is too large, do you still want to send it (error might occurs)?";
+            var message = "Your file is too large, do you still want to continue (errors might occur)?";
 
             //Warning si file.size > maxFileSize (TBD)
             if(size > maxFileSize) {
@@ -168,7 +159,7 @@ app.directive('importSheetJs', function() {
                   $scope.$parent.showSpinner = false;
                   $scope.$parent.$apply();
                 });
-                display_data("Displayed data only on the first five elements");
+                display_data("Displayed elements have been limited to five");
               }
               else {
                 //On enleve l'affichage des champs et du spinner si la conversion est annulée
