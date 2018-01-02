@@ -71,9 +71,9 @@ app.controller('xlxsImport', function ($scope, $route, $interval, $http) {
           if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
             $scope.showSpinner = false                    //On arrete le spinner
             Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-              alert("Data transfer complete");
+              alert("Transfert des données terminé");
             }).catch(reason => {
-              alert("Something wrong happened : " + reason);
+              alert("une erreur est survenue : " + reason);
             });
           }
       });
@@ -95,7 +95,7 @@ app.directive('importSheetJs', function() {
           if (typeof FileReader !== "undefined") {
 
             var size = (changeEvent.target.files[0].size)/1000000;
-            var message = "File size is too large, do you still want to send it (error might occurs)?";
+            var message = "Votre fichier depasse la taille limite, voulez vous continuer ?";
 
             //Warning si file.size > maxFileSize (TBD)
             if(size > maxFileSize) {
@@ -105,7 +105,7 @@ app.directive('importSheetJs', function() {
                   $scope.$parent.showSpinner = false;
                   $scope.$parent.$apply();
                 });
-                display_data("Displayed data only on the first five elements");
+                display_data("L'affichage a été limité aux premiers resultats");
               }
               else {
                 //On enleve l'affichage des champs et du spinner si la conversion est annulée
