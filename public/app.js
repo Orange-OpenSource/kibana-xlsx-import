@@ -68,7 +68,6 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
       $http.get('../api/xlxs_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
         .then((response) => {
           console.log(response);
-<<<<<<< HEAD
           promises.push(Promise.resolve(response));
       }).then(function(){
           if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
@@ -78,12 +77,10 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
             }).catch(reason => {
               alert("Something wrong happened : " + reason);
             });
-=======
           if(response.data.status != 404) {   //Si l'index existe déjà, on envoi un message et on annule le push
             alert("l'index choisit existe déjà, impossible de redefinir un mapping, veuillez choisir un autre index ou ne pas redefinir le mapping");
             $scope.showSpinner = false;
             return;
->>>>>>> f5938911139ed4e0837510dbb22547703056adab
           }
           else {
 
