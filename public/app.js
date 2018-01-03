@@ -11,6 +11,7 @@ import 'ui/autoload/styles';
 import './less/main.less';
 import 'fixed-data-table-2/dist/fixed-data-table.min.css';
 import 'angular-spinner';
+import 'angular-translate';
 
 
 let jsonData;                       // Contient les données de conversion du xlxs 
@@ -19,7 +20,7 @@ const maxFileSize = 4;              // Taille du fichier xlxs avant warning
 const bulkSize = 3000;              // Taille maximal des paquets du bulk 
 const maxDisplayableElement = 5;    // Nombre d'element afficher dans la previs des données
 
-var app = uiModules.get('app/xlxs_import', ['angularSpinner']);
+var app = uiModules.get('app/xlxs_import', ['angularSpinner', 'pascalprecht.translate']);
 
 uiRoutes.enable();
 uiRoutes
@@ -28,12 +29,47 @@ uiRoutes
 });
 
 
+app.config(['$translateProvider', function($translateProvider){
+
+  //Adding a translation table for the English language
+  $translateProvider.translations('en_US', {
+    "PERSONAL_MAPPING_LABEL" : "Define your personnal mapping ",
+    "INDEX_NAME_LABEL" : "Index name ",
+    "SEND_BUTTON" : "Send",
+    "SIZE_WARNING_MESSAGE" : "Your file is too large, do you still want to continue (errors might occur)?",
+    "DISPLAY_LIMIT_MESSAGE" : "Only five elements will be display",
+    "INDEX_ALREADY_EXIST_MESSAGE" : "Index name already exist, choose a new one or don't change the mapping",
+    "SUCCESS_TRANSFER_MESSAGE" : "Transfer completed",
+    "FAILED_TRANSFER_MESSAGE" : "Transfer failed"
+  });
+
+  //Adding a translation table for the French language
+  $translateProvider.translations('fr_FR', {
+    "PERSONAL_MAPPING_LABEL" : "Definir un mapping personnalisé ",
+    "INDEX_NAME_LABEL" : "Nom de l'index ",
+    "SEND_BUTTON" : "Tranférer",
+    "SIZE_WARNING_MESSAGE" : "Fichier trop volumineux, souhaitez vous continuez ?",
+    "DISPLAY_LIMIT_MESSAGE" : "Seulement les cinq premier élément sont affichés",
+    "INDEX_ALREADY_EXIST_MESSAGE" : "Nom d'index déjà utilisé, veuillez utiliser un autre nom ou ne pas modifier le mapping",
+    "SUCCESS_TRANSFER_MESSAGE" : "Transfert terminé",
+    "FAILED_TRANSFER_MESSAGE" : "Transfert échoué"
+  });
+
+  // Tell the module what language to use by default
+  var userLang = navigator.language || navigator.userLanguage;
+  if(userLang === 'fr')
+    $translateProvider.preferredLanguage('fr_FR');
+  else
+    $translateProvider.preferredLanguage('en_US');
+  
+}])
+
 app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
-    usSpinnerConfigProvider.setDefaults({color: 'black'});
-}]);
+  usSpinnerConfigProvider.setDefaults({color: 'black'});
+}])
 
 
-app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
+app.controller('xlsxImport', function ($scope, $route, $interval, $http, $translate) {
   $scope.title = 'XLSX Import';
   $scope.description = 'Import XLSX to JSON';
   $scope.showUploadOptions = false;
@@ -69,7 +105,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
         .then((response) => {
           console.log(response);
           if(response.data.status != 404) {   //Si l'index existe déjà, on envoi un message et on annule le push
-            alert("index already exist, please choose a new one or don't change the mapping");
+            alert($translate.instant('INDEX_ALREADY_EXIST_MESSAGE'));
             $scope.showSpinner = false;
             return;
           }
@@ -97,9 +133,9 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
                         if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
                           $scope.showSpinner = false                    //On arrete le spinner
                           Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                            alert("Data transfer completed");
+                            alert($translate.instant('SUCCESS_TRANSFER_MESSAGE'));
                           }).catch(reason => {
-                            alert("Something wrong happened : " + reason);
+                            alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
                           });
                         }
                       });
@@ -124,9 +160,9 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
             if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
               $scope.showSpinner = false                    //On arrete le spinner
               Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                alert("Data transfer completed");
+                alert($translate.instant('SUCCESS_TRANSFER_MESSAGE'));
               }).catch(reason => {
-                alert("Something wrong happened : " + reason);
+                alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
               });
             }
         });
@@ -137,7 +173,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http) {
 });
 
 
-app.directive('importSheetJs', function() {
+app.directive('importSheetJs', function($translate) {
   return {
     scope: { opts: '=' },
     link: function ($scope, $elm, $attrs) {
@@ -149,7 +185,7 @@ app.directive('importSheetJs', function() {
           if (typeof FileReader !== "undefined") {
 
             var size = (changeEvent.target.files[0].size)/1000000;
-            var message = "Your file is too large, do you still want to continue (errors might occur)?";
+            var message = $translate.instant('SIZE_WARNING_MESSAGE');
 
             //Warning si file.size > maxFileSize (TBD)
             if(size > maxFileSize) {
@@ -159,7 +195,7 @@ app.directive('importSheetJs', function() {
                   $scope.$parent.showSpinner = false;
                   $scope.$parent.$apply();
                 });
-                display_data("Displayed elements have been limited to five");
+                display_data($translate.instant('DISPLAY_LIMIT_MESSAGE'));
               }
               else {
                 //On enleve l'affichage des champs et du spinner si la conversion est annulée

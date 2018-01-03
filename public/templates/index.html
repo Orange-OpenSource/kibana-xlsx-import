@@ -11,11 +11,11 @@
     <div id="message"></div>
     <div id="react_preview"></div> <br/>
     <div ng-show="showUploadOptions">
-      <p><label>Utiliser un mapping personnalisée <input type="checkbox" ng-model="mappingCheck" ng-change="mappingCheckChange()"></label></p>
+      <p><label>{{ 'PERSONAL_MAPPING_LABEL' | translate }}<input type="checkbox" ng-model="mappingCheck" ng-change="mappingCheckChange()"></label></p>
       <div id="mapping"></div>
       <form>
-        <label>Nom de l'index ES : <input type="text" ng-model="indexName" id="indexName"></label> <br/>
-        <button type="button" ng-click="transfer()">Transferer dans ES</button>
+        <label>{{'INDEX_NAME_LABEL' | translate }}<input type="text" ng-model="indexName" id="indexName"></label> <br/>
+        <button type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
       </form>
       <span us-spinner="{radius:30, width:8, length: 16}" spinner-on="showSpinner"></span>
     </div>
@@ -27,5 +27,3 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.10.8/xlsx.full.min.js"></script>
-
-

@@ -1,4 +1,4 @@
-
+import { resolve } from 'path';
 import serverRoute from './server/routes/routing';
 
 export default function (kibana) {
@@ -13,8 +13,6 @@ export default function (kibana) {
         description: 'Import XLSX to JSON',
         main: 'plugins/xlxs-import/app'
       },
-      
-      
       
     },
 
