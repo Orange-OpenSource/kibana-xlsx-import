@@ -12,6 +12,7 @@ import './less/main.less';
 import 'fixed-data-table-2/dist/fixed-data-table.min.css';
 import 'angular-spinner';
 import 'angular-translate';
+import 'angular-translate-loader-static-files';
 
 
 let jsonData;                       // Contient les données de conversion du xlxs 
@@ -31,37 +32,18 @@ uiRoutes
 
 app.config(['$translateProvider', function($translateProvider){
 
-  //Adding a translation table for the English language
-  $translateProvider.translations('en_US', {
-    "PERSONAL_MAPPING_LABEL" : "Define your personnal mapping ",
-    "INDEX_NAME_LABEL" : "Index name ",
-    "SEND_BUTTON" : "Send",
-    "SIZE_WARNING_MESSAGE" : "Your file is too large, do you still want to continue (errors might occur)?",
-    "DISPLAY_LIMIT_MESSAGE" : "Only five elements will be display",
-    "INDEX_ALREADY_EXIST_MESSAGE" : "Index name already exist, choose a new one or don't change the mapping",
-    "SUCCESS_TRANSFER_MESSAGE" : "Transfer completed",
-    "FAILED_TRANSFER_MESSAGE" : "Transfer failed"
-  });
-
-  //Adding a translation table for the French language
-  $translateProvider.translations('fr_FR', {
-    "PERSONAL_MAPPING_LABEL" : "Definir un mapping personnalisé ",
-    "INDEX_NAME_LABEL" : "Nom de l'index ",
-    "SEND_BUTTON" : "Tranférer",
-    "SIZE_WARNING_MESSAGE" : "Fichier trop volumineux, souhaitez vous continuez ?",
-    "DISPLAY_LIMIT_MESSAGE" : "Seulement les cinq premier élément sont affichés",
-    "INDEX_ALREADY_EXIST_MESSAGE" : "Nom d'index déjà utilisé, veuillez utiliser un autre nom ou ne pas modifier le mapping",
-    "SUCCESS_TRANSFER_MESSAGE" : "Transfert terminé",
-    "FAILED_TRANSFER_MESSAGE" : "Transfert échoué"
+  $translateProvider.useStaticFilesLoader({
+    prefix: '../plugins/xlxs-import/i18n/',
+    suffix: '.json'
   });
 
   // Tell the module what language to use by default
   var userLang = navigator.language || navigator.userLanguage;
   if(userLang === 'fr')
-    $translateProvider.preferredLanguage('fr_FR');
+    $translateProvider.preferredLanguage('fr');
   else
-    $translateProvider.preferredLanguage('en_US');
-  
+    $translateProvider.preferredLanguage('en');
+
 }])
 
 app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
@@ -75,6 +57,11 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   $scope.showUploadOptions = false;
   $scope.indexName = '';
   $scope.showSpinner = false;
+
+
+  $scope.changeLanguage = function (langKey) {
+    $translate.use(langKey).then(function(){}, function(){toastr.error('JSON file is invalid')})
+  };
 
 
   $scope.mappingCheckChange = function(){
