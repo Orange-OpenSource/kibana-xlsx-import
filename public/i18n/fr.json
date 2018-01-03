@@ -2,6 +2,7 @@
 	"PERSONAL_MAPPING_LABEL" : "Definir un mapping personnalisé ",
     "INDEX_NAME_LABEL" : "Nom de l'index ",
     "SEND_BUTTON" : "Transférer",
+    "REFRESH_BUTTON" : "Choisir un autre fichier",
     "SIZE_WARNING_MESSAGE" : "Fichier trop volumineux, souhaitez vous continuez ?",
     "DISPLAY_LIMIT_MESSAGE" : "Seulement les cinq premier élément sont affichés",
     "INDEX_ALREADY_EXIST_MESSAGE" : "Nom d'index déjà utilisé, veuillez utiliser un autre nom ou ne pas modifier le mapping",

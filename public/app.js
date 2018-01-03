@@ -179,6 +179,8 @@ app.directive('importSheetJs', function($translate) {
 
               if(confirm(message)) {
                 convert_data(reader, function(){
+                  document.getElementById("import_form").innerHTML = 
+                    '<button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button>';
                   $scope.$parent.showSpinner = false;
                   $scope.$parent.$apply();
                 });
@@ -195,6 +197,8 @@ app.directive('importSheetJs', function($translate) {
             }
             else {
               convert_data(reader, function(){
+                document.getElementById("import_form").innerHTML = 
+                  '<p><button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button></p>';
                 $scope.$parent.showSpinner = false;
                 $scope.$parent.$apply();
               });

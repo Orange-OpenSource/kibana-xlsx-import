@@ -2,6 +2,7 @@
     "PERSONAL_MAPPING_LABEL" : "Define your personnal mapping ",
     "INDEX_NAME_LABEL" : "Index name ",
     "SEND_BUTTON" : "Send",
+    "REFRESH_BUTTON" : "Select another file",
     "SIZE_WARNING_MESSAGE" : "Your file is too large, do you still want to continue (errors might occur)?",
     "DISPLAY_LIMIT_MESSAGE" : "Only five elements will be display",
     "INDEX_ALREADY_EXIST_MESSAGE" : "Index name already exist, choose a new one or don't change the mapping",
