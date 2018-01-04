@@ -1,9 +1,13 @@
-# xlxs_import
+# xlsx_import
 
-> Import XLXS to JSON
+> Kibana plugin for import XLSX file to ElasticSearch
 
 ---
+## How to use
 
+
+
+---
 ## development
 
 See the [kibana contributing guide](https://github.com/elastic/kibana/blob/master/CONTRIBUTING.md) for instructions setting up your development environment. Once you have completed that, use the following npm tasks.
