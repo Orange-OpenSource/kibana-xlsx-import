@@ -1,5 +1,5 @@
 {
-  "name": "xlxs-import",
+  "name": "xlsx-import",
   "version": "0.1.0",
   "description": "Import XLSX to JSON",
   "main": "index.js",

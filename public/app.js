@@ -21,7 +21,7 @@ const maxFileSize = 4;              // Taille du fichier xlxs avant warning
 const bulkSize = 3000;              // Taille maximal des paquets du bulk 
 const maxDisplayableElement = 5;    // Nombre d'element afficher dans la previs des données
 
-var app = uiModules.get('app/xlxs_import', ['angularSpinner', 'pascalprecht.translate']);
+var app = uiModules.get('app/xlsx_import', ['angularSpinner', 'pascalprecht.translate']);
 
 uiRoutes.enable();
 uiRoutes
@@ -31,9 +31,12 @@ uiRoutes
 
 
 app.config(['$translateProvider', function($translateProvider){
+  //angular-translate security
+  $translateProvider.useSanitizeValueStrategy('escape');
 
+  //Path for loading translation files [prefix][filename][suffix]
   $translateProvider.useStaticFilesLoader({
-    prefix: '../plugins/xlxs-import/i18n/',
+    prefix: '../plugins/xlsx-import/i18n/',
     suffix: '.json'
   });
 

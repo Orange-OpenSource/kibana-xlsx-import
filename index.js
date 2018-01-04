@@ -5,13 +5,13 @@ export default function (kibana) {
   return new kibana.Plugin({
 
     require: ['elasticsearch'],
-    name: 'xlxs-import',
+    name: 'xlsx-import',
     uiExports: {
       
       app: {
-        title: 'Data XLSX Import',
+        title: 'XLSX Import',
         description: 'Import XLSX to JSON',
-        main: 'plugins/xlxs-import/app'
+        main: 'plugins/xlsx-import/app'
       },
       
     },
