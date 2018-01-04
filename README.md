@@ -5,7 +5,13 @@
 ---
 ## How to use
 
+### Choose the file you want to import
 
+### Define your own mapping (optional)
+
+### Choose an index name
+
+### Send to ES and check if its working
 
 ---
 ## development
