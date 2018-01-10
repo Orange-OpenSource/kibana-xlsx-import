@@ -7,5 +7,6 @@
     "DISPLAY_LIMIT_MESSAGE" : "Only five elements will be display",
     "INDEX_ALREADY_EXIST_MESSAGE" : "Index name already exist, choose a new one or don't change the mapping",
     "SUCCESS_TRANSFER_MESSAGE" : "Transfer completed",
-    "FAILED_TRANSFER_MESSAGE" : "Transfer failed"
+    "FAILED_TRANSFER_MESSAGE" : "Transfer failed",
+    "INVALID_EXTENSION_FILE_MESSAGE" : "Incorrect type of file"
 }
