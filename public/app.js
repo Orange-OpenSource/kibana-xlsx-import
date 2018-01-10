@@ -234,11 +234,15 @@ function convert_data(reader, callback) {
   var wb = XLSX.read(fileData, {type : 'binary'});
   jsonData = new Object();
 
-  wb.SheetNames.forEach(function(sheetName){
+  /*wb.SheetNames.forEach(function(sheetName){
     update_sheet_range(wb.Sheets[sheetName]);
     jsonData.header = get_header_row(wb.Sheets[sheetName]);
     jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
-  })
+  })*/
+
+  update_sheet_range(wb.Sheets[wb.SheetNames[0]]);
+  jsonData.header = get_header_row(wb.Sheets[wb.SheetNames[0]]);
+  jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
 
   if (typeof callback === "function")
     callback();
