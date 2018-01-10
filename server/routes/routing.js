@@ -2,7 +2,7 @@ export default function (server, adminCluster, dataCluster) {
 
 	//GET cluster health
     server.route({
-    	path: '/api/xlxs_import/health',
+    	path: '/api/xlsx_import/health',
         method: 'GET',
         handler(req, reply) {
         	dataCluster.callWithRequest(req, 'cluster.health')
@@ -14,7 +14,7 @@ export default function (server, adminCluster, dataCluster) {
 
 	//Perform single POST for creating / adding document to an index
     server.route({
-    	path: '/api/xlxs_import/{index}/{document}',
+    	path: '/api/xlsx_import/{index}/{document}',
         method: 'POST',
         handler(req, reply) {
         	dataCluster.callWithRequest(req, 'index', {
@@ -33,7 +33,7 @@ export default function (server, adminCluster, dataCluster) {
 
     //Perform BULK for creating / adding multiple documents to an index
     server.route({
-    	path: '/api/xlxs_import/{index}/{document}/_bulk',
+    	path: '/api/xlsx_import/{index}/{document}/_bulk',
         method: 'POST',
         handler(req, reply) {
 
@@ -51,7 +51,7 @@ export default function (server, adminCluster, dataCluster) {
 
     //Create a mapping for a selected index and document
     server.route({
-        path: '/api/xlxs_import/{index}/_mapping/{document}',
+        path: '/api/xlsx_import/{index}/_mapping/{document}',
         method: 'POST',
         handler(req, reply) {
             dataCluster.callWithRequest(req, 'indices.putMapping', {
@@ -70,7 +70,7 @@ export default function (server, adminCluster, dataCluster) {
 
     //creating index
     server.route({
-        path: '/api/xlxs_import/{index}',
+        path: '/api/xlsx_import/{index}',
         method: 'POST',
         handler(req, reply) {
             dataCluster.callWithRequest(req, 'indices.create', {
@@ -88,7 +88,7 @@ export default function (server, adminCluster, dataCluster) {
 
     //checking index
     server.route({
-        path: '/api/xlxs_import/{index}/_exists',
+        path: '/api/xlsx_import/{index}/_exists',
         method: 'GET',
         handler(req, reply) {
             dataCluster.callWithRequest(req, 'indices.get', {

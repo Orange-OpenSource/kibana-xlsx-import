@@ -91,7 +91,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
     if($scope.mappingCheck){    //Si l'utilisateur souhaite choisir son propre mapping
 
-      $http.get('../api/xlxs_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
+      $http.get('../api/xlsx_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
         .then((response) => {
           console.log(response);
           if(response.data.status != 404) {   //Si l'index existe déjà, on envoi un message et on annule le push
@@ -103,11 +103,11 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
             var mapping_request = createMappingJson();
 
-            $http.post('../api/xlxs_import/'+ $scope.indexName)  //On crée l'index dans ES
+            $http.post('../api/xlsx_import/'+ $scope.indexName)  //On crée l'index dans ES
               .then((response) => {
                 console.log(response);
 
-                $http.post('../api/xlxs_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)  //On attribut le mapping dynamique
+                $http.post('../api/xlsx_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)  //On attribut le mapping dynamique
                   .then((response) => {
                     console.log(response);
 
@@ -115,7 +115,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
                     bulk_request.forEach(function(split_bulk){
 
-                    $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)   //On push les data avec le bulk
+                    $http.post('../api/xlsx_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)   //On push les data avec le bulk
                       .then((response) => {
                         console.log(response);
                         promises.push(Promise.resolve(response));
@@ -142,7 +142,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
       bulk_request.forEach(function(split_bulk){
 
-        $http.post('../api/xlxs_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
+        $http.post('../api/xlsx_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
           .then((response) => {
             console.log(response);
             promises.push(Promise.resolve(response));
@@ -292,7 +292,7 @@ function setESIndexName(name) {
 //Crée les données JSON pour le mapping dynamique
 function createMappingJson() {
   var mapping_request = '{ "properties": {';
-
+  console.log(jsonData.header);
   for(var i = 0; i < jsonData.header.length; i++) {
     if(i < jsonData.header.length -1)
       mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }, ';
