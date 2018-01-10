@@ -171,6 +171,11 @@ app.directive('importSheetJs', function($translate) {
       $elm.on('change', function (changeEvent) {
         var reader = new FileReader();
 
+        if (getExtension(changeEvent.target.files[0].name) != "xlsx") {
+          alert("INVALID_EXTENSION_FILE_MESSAGE");
+          return
+        }
+
         reader.onload = function (file) {
           if (typeof FileReader !== "undefined") {
 
@@ -287,6 +292,11 @@ function setESIndexName(name) {
   var name = name.split('.')[0];                //on enlève l'extension du fichier
   var name = name.replace(/[^a-zA-Z ]/g, "");   //on enlève aussi les charactères speciaux (modif possible avec UTF?)
   return name;
+}
+
+//Retourne l'extension d'un fichier
+function getExtension(filename) {
+  return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) : undefined;
 }
 
 //Crée les données JSON pour le mapping dynamique
