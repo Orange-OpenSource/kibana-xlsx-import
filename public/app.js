@@ -124,7 +124,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                         if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
                           $scope.showSpinner = false                    //On arrete le spinner
                           Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                            alert($translate.instant('SUCCESS_TRANSFER_MESSAGE'));
+                            alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
                           }).catch(reason => {
                             alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
                           });
@@ -151,7 +151,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
             if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
               $scope.showSpinner = false                    //On arrete le spinner
               Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                alert($translate.instant('SUCCESS_TRANSFER_MESSAGE'));
+                alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
               }).catch(reason => {
                 alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
               });
