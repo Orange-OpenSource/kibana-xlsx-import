@@ -15,11 +15,12 @@ import 'angular-translate';
 import 'angular-translate-loader-static-files';
 
 
-let jsonData;                       // Contient les données de conversion du xlxs 
+let jsonData;                               // Contient les données de conversion du xlxs 
 
-const maxFileSize = 4;              // Taille du fichier xlxs avant warning 
-const bulkSize = 3000;              // Taille maximal des paquets du bulk 
-const maxDisplayableElement = 5;    // Nombre d'element afficher dans la previs des données
+const maxFileSize = 4;                      // Taille du fichier xlxs avant warning 
+const bulkSize = 3000;                      // Taille maximal des paquets du bulk 
+const maxDisplayableElement = 5;            // Nombre d'element afficher dans la previs des données
+var supportedFileType = ['xlsx', 'csv'];  // Defini les extensions utilisable dans le plugin
 
 var app = uiModules.get('app/xlsx_import', ['angularSpinner', 'pascalprecht.translate']);
 
@@ -171,55 +172,61 @@ app.directive('importSheetJs', function($translate) {
       $elm.on('change', function (changeEvent) {
         var reader = new FileReader();
 
-        if (getExtension(changeEvent.target.files[0].name) != "xlsx") {
-          alert("INVALID_EXTENSION_FILE_MESSAGE");
+        if (!supportedFileType.includes(getExtension(changeEvent.target.files[0].name)[0])) {
+          alert($translate.instant("INVALID_EXTENSION_FILE_MESSAGE"));
           return
         }
 
-        reader.onload = function (file) {
-          if (typeof FileReader !== "undefined") {
+        try {
+          reader.onload = function (file) {
+            if (typeof FileReader !== "undefined") {
 
-            var size = (changeEvent.target.files[0].size)/1000000;
-            var message = $translate.instant('SIZE_WARNING_MESSAGE');
+              var size = (changeEvent.target.files[0].size)/1000000;
+              var message = $translate.instant('SIZE_WARNING_MESSAGE');
 
-            //Warning si file.size > maxFileSize (TBD)
-            if(size > maxFileSize) {
+              //Warning si file.size > maxFileSize (TBD)
+              if(size > maxFileSize) {
 
-              if(confirm(message)) {
+                if(confirm(message)) {
+                  convert_data(reader, function(){
+                    document.getElementById("import_form").innerHTML = 
+                      '<button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button>';
+                    $scope.$parent.showSpinner = false;
+                    $scope.$parent.$apply();
+                  });
+                  display_data($translate.instant('DISPLAY_LIMIT_MESSAGE'));
+                }
+                else {
+                  //On enleve l'affichage des champs et du spinner si la conversion est annulée
+                  $scope.$parent.showSpinner = false;
+                  $scope.$parent.showUploadOptions = false;
+                  $scope.$parent.$apply();
+                  return;
+                }
+
+              }
+              else {
                 convert_data(reader, function(){
                   document.getElementById("import_form").innerHTML = 
-                    '<button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button>';
+                    '<p><button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button></p>';
                   $scope.$parent.showSpinner = false;
                   $scope.$parent.$apply();
                 });
-                display_data($translate.instant('DISPLAY_LIMIT_MESSAGE'));
+                display_data("");
               }
-              else {
-                //On enleve l'affichage des champs et du spinner si la conversion est annulée
-                $scope.$parent.showSpinner = false;
-                $scope.$parent.showUploadOptions = false;
-                $scope.$parent.$apply();
-                return;
-              }
-
             }
-            else {
-              convert_data(reader, function(){
-                document.getElementById("import_form").innerHTML = 
-                  '<p><button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button></p>';
-                $scope.$parent.showSpinner = false;
-                $scope.$parent.$apply();
-              });
-              display_data("");
-            }
-          }
-        }; 
-        reader.readAsBinaryString(changeEvent.target.files[0]);
+          }; 
+          reader.readAsBinaryString(changeEvent.target.files[0]);
 
-        $scope.$parent.showSpinner = true;                                            //On affiche le spinner
-        $scope.$parent.showUploadOptions = true;                                      //On rend le champ index editable
-        $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
-        $scope.$parent.$apply();
+          $scope.$parent.showSpinner = true;                                            //On affiche le spinner
+          $scope.$parent.showUploadOptions = true;                                      //On rend le champ index editable
+          $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
+          $scope.$parent.$apply();
+
+        } catch(err) {
+          alert($translate.instant("INVALID_EXTENSION_FILE_MESSAGE"));
+          return
+        }
       });
     }
   };
