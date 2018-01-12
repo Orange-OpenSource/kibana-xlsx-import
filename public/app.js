@@ -6,21 +6,23 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import MyTable from './components/mytable.js';
 import MyMapping from './components/mymapping.js';
+import MyTabs from './components/mytabs.js';
 
 import 'ui/autoload/styles';
 import './less/main.less';
-import 'fixed-data-table-2/dist/fixed-data-table.min.css';
+import 'fixed-data-table-2/dist/fixed-data-table.css';
+
 import 'angular-spinner';
 import 'angular-translate';
 import 'angular-translate-loader-static-files';
 
 
-let jsonData;                               // Contient les données de conversion du xlxs 
+let jsonData;                                 // Contient les données de conversion du xlxs 
 
-const maxFileSize = 4;                      // Taille du fichier xlxs avant warning 
-const bulkSize = 3000;                      // Taille maximal des paquets du bulk 
-const maxDisplayableElement = 5;            // Nombre d'element afficher dans la previs des données
-var supportedFileType = ['xlsx', 'csv'];  // Defini les extensions utilisable dans le plugin
+const maxFileSize = 4;                        // Taille du fichier xlxs avant warning 
+const bulkSize = 3000;                        // Taille maximal des paquets du bulk 
+const maxDisplayableElement = 5;              // Nombre d'element afficher dans la previs des données
+const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
 
 var app = uiModules.get('app/xlsx_import', ['angularSpinner', 'pascalprecht.translate']);
 
@@ -68,19 +70,6 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   };
 
 
-  $scope.mappingCheckChange = function(){
-
-    if($scope.mappingCheck) {
-      ReactDOM.render(
-        <MyMapping data={jsonData} />,
-        document.getElementById("mapping")
-      );
-    } else {
-        document.getElementById("mapping").innerHTML = '';
-    }
-  }
-
-
   $scope.transfer = function() {
 
     var promises = [];
@@ -90,7 +79,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     $scope.showSpinner = true;    //On affiche le spinner
 
 
-    if($scope.mappingCheck){    //Si l'utilisateur souhaite choisir son propre mapping
+    if(document.getElementById('checkMapping').checked){    //Si l'utilisateur souhaite choisir son propre mapping
 
       $http.get('../api/xlsx_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
         .then((response) => {
@@ -183,6 +172,7 @@ app.directive('importSheetJs', function($translate) {
 
               var size = (changeEvent.target.files[0].size)/1000000;
               var message = $translate.instant('SIZE_WARNING_MESSAGE');
+              var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
 
               //Warning si file.size > maxFileSize (TBD)
               if(size > maxFileSize) {
@@ -190,11 +180,11 @@ app.directive('importSheetJs', function($translate) {
                 if(confirm(message)) {
                   convert_data(reader, function(){
                     document.getElementById("import_form").innerHTML = 
-                      '<button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button>';
+                      '<button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + changeEvent.target.files[0].name;
                     $scope.$parent.showSpinner = false;
                     $scope.$parent.$apply();
                   });
-                  display_data($translate.instant('DISPLAY_LIMIT_MESSAGE'));
+                  display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabNames);
                 }
                 else {
                   //On enleve l'affichage des champs et du spinner si la conversion est annulée
@@ -208,11 +198,11 @@ app.directive('importSheetJs', function($translate) {
               else {
                 convert_data(reader, function(){
                   document.getElementById("import_form").innerHTML = 
-                    '<p><button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button></p>';
+                    '<p><button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ changeEvent.target.files[0].name;
                   $scope.$parent.showSpinner = false;
                   $scope.$parent.$apply();
                 });
-                display_data("");
+                display_UI("", tabNames);
               }
             }
           }; 
@@ -256,18 +246,25 @@ function convert_data(reader, callback) {
 }
 
 //Affichage des données dans une table html après conversion
-function display_data(message) {
-    var headers = '';
-    var body = '';
+function display_UI(message ,tabNames) {
 
-      if(message)
+    if(message)
       document.getElementById("message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
 
     ReactDOM.render(
-      <MyTable data={jsonData} maxElement={maxDisplayableElement}/>,
-      document.getElementById("react_preview")
-    ); 
+      <MyTabs names={tabNames}/>,
+      document.getElementById("react_tabs")
+    );
 
+    ReactDOM.render(
+      <MyTable data={jsonData} maxElement={maxDisplayableElement}/>,
+      document.getElementById("view_tab")
+    );
+
+    ReactDOM.render(
+      <MyMapping data={jsonData} />,
+      document.getElementById("mapping_tab")
+    );
 }
 
 //Mise à jour du fichier en cas d'ouverture avec d'autres logiciel... (libreoffice)

@@ -28,10 +28,14 @@
     "expect.js": "^0.3.1"
   },
   "dependencies": {
+    "angular-animate": "^1.6.8",
     "angular-spinner": "^1.0.1",
     "angular-translate": "2.8.1",
     "angular-translate-loader-static-files": "2.8.1",
-    "fixed-data-table-2": "^0.8.6"
+    "fixed-data-table-2": "^0.8.6",
+    "react-collapsible": "^2.0.3",
+    "react-simpletabs": "^0.7.0",
+    "v-accordion": "^1.6.0"
   },
   "author": "frederic testaniere",
   "license": "ISC"
