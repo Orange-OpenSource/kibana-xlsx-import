@@ -192,7 +192,7 @@ app.directive('importSheetJs', function($translate) {
                 if(confirm(message)) {
                   convert_data(reader, function(){
                     document.getElementById("import_form").innerHTML = 
-                      '<button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button>';
+                      '<button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + changeEvent.target.files[0].name;
                     $scope.$parent.showSpinner = false;
                     $scope.$parent.$apply();
                   });
@@ -210,7 +210,7 @@ app.directive('importSheetJs', function($translate) {
               else {
                 convert_data(reader, function(){
                   document.getElementById("import_form").innerHTML = 
-                    '<p><button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button></p>';
+                    '<p><button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ changeEvent.target.files[0].name;
                   $scope.$parent.showSpinner = false;
                   $scope.$parent.$apply();
                 });
