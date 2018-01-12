@@ -1,6 +1,8 @@
 {
 	"PERSONAL_MAPPING_LABEL" : "Definir un mapping personnalisé ",
     "INDEX_NAME_LABEL" : "Nom de l'index ",
+    "VIEW_TABS_NAME" : "Visualiser les données",
+    "MAPPING_TAB_NAME" : "Definir le Mapping",
     "SEND_BUTTON" : "Transférer",
     "REFRESH_BUTTON" : "Choisir un autre fichier",
     "SIZE_WARNING_MESSAGE" : "Fichier trop volumineux, souhaitez vous continuez ?",
