@@ -6,21 +6,23 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import MyTable from './components/mytable.js';
 import MyMapping from './components/mymapping.js';
+import MyTabs from './components/mytabs.js';
 
 import 'ui/autoload/styles';
 import './less/main.less';
-import 'fixed-data-table-2/dist/fixed-data-table.min.css';
+import 'fixed-data-table-2/dist/fixed-data-table.css';
+
 import 'angular-spinner';
 import 'angular-translate';
 import 'angular-translate-loader-static-files';
 
 
-let jsonData;                               // Contient les données de conversion du xlxs 
+let jsonData;                                 // Contient les données de conversion du xlxs 
 
-const maxFileSize = 4;                      // Taille du fichier xlxs avant warning 
-const bulkSize = 3000;                      // Taille maximal des paquets du bulk 
-const maxDisplayableElement = 5;            // Nombre d'element afficher dans la previs des données
-var supportedFileType = ['xlsx', 'csv'];  // Defini les extensions utilisable dans le plugin
+const maxFileSize = 4;                        // Taille du fichier xlxs avant warning 
+const bulkSize = 3000;                        // Taille maximal des paquets du bulk 
+const maxDisplayableElement = 5;              // Nombre d'element afficher dans la previs des données
+const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
 
 var app = uiModules.get('app/xlsx_import', ['angularSpinner', 'pascalprecht.translate']);
 
@@ -260,13 +262,24 @@ function display_data(message) {
     var headers = '';
     var body = '';
 
-      if(message)
+    if(message)
       document.getElementById("message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
 
     ReactDOM.render(
+      <MyTabs />,
+      document.getElementById("react_tabs")
+    );
+
+    ReactDOM.render(
       <MyTable data={jsonData} maxElement={maxDisplayableElement}/>,
-      document.getElementById("react_preview")
-    ); 
+      //document.getElementById("react_preview")
+      document.getElementById("tabs1")
+    );
+
+    ReactDOM.render(
+      <MyMapping data={jsonData} />,
+      document.getElementById("tabs2")
+    );
 
 }
 
