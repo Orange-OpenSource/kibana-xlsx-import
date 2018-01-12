@@ -70,7 +70,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   };
 
 
-  $scope.mappingCheckChange = function(){
+  /*$scope.mappingCheckChange = function(){
 
     if($scope.mappingCheck) {
       ReactDOM.render(
@@ -80,7 +80,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     } else {
         document.getElementById("mapping").innerHTML = '';
     }
-  }
+  }*/
 
 
   $scope.transfer = function() {
@@ -92,7 +92,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     $scope.showSpinner = true;    //On affiche le spinner
 
 
-    if($scope.mappingCheck){    //Si l'utilisateur souhaite choisir son propre mapping
+    if(document.getElementById('checkMapping').checked){    //Si l'utilisateur souhaite choisir son propre mapping
 
       $http.get('../api/xlsx_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
         .then((response) => {
@@ -273,14 +273,13 @@ function display_data(message) {
     ReactDOM.render(
       <MyTable data={jsonData} maxElement={maxDisplayableElement}/>,
       //document.getElementById("react_preview")
-      document.getElementById("tabs1")
+      document.getElementById("view_tab")
     );
 
     ReactDOM.render(
       <MyMapping data={jsonData} />,
-      document.getElementById("tabs2")
+      document.getElementById("mapping_tab")
     );
-
 }
 
 //Mise à jour du fichier en cas d'ouverture avec d'autres logiciel... (libreoffice)

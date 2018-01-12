@@ -10,11 +10,12 @@ class MyTabs extends React.Component {
     return (
     	<div>
 			<Collapsible trigger="View Data" open={true}>
-	        	<div id="tabs1"></div>
+	        	<div id="view_tab"></div>
 	      	</Collapsible>
 
 	      	<Collapsible trigger="Define Mapping">
-	        	<div id="tabs2"></div>
+	      		<label>Use a personnal mapping <input id="checkMapping" type="checkbox"/></label>
+	        	<div id="mapping_tab"></div>
 	      	</Collapsible>
       	</div>
     );
