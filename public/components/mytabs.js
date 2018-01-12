@@ -4,18 +4,22 @@ import Collapsible from 'react-collapsible';
 class MyTabs extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      tabNames: this.props.names 
+    };
   }
 
   render() {
     return (
     	<div>
-			 <Collapsible trigger="View Data" open={true}>
+			 <Collapsible trigger={this.state.tabNames[1]} open={true}>
 	       <div id="view_tab"></div>
 	     </Collapsible>
 
-	     <Collapsible trigger="Define Mapping">
+	     <Collapsible trigger={this.state.tabNames[2]}>
           <form className="form-inline">
-	      		<input className="form-control" id="checkMapping" type="checkbox"/> <label>Use a personnal mapping</label>
+	      		<input className="form-control" id="checkMapping" type="checkbox"/> <label>{this.state.tabNames[0]}</label>
           </form>
 	        <div id="mapping_tab"></div>
 	     </Collapsible>

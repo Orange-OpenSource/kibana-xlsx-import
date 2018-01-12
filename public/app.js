@@ -70,19 +70,6 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   };
 
 
-  /*$scope.mappingCheckChange = function(){
-
-    if($scope.mappingCheck) {
-      ReactDOM.render(
-        <MyMapping data={jsonData} />,
-        document.getElementById("mapping")
-      );
-    } else {
-        document.getElementById("mapping").innerHTML = '';
-    }
-  }*/
-
-
   $scope.transfer = function() {
 
     var promises = [];
@@ -185,6 +172,7 @@ app.directive('importSheetJs', function($translate) {
 
               var size = (changeEvent.target.files[0].size)/1000000;
               var message = $translate.instant('SIZE_WARNING_MESSAGE');
+              var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
 
               //Warning si file.size > maxFileSize (TBD)
               if(size > maxFileSize) {
@@ -196,7 +184,7 @@ app.directive('importSheetJs', function($translate) {
                     $scope.$parent.showSpinner = false;
                     $scope.$parent.$apply();
                   });
-                  display_data($translate.instant('DISPLAY_LIMIT_MESSAGE'));
+                  display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabNames);
                 }
                 else {
                   //On enleve l'affichage des champs et du spinner si la conversion est annulée
@@ -214,7 +202,7 @@ app.directive('importSheetJs', function($translate) {
                   $scope.$parent.showSpinner = false;
                   $scope.$parent.$apply();
                 });
-                display_data("");
+                display_UI("", tabNames);
               }
             }
           }; 
@@ -258,21 +246,18 @@ function convert_data(reader, callback) {
 }
 
 //Affichage des données dans une table html après conversion
-function display_data(message) {
-    var headers = '';
-    var body = '';
+function display_UI(message ,tabNames) {
 
     if(message)
       document.getElementById("message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
 
     ReactDOM.render(
-      <MyTabs />,
+      <MyTabs names={tabNames}/>,
       document.getElementById("react_tabs")
     );
 
     ReactDOM.render(
       <MyTable data={jsonData} maxElement={maxDisplayableElement}/>,
-      //document.getElementById("react_preview")
       document.getElementById("view_tab")
     );
 
