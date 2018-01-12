@@ -5,28 +5,28 @@
     <div class="col-12-sm">
       <h1>{{ title }}</h1>
     </div>
-    <form id="import_form">
+
+    <form class="form-group" id="import_form">
       <input import-sheet-js type="file" id="file"><br/>
     </form>
+
     <div id="message"></div>
     <div id="react_tabs"></div>
-    <div id="react_preview"></div> <br/>
+
     <div ng-show="showUploadOptions">
-      <!--<p><label>{{ 'PERSONAL_MAPPING_LABEL' | translate }}<input type="checkbox" ng-model="mappingCheck" ng-change="mappingCheckChange()"></label></p>-->
-      <div id="mapping"></div>
-      <form>
-        <label>{{'INDEX_NAME_LABEL' | translate }}<input type="text" ng-model="indexName" id="indexName"></label> <br/>
-        <button type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
+      <form class="form-inline">
+        <label>{{'INDEX_NAME_LABEL' | translate }}</label>
+        <input type="text" class="form-control" ng-model="indexName" id="indexName"><br/>
+        <button class="btn btn-primary" type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
       </form>
       <span us-spinner="{radius:30, width:8, length: 16}" spinner-on="showSpinner"></span>
     </div>
+
   </div>
 
 </div>
 
 
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.17/shim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.17/xlsx.core.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.17/xlsx.full.min.js"></script>

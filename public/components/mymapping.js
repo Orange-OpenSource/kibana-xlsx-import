@@ -36,7 +36,8 @@ class MyMapping extends React.Component {
       		header={<Cell>Type</Cell>}
       		cell={props => (
       			<Cell {...props}>
-      			  <select id={this.state.myMappingData[props.rowIndex]}>
+              <div className="form-group">
+      			  <select className="form-control" id={this.state.myMappingData[props.rowIndex]}>
   						  <option value="text">text</option>
   						  <option value="keyword">keyword</option>
   						  <option value="integer">integer</option>
@@ -48,6 +49,7 @@ class MyMapping extends React.Component {
   						  <option value="date">date</option>
   						  <option value="boolean">boolean</option>
 					    </select>
+              </div>
       			</Cell>
       		)}
       		width={200}
