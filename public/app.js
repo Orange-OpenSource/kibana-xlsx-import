@@ -312,10 +312,12 @@ function createMappingJson() {
   var mapping_request = '{ "properties": {';
   console.log(jsonData.header);
   for(var i = 0; i < jsonData.header.length; i++) {
-    if(i < jsonData.header.length -1)
-      mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }, ';
+    if(angular.element('#' + jsonData.header[i]).val() === 'text')
+      mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'", "fields": { "raw": { "type": "keyword" } } }';
     else
       mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }';
+    if(i < jsonData.header.length -1)
+      mapping_request += ','
     }
     mapping_request += '} }';
 
