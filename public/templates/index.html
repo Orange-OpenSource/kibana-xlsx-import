@@ -10,6 +10,13 @@
       <input import-sheet-js type="file" id="file"><br/>
     </form>
 
+    <div ng-show="showSheetForm">
+      <form class="form-inline" id="sheet_form">
+        <input type="text" ng-model="sheetNumber">
+        <button type="button" ng-click="convert()">{{ 'CONVERT_BUTTON' | translate}}</button>
+      </form>
+    </div>
+
     <div id="message"></div>
     <div id="react_tabs"></div>
 

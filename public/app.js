@@ -64,6 +64,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   $scope.showUploadOptions = false;
   $scope.indexName = '';
   $scope.showSpinner = false;
+  $scope.showSheetForm = false;
+  $scope.sheetNumber = 0;
 
 
   $scope.changeLanguage = function (langKey) {
@@ -80,7 +82,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     if(fileInfo.size > maxFileSize) {
 
       if(confirm($translate.instant('SIZE_WARNING_MESSAGE'))) {
-          convert_data(wb, 0, function(){
+          convert_data(wb, $scope.sheetNumber, function(){
             document.getElementById("import_form").innerHTML = 
               '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + fileInfo.name;
             $scope.showSpinner = false;
@@ -98,7 +100,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
     }
     else {
-      convert_data(wb, 0, function(){
+      convert_data(wb, $scope.sheetNumber, function(){
         document.getElementById("import_form").innerHTML = 
           '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
         $scope.showSpinner = false;
@@ -218,8 +220,7 @@ app.directive('importSheetJs', function($translate) {
 
               var wb = XLSX.read(fileInfo.data, {type : 'binary', bookSheets: 'true'});
 
-              
-                $scope.$parent.convert();
+              $scope.$parent.convert();
 
 
               //Warning si file.size > maxFileSize (TBD)
@@ -257,7 +258,7 @@ app.directive('importSheetJs', function($translate) {
           reader.readAsBinaryString(changeEvent.target.files[0]);
 
           $scope.$parent.showSpinner = true;                                            //On affiche le spinner
-          $scope.$parent.showUploadOptions = true;                                      //On rend le champ index editable
+          $scope.$parent.showUploadOptions = true;                                     //On rend le champ index editable
           $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
           $scope.$parent.$apply();
 
