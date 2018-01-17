@@ -198,7 +198,7 @@ app.directive('importSheetJs', function($translate) {
               else {
                 convert_data(reader, function(){
                   document.getElementById("import_form").innerHTML = 
-                    '<p><button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ changeEvent.target.files[0].name;
+                    '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ changeEvent.target.files[0].name;
                   $scope.$parent.showSpinner = false;
                   $scope.$parent.$apply();
                 });
@@ -312,10 +312,12 @@ function createMappingJson() {
   var mapping_request = '{ "properties": {';
   console.log(jsonData.header);
   for(var i = 0; i < jsonData.header.length; i++) {
-    if(i < jsonData.header.length -1)
-      mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }, ';
+    if(angular.element('#' + jsonData.header[i]).val() === 'text')
+      mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'", "fields": { "raw": { "type": "keyword" } } }';
     else
       mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }';
+    if(i < jsonData.header.length -1)
+      mapping_request += ','
     }
     mapping_request += '} }';
 
