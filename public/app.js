@@ -18,6 +18,7 @@ import 'angular-translate-loader-static-files';
 
 
 let jsonData;                                 // Contient les données de conversion du xlxs 
+let fileInfo;                                 // Contient les informations sur le fichier upload (data, name, size)                                 
 
 const maxFileSize = 4;                        // Taille du fichier xlxs avant warning 
 const bulkSize = 3000;                        // Taille maximal des paquets du bulk 
@@ -69,6 +70,9 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     $translate.use(langKey).then(function(){}, function(){toastr.error('JSON file is invalid')})
   };
 
+  $scope.test = function() {
+    alert("toto");
+  }
 
   $scope.transfer = function() {
 
@@ -166,23 +170,27 @@ app.directive('importSheetJs', function($translate) {
           return
         }
 
-        try {
           reader.onload = function (file) {
             if (typeof FileReader !== "undefined") {
 
-              var size = (changeEvent.target.files[0].size)/1000000;
+              fileInfo = new Object();
+              fileInfo.size = (changeEvent.target.files[0].size)/1000000;
+              fileInfo.data = reader.result;
+              fileInfo.name = changeEvent.target.files[0].name;
+
               var message = $translate.instant('SIZE_WARNING_MESSAGE');
               var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
-              var fileData = reader.result;
-              var wb = XLSX.read(fileData, {type : 'binary'});
+
+              var wb = XLSX.read(fileInfo.data, {type : 'binary'});
+
 
               //Warning si file.size > maxFileSize (TBD)
-              if(size > maxFileSize) {
+              if(fileInfo.size > maxFileSize) {
 
                 if(confirm(message)) {
-                  convert_data(wb, function(){
+                  convert_data(wb, 0, function(){
                     document.getElementById("import_form").innerHTML = 
-                      '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + changeEvent.target.files[0].name;
+                      '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + fileInfo.name;
                     $scope.$parent.showSpinner = false;
                     $scope.$parent.$apply();
                   });
@@ -198,9 +206,9 @@ app.directive('importSheetJs', function($translate) {
 
               }
               else {
-                convert_data(wb, function(){
+                convert_data(wb, 0, function(){
                   document.getElementById("import_form").innerHTML = 
-                    '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ changeEvent.target.files[0].name;
+                    '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
                   $scope.$parent.showSpinner = false;
                   $scope.$parent.$apply();
                 });
@@ -215,10 +223,6 @@ app.directive('importSheetJs', function($translate) {
           $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
           $scope.$parent.$apply();
 
-        } catch(err) {
-          alert($translate.instant("INVALID_EXTENSION_FILE_MESSAGE"));
-          return
-        }
       });
     }
   };
@@ -227,7 +231,7 @@ app.directive('importSheetJs', function($translate) {
 
 
 //Traitement du fichier XLSX -> JSON
-function convert_data(wb, callback) {
+function convert_data(wb, sheetnumber, callback) {
   jsonData = new Object();
 
   /*wb.SheetNames.forEach(function(sheetName){
@@ -236,9 +240,9 @@ function convert_data(wb, callback) {
     jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
   })*/
 
-  update_sheet_range(wb.Sheets[wb.SheetNames[0]]);
-  jsonData.header = get_header_row(wb.Sheets[wb.SheetNames[0]]);
-  jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+  update_sheet_range(wb.Sheets[wb.SheetNames[sheetnumber]]);
+  jsonData.header = get_header_row(wb.Sheets[wb.SheetNames[sheetnumber]]);
+  jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[sheetnumber]]);
 
   if (typeof callback === "function")
     callback();
