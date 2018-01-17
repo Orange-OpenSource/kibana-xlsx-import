@@ -173,14 +173,16 @@ app.directive('importSheetJs', function($translate) {
               var size = (changeEvent.target.files[0].size)/1000000;
               var message = $translate.instant('SIZE_WARNING_MESSAGE');
               var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
+              var fileData = reader.result;
+              var wb = XLSX.read(fileData, {type : 'binary'});
 
               //Warning si file.size > maxFileSize (TBD)
               if(size > maxFileSize) {
 
                 if(confirm(message)) {
-                  convert_data(reader, function(){
+                  convert_data(wb, function(){
                     document.getElementById("import_form").innerHTML = 
-                      '<button type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + changeEvent.target.files[0].name;
+                      '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + changeEvent.target.files[0].name;
                     $scope.$parent.showSpinner = false;
                     $scope.$parent.$apply();
                   });
@@ -196,7 +198,7 @@ app.directive('importSheetJs', function($translate) {
 
               }
               else {
-                convert_data(reader, function(){
+                convert_data(wb, function(){
                   document.getElementById("import_form").innerHTML = 
                     '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ changeEvent.target.files[0].name;
                   $scope.$parent.showSpinner = false;
@@ -225,10 +227,7 @@ app.directive('importSheetJs', function($translate) {
 
 
 //Traitement du fichier XLSX -> JSON
-function convert_data(reader, callback) {
-  var fileData = reader.result;
-
-  var wb = XLSX.read(fileData, {type : 'binary'});
+function convert_data(wb, callback) {
   jsonData = new Object();
 
   /*wb.SheetNames.forEach(function(sheetName){
