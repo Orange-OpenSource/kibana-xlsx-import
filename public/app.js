@@ -70,9 +70,44 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     $translate.use(langKey).then(function(){}, function(){toastr.error('JSON file is invalid')})
   };
 
-  $scope.test = function() {
-    alert("toto");
+
+  $scope.convert = function() {
+
+    var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
+    var wb = XLSX.read(fileInfo.data, {type : 'binary'});
+
+    //Warning si file.size > maxFileSize (TBD)
+    if(fileInfo.size > maxFileSize) {
+
+      if(confirm($translate.instant('SIZE_WARNING_MESSAGE'))) {
+          convert_data(wb, 0, function(){
+            document.getElementById("import_form").innerHTML = 
+              '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + fileInfo.name;
+            $scope.showSpinner = false;
+            $scope.$apply();
+          });
+          display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabNames);
+      }
+      else {
+        //On enleve l'affichage des champs et du spinner si la conversion est annulée
+        $scope.showSpinner = false;
+        $scope.showUploadOptions = false;
+        $scope.$apply();
+        return;
+      }
+
+    }
+    else {
+      convert_data(wb, 0, function(){
+        document.getElementById("import_form").innerHTML = 
+          '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
+        $scope.showSpinner = false;
+        $scope.$apply();
+      });
+    display_UI("", tabNames);
+    }
   }
+
 
   $scope.transfer = function() {
 
@@ -181,11 +216,14 @@ app.directive('importSheetJs', function($translate) {
               var message = $translate.instant('SIZE_WARNING_MESSAGE');
               var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
 
-              var wb = XLSX.read(fileInfo.data, {type : 'binary'});
+              var wb = XLSX.read(fileInfo.data, {type : 'binary', bookSheets: 'true'});
+
+              
+                $scope.$parent.convert();
 
 
               //Warning si file.size > maxFileSize (TBD)
-              if(fileInfo.size > maxFileSize) {
+              /*if(fileInfo.size > maxFileSize) {
 
                 if(confirm(message)) {
                   convert_data(wb, 0, function(){
@@ -213,7 +251,7 @@ app.directive('importSheetJs', function($translate) {
                   $scope.$parent.$apply();
                 });
                 display_UI("", tabNames);
-              }
+              }*/
             }
           }; 
           reader.readAsBinaryString(changeEvent.target.files[0]);
