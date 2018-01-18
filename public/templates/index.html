@@ -12,8 +12,9 @@
 
     <div ng-show="showSheetForm">
       <form class="form-inline" id="sheet_form">
+        <label>{{ 'CHOOSE_SHEETNAME_LABEL' | translate }}</label>
         <select class="form-control" ng-model="sheetname" ng-options="item for item in sheetnames"></select>
-        <button class="btn btn-primary" type="button" ng-click="convert()">{{ 'CONVERT_BUTTON' | translate}}</button>
+        <button class="btn btn-primary" type="button" ng-click="convert()">{{ 'CONVERT_BUTTON' | translate }}</button>
       </form>
     </div>
 

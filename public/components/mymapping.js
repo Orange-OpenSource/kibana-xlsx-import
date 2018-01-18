@@ -7,10 +7,9 @@ class MyMapping extends React.Component {
     super(props);
 
     this.state = {
-    	myMappingData: this.props.data.header
+    	myMappingData: this.props.data
     };
   }
-
 
   render() {
 

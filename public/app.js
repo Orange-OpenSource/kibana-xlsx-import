@@ -253,8 +253,9 @@ function convert_data(sheetname, callback) {
 
   update_sheet_range(wb.Sheets[sheetname]);
   jsonData.header = get_header_row(wb.Sheets[sheetname]);
-  jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[sheetname]);
+  jsonData.data = formatJSON(XLSX.utils.sheet_to_json(wb.Sheets[sheetname]));
 
+  console.log(jsonData.data);
   if (typeof callback === "function")
     callback();
 }
@@ -263,7 +264,7 @@ function convert_data(sheetname, callback) {
 function display_UI(message ,tabNames) {
 
     if(message)
-      document.getElementById("message").innerHTML = '<pre style="background-color:rgba(255, 0, 0, 0.4);">' + message + '</pre>';
+      document.getElementById("message").innerHTML = '<span class="label label-danger" style="font-size: 14px;">' + message + '</span><br/>';
 
     ReactDOM.render(
       <MyTabs names={tabNames}/>,
@@ -276,7 +277,7 @@ function display_UI(message ,tabNames) {
     );
 
     ReactDOM.render(
-      <MyMapping data={jsonData} />,
+      <MyMapping data={jsonData.header} />,
       document.getElementById("mapping_tab")
     );
 }
@@ -303,7 +304,7 @@ function get_header_row(sheet) {
         var hdr = "UNKNOWN " + C; // <-- replace with your desired default 
         if(cell && cell.t) hdr = XLSX.utils.format_cell(cell);
 
-        headers.push(hdr);
+        headers.push(formatHeader(hdr));
     }
     return headers;
 }
@@ -325,14 +326,18 @@ function getExtension(filename) {
 function createMappingJson() {
   var mapping_request = '{ "properties": {';
   console.log(jsonData.header);
+
   for(var i = 0; i < jsonData.header.length; i++) {
+
     if(angular.element('#' + jsonData.header[i]).val() === 'text')
       mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'", "fields": { "raw": { "type": "keyword" } } }';
     else
       mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }';
+
     if(i < jsonData.header.length -1)
       mapping_request += ','
     }
+
     mapping_request += '} }';
 
     return mapping_request;
@@ -355,4 +360,29 @@ function createBulk(indexName) {
   bulk_request.push(bulk_package);
 
   return bulk_request;
+}
+
+
+function formatHeader(header){
+  return header.replace(/ /g,"_");
+}
+
+function formatJSON(json){
+  // Iterate over array
+  json.forEach(function(e, i) {
+  // Iterate over the keys of object
+    Object.keys(e).forEach(function(key) {
+    
+    // Copy the value
+      var val = e[key],
+      newKey = key.replace(/\s+/g, '_');
+    
+    // Remove key-value from object
+      delete json[i][key];
+
+    // Add value with new key
+      json[i][newKey] = val;
+    });
+  });
+  return json;
 }
