@@ -231,42 +231,10 @@ app.directive('importSheetJs', function($translate) {
               $scope.$parent.showSheetForm = true;
               $scope.$parent.$apply();
 
-              //Warning si file.size > maxFileSize (TBD)
-              /*if(fileInfo.size > maxFileSize) {
-
-                if(confirm(message)) {
-                  convert_data(wb, 0, function(){
-                    document.getElementById("import_form").innerHTML = 
-                      '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + fileInfo.name;
-                    $scope.$parent.showSpinner = false;
-                    $scope.$parent.$apply();
-                  });
-                  display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabNames);
-                }
-                else {
-                  //On enleve l'affichage des champs et du spinner si la conversion est annulée
-                  $scope.$parent.showSpinner = false;
-                  $scope.$parent.showUploadOptions = false;
-                  $scope.$parent.$apply();
-                  return;
-                }
-
-              }
-              else {
-                convert_data(wb, 0, function(){
-                  document.getElementById("import_form").innerHTML = 
-                    '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
-                  $scope.$parent.showSpinner = false;
-                  $scope.$parent.$apply();
-                });
-                display_UI("", tabNames);
-              }*/
             }
           }; 
           reader.readAsBinaryString(changeEvent.target.files[0]);
-
-          /*$scope.$parent.showSpinner = true;                                            //On affiche le spinner
-          $scope.$parent.showUploadOptions = true;*/                                     //On rend le champ index editable
+                                    //On rend le champ index editable
           $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
           $scope.$parent.$apply();
 
@@ -282,12 +250,6 @@ function convert_data(sheetname, callback) {
 
   jsonData = new Object();
   var wb = XLSX.read(fileInfo.data, {type : 'binary'});
-
-  /*wb.SheetNames.forEach(function(sheetName){
-    update_sheet_range(wb.Sheets[sheetName]);
-    jsonData.header = get_header_row(wb.Sheets[sheetName]);
-    jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
-  })*/
 
   update_sheet_range(wb.Sheets[sheetname]);
   jsonData.header = get_header_row(wb.Sheets[sheetname]);
