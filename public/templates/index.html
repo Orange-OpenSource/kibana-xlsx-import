@@ -13,7 +13,7 @@
     <div ng-show="showSheetForm">
       <form class="form-inline" id="sheet_form">
         <select class="form-control" ng-model="sheetname" ng-options="item for item in sheetnames"></select>
-        <button type="button" ng-click="convert()">{{ 'CONVERT_BUTTON' | translate}}</button>
+        <button class="btn btn-primary" type="button" ng-click="convert()">{{ 'CONVERT_BUTTON' | translate}}</button>
       </form>
     </div>
 
@@ -26,8 +26,8 @@
         <input type="text" class="form-control" ng-model="indexName" id="indexName"><br/>
         <button class="btn btn-primary" type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
       </form>
-      <span us-spinner="{radius:30, width:8, length: 16}" spinner-on="showSpinner"></span>
     </div>
+    <span us-spinner="{radius:30, width:8, length: 16}" spinner-on="showSpinner"></span>
 
   </div>
 

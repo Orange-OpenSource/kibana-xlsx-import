@@ -58,7 +58,7 @@ app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
 }])
 
 
-app.controller('xlsxImport', function ($scope, $route, $interval, $http, $translate) {
+app.controller('xlsxImport', function ($scope, $route, $interval, $http, $translate, $timeout) {
   $scope.title = 'XLSX Import';
   $scope.description = 'Import XLSX to JSON';
   $scope.showUploadOptions = false;
@@ -79,18 +79,20 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
 
     $scope.showSpinner = true;
-    $scope.showUploadOptions = true;
 
     //Warning si file.size > maxFileSize (TBD)
     if(fileInfo.size > maxFileSize) {
 
       if(confirm($translate.instant('SIZE_WARNING_MESSAGE'))) {
+        $timeout(function() {}, 10).then(function(){
           convert_data($scope.sheetname, function(){
             document.getElementById("import_form").innerHTML = 
               '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + fileInfo.name;
             $scope.showSpinner = false;
+            $scope.showUploadOptions = true;
             display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabNames);
           });
+        })
       }
       else {
         //On enleve l'affichage des champs et du spinner si la conversion est annulée
@@ -101,13 +103,18 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
     }
     else {
-      convert_data($scope.sheetname, function(){
-        document.getElementById("import_form").innerHTML = 
-          '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
-        $scope.showSpinner = false;
-        display_UI("", tabNames);
-      });
+      $timeout(function() {}, 10).then(function(){
+        convert_data($scope.sheetname, function(){
+          document.getElementById("import_form").innerHTML = 
+            '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
+          $scope.showSpinner = false;
+          $scope.showUploadOptions = true;
+          display_UI("", tabNames);
+        });
+      })
     }
+
+    $scope.showSheetForm = false;
   }
 
 

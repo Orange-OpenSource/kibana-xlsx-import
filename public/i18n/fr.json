@@ -5,6 +5,7 @@
     "MAPPING_TAB_NAME" : "Definir le Mapping",
     "SEND_BUTTON" : "Transférer",
     "REFRESH_BUTTON" : "Choisir un nouveau fichier",
+    "CONVERT_BUTTON" : "Convertir",
     "SIZE_WARNING_MESSAGE" : "Fichier trop volumineux, souhaitez vous continuez ?",
     "DISPLAY_LIMIT_MESSAGE" : "Seulement les cinq premier élément sont affichés",
     "INDEX_ALREADY_EXIST_MESSAGE" : "Nom d'index déjà utilisé, veuillez utiliser un autre nom ou ne pas modifier le mapping",
