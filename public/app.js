@@ -65,7 +65,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   $scope.indexName = '';
   $scope.showSpinner = false;
   $scope.showSheetForm = false;
-  $scope.sheetNumber = 0;
+  $scope.sheetnames = [];
+  $scope.sheetname = '';
 
 
   $scope.changeLanguage = function (langKey) {
@@ -76,37 +77,36 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   $scope.convert = function() {
 
     var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
-    var wb = XLSX.read(fileInfo.data, {type : 'binary'});
+
+    $scope.showSpinner = true;
+    $scope.showUploadOptions = true;
 
     //Warning si file.size > maxFileSize (TBD)
     if(fileInfo.size > maxFileSize) {
 
       if(confirm($translate.instant('SIZE_WARNING_MESSAGE'))) {
-          convert_data(wb, $scope.sheetNumber, function(){
+          convert_data($scope.sheetname, function(){
             document.getElementById("import_form").innerHTML = 
               '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + fileInfo.name;
             $scope.showSpinner = false;
-            $scope.$apply();
+            display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabNames);
           });
-          display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabNames);
       }
       else {
         //On enleve l'affichage des champs et du spinner si la conversion est annulée
         $scope.showSpinner = false;
         $scope.showUploadOptions = false;
-        $scope.$apply();
         return;
       }
 
     }
     else {
-      convert_data(wb, $scope.sheetNumber, function(){
+      convert_data($scope.sheetname, function(){
         document.getElementById("import_form").innerHTML = 
           '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
         $scope.showSpinner = false;
-        $scope.$apply();
+        display_UI("", tabNames);
       });
-    display_UI("", tabNames);
     }
   }
 
@@ -220,8 +220,9 @@ app.directive('importSheetJs', function($translate) {
 
               var wb = XLSX.read(fileInfo.data, {type : 'binary', bookSheets: 'true'});
 
-              $scope.$parent.convert();
-
+              $scope.$parent.sheetnames = wb.SheetNames;
+              $scope.$parent.showSheetForm = true;
+              $scope.$parent.$apply();
 
               //Warning si file.size > maxFileSize (TBD)
               /*if(fileInfo.size > maxFileSize) {
@@ -257,8 +258,8 @@ app.directive('importSheetJs', function($translate) {
           }; 
           reader.readAsBinaryString(changeEvent.target.files[0]);
 
-          $scope.$parent.showSpinner = true;                                            //On affiche le spinner
-          $scope.$parent.showUploadOptions = true;                                     //On rend le champ index editable
+          /*$scope.$parent.showSpinner = true;                                            //On affiche le spinner
+          $scope.$parent.showUploadOptions = true;*/                                     //On rend le champ index editable
           $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
           $scope.$parent.$apply();
 
@@ -270,8 +271,10 @@ app.directive('importSheetJs', function($translate) {
 
 
 //Traitement du fichier XLSX -> JSON
-function convert_data(wb, sheetnumber, callback) {
+function convert_data(sheetname, callback) {
+
   jsonData = new Object();
+  var wb = XLSX.read(fileInfo.data, {type : 'binary'});
 
   /*wb.SheetNames.forEach(function(sheetName){
     update_sheet_range(wb.Sheets[sheetName]);
@@ -279,9 +282,9 @@ function convert_data(wb, sheetnumber, callback) {
     jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
   })*/
 
-  update_sheet_range(wb.Sheets[wb.SheetNames[sheetnumber]]);
-  jsonData.header = get_header_row(wb.Sheets[wb.SheetNames[sheetnumber]]);
-  jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[sheetnumber]]);
+  update_sheet_range(wb.Sheets[sheetname]);
+  jsonData.header = get_header_row(wb.Sheets[sheetname]);
+  jsonData.data = XLSX.utils.sheet_to_json(wb.Sheets[sheetname]);
 
   if (typeof callback === "function")
     callback();
