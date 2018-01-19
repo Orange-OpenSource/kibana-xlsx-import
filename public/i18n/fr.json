@@ -3,14 +3,14 @@
     "INDEX_NAME_LABEL" : "Nom de l'index ",
     "CHOOSE_SHEETNAME_LABEL" : "Choisir la feuille à convertir ",
     "VIEW_TABS_NAME" : "Visualiser les données",
-    "MAPPING_TAB_NAME" : "Definir le Mapping",
+    "MAPPING_TAB_NAME" : "Definir le mapping",
     "SEND_BUTTON" : "Transférer",
     "REFRESH_BUTTON" : "Choisir un nouveau fichier",
     "CONVERT_BUTTON" : "Convertir",
-    "SIZE_WARNING_MESSAGE" : "Fichier trop volumineux, souhaitez vous continuez ?",
-    "DISPLAY_LIMIT_MESSAGE" : "Seulement les cinq premier élément sont affichés",
+    "SIZE_WARNING_MESSAGE" : "Fichier trop volumineux, souhaitez-vous continuer ?",
+    "DISPLAY_LIMIT_MESSAGE" : "Seulement les cinq premiers éléments sont affichés",
     "INDEX_ALREADY_EXIST_MESSAGE" : "Nom d'index déjà utilisé, veuillez utiliser un autre nom ou ne pas modifier le mapping",
     "SUCCESS_TRANSFER_MESSAGE" : "Transfert terminé",
     "FAILED_TRANSFER_MESSAGE" : "Transfert échoué",
-    "INVALID_EXTENSION_FILE_MESSAGE" : "Type de fichier incorrecte"
+    "INVALID_EXTENSION_FILE_MESSAGE" : "Type de fichier incorrect"
 }

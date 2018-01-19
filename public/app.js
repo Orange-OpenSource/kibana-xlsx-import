@@ -327,7 +327,7 @@ function createMappingJson() {
   for(var i = 0; i < jsonData.header.length; i++) {
 
     if(angular.element('#' + jsonData.header[i]).val() === 'text')
-      mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'", "fields": { "raw": { "type": "keyword" } } }';
+      mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'", "fields": { "keyword": { "type": "keyword" } } }';
     else
       mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }';
 
