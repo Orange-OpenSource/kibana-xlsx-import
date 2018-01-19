@@ -106,7 +106,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
       $timeout(function() {}, 10).then(function(){
         convert_data($scope.sheetname, function(){
           document.getElementById("import_form").innerHTML = 
-            '<p><button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
+            '<p><button class="btn btn-primary btn-metriks" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
           $scope.showSpinner = false;
           $scope.showUploadOptions = true;
           display_UI("", tabNames);
@@ -221,9 +221,6 @@ app.directive('importSheetJs', function($translate) {
               fileInfo.size = (changeEvent.target.files[0].size)/1000000;
               fileInfo.data = reader.result;
               fileInfo.name = changeEvent.target.files[0].name;
-
-              var message = $translate.instant('SIZE_WARNING_MESSAGE');
-              var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
 
               var wb = XLSX.read(fileInfo.data, {type : 'binary', bookSheets: 'true'});
 
