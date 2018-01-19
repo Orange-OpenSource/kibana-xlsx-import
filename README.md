@@ -1,27 +1,19 @@
 # XLSX import
 
-> Kibana plugin for import XLSX file to ElasticSearch
+> Kibana plugin for import XLSX/CSV file to ElasticSearch
 
 ---
 ## How to use
 
-### Choose the file you want to import
-![](https://raw.githubusercontent.com/kyushy/kibana-xlsx-import/master/assets/s1.gif)
+### Upload a file
+![](https://raw.githubusercontent.com/kyushy/kibana-xlsx-import/master/assets/s01.gif)
 
-### Define your own mapping (optional)
+### Define your own mapping and/or index name (optional)
 ```diff
 - If you want to define your own mapping, you have to use a new index name.
+- Index name must be all lower case.
 ```
-![](https://raw.githubusercontent.com/kyushy/kibana-xlsx-import/master/assets/s2.gif)
-
-### Choose an index name
-If the index name already exist then it will be add to this index, else it will be create.
-![](https://raw.githubusercontent.com/kyushy/kibana-xlsx-import/master/assets/s3.gif)
-
-### Send to ES and check if its working
-![](https://raw.githubusercontent.com/kyushy/kibana-xlsx-import/master/assets/s4.gif)
-
-![](https://raw.githubusercontent.com/kyushy/kibana-xlsx-import/master/assets/s5.gif)
+![](https://raw.githubusercontent.com/kyushy/kibana-xlsx-import/master/assets/s02.gif)
 
 ---
 ## development
