@@ -1,6 +1,7 @@
 {
 	"PERSONAL_MAPPING_LABEL" : "Definir un mapping personnalisé ",
     "INDEX_NAME_LABEL" : "Nom de l'index ",
+    "CHOOSE_SHEETNAME_LABEL" : "Choisir la feuille à convertir ",
     "VIEW_TABS_NAME" : "Visualiser les données",
     "MAPPING_TAB_NAME" : "Definir le Mapping",
     "SEND_BUTTON" : "Transférer",

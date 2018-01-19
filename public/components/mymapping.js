@@ -47,6 +47,7 @@ class MyMapping extends React.Component {
   						  <option value="float">float</option>
   						  <option value="date">date</option>
   						  <option value="boolean">boolean</option>
+                <option value="geo_point">geo point</option>
 					    </select>
               </div>
       			</Cell>

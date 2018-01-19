@@ -234,7 +234,7 @@ app.directive('importSheetJs', function($translate) {
             }
           }; 
           reader.readAsBinaryString(changeEvent.target.files[0]);
-                                    //On rend le champ index editable
+
           $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
           $scope.$parent.$apply();
 
@@ -362,11 +362,13 @@ function createBulk(indexName) {
   return bulk_request;
 }
 
-
+//Replace all space in json header
 function formatHeader(header){
   return header.replace(/ /g,"_");
 }
 
+
+//Replace all space in json data keys
 function formatJSON(json){
   // Iterate over array
   json.forEach(function(e, i) {
