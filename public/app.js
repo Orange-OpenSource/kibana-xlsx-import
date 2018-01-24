@@ -76,6 +76,9 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
   $scope.convert = function() {
 
+    if($scope.sheetname === '')
+      return;
+
     var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
 
     $scope.showSpinner = true;
