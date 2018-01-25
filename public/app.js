@@ -20,7 +20,7 @@ import 'angular-translate-loader-static-files';
 let jsonData;                                 // Contient les données de conversion du xlxs 
 let fileInfo;                                 // Contient les informations sur le fichier upload (data, name, size)                                 
 
-const maxFileSize = 4;                        // Taille du fichier xlxs avant warning 
+const maxFileSize = 10;                        // Taille du fichier xlxs avant warning 
 const bulkSize = 3000;                        // Taille maximal des paquets du bulk 
 const maxDisplayableElement = 5;              // Nombre d'element afficher dans la previs des données
 const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
@@ -60,7 +60,7 @@ app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
 
 app.controller('xlsxImport', function ($scope, $route, $interval, $http, $translate, $timeout) {
   $scope.title = 'XLSX Import';
-  $scope.description = 'Import XLSX to JSON';
+  $scope.description = $translate.instant('PLUGIN_DESCRIPTION');
   $scope.showUploadOptions = false;
   $scope.indexName = '';
   $scope.showSpinner = false;
@@ -70,7 +70,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
 
   $scope.changeLanguage = function (langKey) {
-    $translate.use(langKey).then(function(){}, function(){toastr.error('JSON file is invalid')})
+    $translate.use(langKey).then(function(){}, function(){toastr.error('JSON translate file is invalid')})
   };
 
 
