@@ -10,7 +10,7 @@
 
 ### Define your own mapping and/or index name (optional)
 ```diff
-- If you want to define your own mapping, you have to use a new index name.
+- If you want to define your own mapping, you have to use an index name which doesn't already exist.
 - Index name must be all lower case.
 ```
 ![](https://raw.githubusercontent.com/kyushy/kibana-xlsx-import/master/assets/s02.gif)
