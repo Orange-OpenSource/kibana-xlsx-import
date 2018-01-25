@@ -1,4 +1,5 @@
 {
+    "PLUGIN_DESCRIPTION" : "Importer vos fichiers xlsx et csv dans ElasticSearch",
 	"PERSONAL_MAPPING_LABEL" : "Definir un mapping personnalisé ",
     "INDEX_NAME_LABEL" : "Nom de l'index ",
     "CHOOSE_SHEETNAME_LABEL" : "Choisir la feuille à convertir ",
