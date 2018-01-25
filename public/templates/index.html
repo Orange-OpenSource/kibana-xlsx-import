@@ -6,11 +6,8 @@
       <h1>{{ title }}</h1>
     </div>
 
-    <div class="col-12-sm">
-      <p>{{ description }}</p>
-    </div>
-
     <form class="form-group" id="import_form">
+      <h2><small class="text-muted">{{ 'PLUGIN_DESCRIPTION' | translate }}</small></h2>
       <input import-sheet-js type="file" id="file"><br/>
     </form>
 
