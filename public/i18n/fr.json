@@ -5,7 +5,7 @@
     "CHOOSE_SHEETNAME_LABEL" : "Choisir la feuille à convertir ",
     "VIEW_TABS_NAME" : "Visualiser les données",
     "MAPPING_TAB_NAME" : "Definir le mapping",
-    "SEND_BUTTON" : "Transférer",
+    "SEND_BUTTON" : "Charger dans ElasticSearch",
     "REFRESH_BUTTON" : "Choisir un nouveau fichier",
     "CONVERT_BUTTON" : "Convertir",
     "SIZE_WARNING_MESSAGE" : "Fichier trop volumineux, souhaitez-vous continuer ?",

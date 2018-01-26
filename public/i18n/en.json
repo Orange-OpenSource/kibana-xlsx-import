@@ -5,7 +5,7 @@
     "CHOOSE_SHEETNAME_LABEL" : "Select the sheet to convert ",
     "VIEW_TABS_NAME" : "View Data",
     "MAPPING_TAB_NAME" : "Define mapping",
-    "SEND_BUTTON" : "Send",
+    "SEND_BUTTON" : "Load into ElasticSearch",
     "REFRESH_BUTTON" : "Select a new file",
     "CONVERT_BUTTON" : "Convert",
     "SIZE_WARNING_MESSAGE" : "Your file is too large, do you still want to continue (errors might occur)?",

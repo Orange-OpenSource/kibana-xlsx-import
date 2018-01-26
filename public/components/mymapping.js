@@ -17,10 +17,10 @@ class MyMapping extends React.Component {
     <div>
       <Table
         rowsCount={this.state.myMappingData.length}
-        rowHeight={50}
+        rowHeight={80}
         headerHeight={50}
         width={500}
-        height={(this.state.myMappingData.length + 1 ) * 51}>
+        height={(this.state.myMappingData.length) * 80 + 55}>
 	    
 	    <Column
       		header={<Cell>Fields</Cell>}
@@ -53,8 +53,7 @@ class MyMapping extends React.Component {
       			</Cell>
       		)}
       		width={200}
-    	/>
-
+    	/>   
       </Table>
       <br />
     </div>
