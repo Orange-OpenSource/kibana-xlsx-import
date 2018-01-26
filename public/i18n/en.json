@@ -2,6 +2,7 @@
     "PLUGIN_DESCRIPTION" : "Import your xlsx and csv file to ElasticSearch",
     "PERSONAL_MAPPING_LABEL" : "Define your personnal mapping ",
     "INDEX_NAME_LABEL" : "Index name ",
+    "ES_ID_LABEL" : "ID in ElasticSearch",
     "CHOOSE_SHEETNAME_LABEL" : "Select the sheet to convert ",
     "VIEW_TABS_NAME" : "View Data",
     "MAPPING_TAB_NAME" : "Define mapping",
