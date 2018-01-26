@@ -23,10 +23,9 @@
     <div id="react_tabs"></div>
 
     <div ng-show="showUploadOptions">
-      <form class="form-inline">
-        <label>{{'INDEX_NAME_LABEL' | translate }}</label>
-        <input type="text" class="form-control" ng-model="indexName" id="indexName">
-        <br/>
+      <form class="form-group">
+        <label>{{'INDEX_NAME_LABEL' | translate }}<input type="text" class="form-control" ng-model="indexName" id="indexName"></label>
+        <label>{{'ES_ID_LABEL' | translate }}<input type="text" class="form-control" ng-model="esID" id="esID"></label>
         <button class="btn btn-primary btn-metriks" type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
       </form>
     </div>
