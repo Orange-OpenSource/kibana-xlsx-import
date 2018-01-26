@@ -25,7 +25,11 @@
     <div ng-show="showUploadOptions">
       <form class="form-group">
         <label>{{'INDEX_NAME_LABEL' | translate }}<input type="text" class="form-control" ng-model="indexName" id="indexName"></label>
-        <label>{{'ES_ID_LABEL' | translate }}<input type="text" class="form-control" ng-model="esID" id="esID"></label>
+        <form class="form-group">
+        <label>{{'ES_ID_LABEL' | translate }} <span class="badge badge-pill badge-primary">?</span> 
+          <input type="text" class="form-control" ng-model="esID" id="esID">
+        </label>
+        </form class="form-group">
         <button class="btn btn-primary btn-metriks" type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
       </form>
     </div>
