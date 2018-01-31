@@ -19,7 +19,22 @@
 
 To create a personnal ID per document you have to use a template with placeholder {fieldname}.  
 In our example, if I use the following template `{ID}-{Last_name}-{First_name}` it will set for the first document:  
-  - `0-Miller-Katrina`
+  - `0-Miller-Katrina`  
+
+### Advanced settings  
+
+In the kibana advanced setting you can find three parameters  
+__Warning :__ All those options might cause crash if values are too high.  
+
+  - `xlsx-import:bulk_package_size`  
+  Allow you to define the number of json item you want to send per bulk package  
+  
+  - `xlsx-import:filesize_warning`  
+  Define when the trigger for a larger file will appear (value in Mb)  
+  
+  - `xlsx-import:displayed_elements`  
+  Define the number of elements which will be displayed in the preview datatable
+  
 ---
 ## development
 
