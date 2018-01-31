@@ -231,7 +231,6 @@ app.directive('importSheetJs', function($translate) {
               $scope.$parent.sheetnames = wb.SheetNames;
               $scope.$parent.showSheetForm = true;
               $scope.$parent.$apply();
-
             }
           }; 
           reader.readAsBinaryString(changeEvent.target.files[0]);
@@ -326,7 +325,6 @@ function getExtension(filename) {
 //Crée les données JSON pour le mapping dynamique
 function createMappingJson() {
   var mapping_request = '{ "properties": {';
-  console.log(jsonData.header);
 
   for(var i = 0; i < jsonData.header.length; i++) {
 

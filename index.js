@@ -11,7 +11,14 @@ export default function (kibana) {
       app: {
         title: 'XLSX Import',
         description: 'Import XLSX to JSON',
-        main: 'plugins/xlsx-import/app'
+        main: 'plugins/xlsx-import/app',
+        injectVars: function (server, options) {
+          var config = server.config();
+          return {
+            kbnIndex: config.get('kibana.index'),
+            esApiVersion: config.get('elasticsearch.apiVersion'),
+          };
+        }
       },
       
     },
