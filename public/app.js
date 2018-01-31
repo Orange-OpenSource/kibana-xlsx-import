@@ -21,7 +21,7 @@ let jsonData;                                 // Contient les données de conver
 let fileInfo;                                 // Contient les informations sur le fichier upload (data, name, size)                                 
 
 const maxFileSize = 10;                        // Taille du fichier xlxs avant warning 
-const bulkSize = 3000;                        // Taille maximal des paquets du bulk 
+const bulkSize = 1000;                        // Taille maximal des paquets du bulk 
 const maxDisplayableElement = 5;              // Nombre d'element afficher dans la previs des données
 const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
 
