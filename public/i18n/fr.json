@@ -10,7 +10,7 @@
     "REFRESH_BUTTON" : "Choisir un nouveau fichier",
     "CONVERT_BUTTON" : "Convertir",
     "SIZE_WARNING_MESSAGE" : "Fichier trop volumineux, souhaitez-vous continuer ?",
-    "DISPLAY_LIMIT_MESSAGE" : "Seulement les cinq premiers éléments sont affichés",
+    "DISPLAY_LIMIT_MESSAGE" : "Seulement quelques éléments sont affichés",
     "INDEX_ALREADY_EXIST_MESSAGE" : "Nom d'index déjà utilisé, veuillez utiliser un autre nom ou ne pas modifier le mapping",
     "SUCCESS_TRANSFER_MESSAGE" : "Transfert terminé",
     "FAILED_TRANSFER_MESSAGE" : "Transfert échoué",

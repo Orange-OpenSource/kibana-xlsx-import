@@ -20,6 +20,21 @@ export default function (kibana) {
           };
         }
       },
+
+      uiSettingDefaults: {
+        'xlsx-import:bulk_package_size': {
+          value: 1000,
+          description: 'The number of json item send in one bulk request'
+        },
+        'xlsx-import:displayed_elements': {
+          value: 5,
+          description: 'Number of elements displayed in the preview datatable'
+        },
+        'xlsx-import:filesize_warning': {
+          value: 10,
+          description: 'Trigger for warning file size popup (in Mb)'
+        }
+      },
       
     },
 
@@ -37,7 +52,5 @@ export default function (kibana) {
 
       serverRoute(server, adminCluster, dataCluster);
     }
-    
-
   });
 };

@@ -20,9 +20,10 @@ import 'angular-translate-loader-static-files';
 let jsonData;                                 // Contient les données de conversion du xlxs 
 let fileInfo;                                 // Contient les informations sur le fichier upload (data, name, size)                                 
 
-const maxFileSize = 10;                        // Taille du fichier xlxs avant warning 
-const bulkSize = 1000;                        // Taille maximal des paquets du bulk 
-const maxDisplayableElement = 5;              // Nombre d'element afficher dans la previs des données
+let maxFileSize;                              // Taille du fichier xlxs avant warning 
+let bulkSize;                                 // Taille maximal des paquets du bulk 
+let maxDisplayableElement;                    // Nombre d'element afficher dans la previs des données
+
 const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
 
 var app = uiModules.get('app/xlsx_import', ['angularSpinner', 'pascalprecht.translate']);
@@ -58,7 +59,11 @@ app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
 }])
 
 
-app.controller('xlsxImport', function ($scope, $route, $interval, $http, $translate, $timeout) {
+app.controller('xlsxImport', function ($scope, $route, $interval, $http, $translate, $timeout, config) {
+  maxFileSize = config.get('xlsx-import:filesize_warning');
+  bulkSize = config.get('xlsx-import:bulk_package_size');
+  maxDisplayableElement = config.get('xlsx-import:displayed_elements');
+
   $scope.title = 'XLSX Import';
   $scope.description = $translate.instant('PLUGIN_DESCRIPTION');
   $scope.indexName = '';
@@ -69,7 +74,6 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   $scope.sheetnames = [];
   $scope.sheetname = '';
 
-
   $scope.changeLanguage = function (langKey) {
     $translate.use(langKey).then(function(){}, function(){toastr.error('JSON translate file is invalid')})
   };
@@ -77,6 +81,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
   $scope.convert = function() {
 
+    console.log(config.get('xlsx-import:bulk_package_size'));
     if($scope.sheetname === '')
       return;
 
