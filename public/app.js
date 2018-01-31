@@ -438,7 +438,10 @@ function createDocumentId(template, obj) {
   let keys = getFromBetween.get(template, "{", "}");
 
   keys.forEach(function(key) {
-    template = template.replace('{'+key+'}', obj[key]);
+    if(obj[key] != undefined)
+      template = template.replace('{'+key+'}', obj[key]);
+    else
+      template = template.replace('{'+key+'}', key);
   })
 
   return template;
