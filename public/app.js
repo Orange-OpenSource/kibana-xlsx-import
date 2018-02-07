@@ -20,9 +20,10 @@ import 'angular-translate-loader-static-files';
 let jsonData;                                 // Contient les données de conversion du xlxs 
 let fileInfo;                                 // Contient les informations sur le fichier upload (data, name, size)                                 
 
-const maxFileSize = 10;                        // Taille du fichier xlxs avant warning 
-const bulkSize = 1000;                        // Taille maximal des paquets du bulk 
-const maxDisplayableElement = 5;              // Nombre d'element afficher dans la previs des données
+let maxFileSize;                              // Taille du fichier xlxs avant warning 
+let bulkSize;                                 // Taille maximal des paquets du bulk 
+let maxDisplayableElement;                    // Nombre d'element afficher dans la previs des données
+
 const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
 
 var app = uiModules.get('app/xlsx_import', ['angularSpinner', 'pascalprecht.translate']);
@@ -58,7 +59,11 @@ app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
 }])
 
 
-app.controller('xlsxImport', function ($scope, $route, $interval, $http, $translate, $timeout) {
+app.controller('xlsxImport', function ($scope, $route, $interval, $http, $translate, $timeout, config) {
+  maxFileSize = config.get('xlsx-import:filesize_warning');
+  bulkSize = config.get('xlsx-import:bulk_package_size');
+  maxDisplayableElement = config.get('xlsx-import:displayed_elements');
+
   $scope.title = 'XLSX Import';
   $scope.description = $translate.instant('PLUGIN_DESCRIPTION');
   $scope.indexName = '';
@@ -69,10 +74,15 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   $scope.sheetnames = [];
   $scope.sheetname = '';
 
-
   $scope.changeLanguage = function (langKey) {
     $translate.use(langKey).then(function(){}, function(){toastr.error('JSON translate file is invalid')})
   };
+
+
+  $scope.previewDocID = function() {
+    //angular.element('#previewID').val(createDocumentId($scope.esID, jsonData.data[0]));
+    $scope.previewID = createDocumentId($scope.esID, jsonData.data[0]);
+  }
 
 
   $scope.convert = function() {
@@ -149,8 +159,14 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
               .then((response) => {
                 console.log(response);
 
-                $http.post('../api/xlsx_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)  //On attribut le mapping dynamique
-                  .then((response) => {
+                if(response.data.error != undefined) {  //Handle errors on index creation
+                  alert(response.data.error.msg);
+                  $scope.showSpinner = false;
+                  return;
+                }  
+
+                $http.put('../api/xlsx_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)  //On attribut le mapping dynamique
+                  .then(function onSuccess(response){
                     console.log(response);
 
                     bulk_request = createBulk($scope.indexName, $scope.esID);
@@ -174,31 +190,73 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                     })
                   });
               });
-
           }
+        }).catch(function onError(response){  //Handle network errors
+            console.log(response);
+            $scope.showSpinner = false
+            return;
         });
     }
     else {    //Si l'utilisateur ne souhaite pas de mapping perso, on push juste les données
 
-      bulk_request = createBulk($scope.indexName, $scope.esID);
+        $http.get('../api/xlsx_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
+        .then((response) => {
+          console.log(response);
+          if(response.data.status != 404) {   //Si l'index existe déjà, on push
 
-      bulk_request.forEach(function(split_bulk){
+            bulk_request = createBulk($scope.indexName, $scope.esID);
 
-        $http.post('../api/xlsx_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
-          .then((response) => {
-            console.log(response);
-            promises.push(Promise.resolve(response));
-        }).then(function(){
-            if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
-              $scope.showSpinner = false                    //On arrete le spinner
-              Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
-              }).catch(reason => {
-                alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
+            bulk_request.forEach(function(split_bulk){
+
+            $http.post('../api/xlsx_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
+              .then((response) => {
+                console.log(response);
+                promises.push(Promise.resolve(response));
+              }).then(function(){
+                if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
+                  $scope.showSpinner = false                    //On arrete le spinner
+                  Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
+                    alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
+                  }).catch(reason => {
+                    alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
+                  });
+                }
               });
-            }
-        });
-      })
+            })
+          } else {  //Si il n'existe pas on verifie qu'on peut le créer et on push
+
+            $http.post('../api/xlsx_import/'+ $scope.indexName)  //On crée l'index dans ES
+              .then((response) => {
+                console.log(response);
+
+                if(response.data.error != undefined) {  //Handle errors on index creation
+                  alert(response.data.error.msg);
+                  $scope.showSpinner = false;
+                  return;
+                }  
+
+                bulk_request = createBulk($scope.indexName, $scope.esID);
+
+                bulk_request.forEach(function(split_bulk){
+
+                $http.post('../api/xlsx_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
+                  .then((response) => {
+                    console.log(response);
+                    promises.push(Promise.resolve(response));
+                  }).then(function(){
+                    if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
+                      $scope.showSpinner = false                    //On arrete le spinner
+                      Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
+                        alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
+                      }).catch(reason => {
+                        alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
+                      });
+                    }
+                  });
+                })
+              });
+          }
+      });
     }
   }
 
@@ -255,7 +313,6 @@ function convert_data(sheetname, callback) {
   jsonData.header = get_header_row(wb.Sheets[sheetname]);
   jsonData.data = formatJSON(XLSX.utils.sheet_to_json(wb.Sheets[sheetname]));
 
-  console.log(jsonData.data);
   if (typeof callback === "function")
     callback();
 }

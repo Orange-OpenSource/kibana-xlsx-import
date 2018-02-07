@@ -52,18 +52,19 @@ export default function (server, adminCluster, dataCluster) {
     //Create a mapping for a selected index and document
     server.route({
         path: '/api/xlsx_import/{index}/_mapping/{document}',
-        method: 'POST',
+        method: 'PUT',
         handler(req, reply) {
             dataCluster.callWithRequest(req, 'indices.putMapping', {
                 index: req.params.index,
                 type: req.params.document,
-                body: req.payload
+                body: req.payload,
             })
-            .then(function (err, response) {
-                if(err)
-                    reply(err);
-                else
-                    reply(response);
+            .then((response) => {
+                reply(response);
+
+            }).catch((e) => {
+                console.error(e);
+                reply({"error" : e})
             });
         }
     });
@@ -77,11 +78,12 @@ export default function (server, adminCluster, dataCluster) {
                 index: req.params.index,
                 body: req.payload
             })
-            .then(function (err, response) {
-                if(err)
-                    reply(err);
-                else
-                    reply(response);
+            .then((response) => {
+                reply(response);
+
+            }).catch((e) => {
+                console.error(e);
+                reply({"error" : e})
             });
         }
     });
