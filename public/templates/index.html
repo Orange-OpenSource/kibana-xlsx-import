@@ -25,16 +25,15 @@
     <div ng-show="showUploadOptions">
       <form class="form-group">
         <label>{{'INDEX_NAME_LABEL' | translate }}<input type="text" class="form-control" ng-model="indexName" id="indexName"></label>
-        <form class="form-group">
         <label>{{'ES_ID_LABEL' | translate }} 
           <span class="badge badge-pill badge-primary" 
             data-toggle="tooltip" data-placement="top" 
             title="Use placeholder {fieldname} to generate the ID">?</span>
-          <input type="text" class="form-control" ng-model="esID" id="esID">
+          <input type="text" class="form-control" ng-model="esID" id="esID" ng-change="previewDocID()">
         </label>
-        </form class="form-group">
-        <button class="btn btn-primary btn-metriks" type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
+        <label>{{ 'ES_PREVIEW_ID_LABEL' | translate }}<input type="text" class="form-control" ng-readonly="true" ng-model="previewID"></label>
       </form>
+      <button class="btn btn-primary btn-metriks" type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
     </div>
     <span us-spinner="{radius:30, width:8, length: 16}" spinner-on="showSpinner"></span>
 
@@ -43,7 +42,7 @@
 </div>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.17/shim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.17/xlsx.core.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.17/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.18/shim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.18/xlsx.core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.18/xlsx.full.min.js"></script>
 
