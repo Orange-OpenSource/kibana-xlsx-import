@@ -1,6 +1,6 @@
 {
   "name": "xlsx-import",
-  "version": "5.6.5-2",
+  "version": "5.6.5-3",
   "description": "Import XLSX to JSON",
   "main": "index.js",
   "kibana": {
