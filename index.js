@@ -7,7 +7,7 @@ export default function (kibana) {
     require: ['elasticsearch'],
     name: 'xlsx-import',
     uiExports: {
-      
+
       app: {
         title: 'XLSX Import',
         description: 'Import XLSX to JSON',
@@ -33,9 +33,15 @@ export default function (kibana) {
         'xlsx-import:filesize_warning': {
           value: 10,
           description: 'Trigger for warning file size popup (in Mb)'
+        },
+        'xlsx-import:default_language': {
+          value: "Browser",
+          description: "Which language should be used.  \"Browser\" will use the language detected by your browser.",
+          options: ["Browser", "English", "Français"],
+          type: "select"
         }
       },
-      
+
     },
 
     config(Joi) {
@@ -44,7 +50,7 @@ export default function (kibana) {
       }).default();
     },
 
-    
+
     init(server, options) {
       // Add server routes and initialize the plugin here
       const adminCluster = server.plugins.elasticsearch.getCluster('admin');

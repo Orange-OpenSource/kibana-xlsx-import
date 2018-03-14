@@ -17,12 +17,13 @@ import 'angular-translate';
 import 'angular-translate-loader-static-files';
 
 
-let jsonData;                                 // Contient les données de conversion du xlxs 
-let fileInfo;                                 // Contient les informations sur le fichier upload (data, name, size)                                 
+let jsonData;                                 // Contient les données de conversion du xlxs
+let fileInfo;                                 // Contient les informations sur le fichier upload (data, name, size)
 
-let maxFileSize;                              // Taille du fichier xlxs avant warning 
-let bulkSize;                                 // Taille maximal des paquets du bulk 
+let maxFileSize;                              // Taille du fichier xlxs avant warning
+let bulkSize;                                 // Taille maximal des paquets du bulk
 let maxDisplayableElement;                    // Nombre d'element afficher dans la previs des données
+let default_language;
 
 const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
 
@@ -35,7 +36,7 @@ uiRoutes
 });
 
 
-app.config(['$translateProvider', function($translateProvider){
+app.config(['$translateProvider', function($translateProvider, config){
   //angular-translate security
   $translateProvider.useSanitizeValueStrategy('escape');
 
@@ -63,9 +64,19 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   maxFileSize = config.get('xlsx-import:filesize_warning');
   bulkSize = config.get('xlsx-import:bulk_package_size');
   maxDisplayableElement = config.get('xlsx-import:displayed_elements');
+  default_language = config.get('xlsx-import:default_language');
 
   $scope.title = 'XLSX Import';
   $scope.description = $translate.instant('PLUGIN_DESCRIPTION');
+
+  $scope.topNavMenu = [
+    {
+      key: 'XLSX Import',
+      description: 'Home',
+      run: function () { kbnUrl.change('/'); }
+    }
+  ];
+
   $scope.indexName = '';
   $scope.esID = '';
   $scope.showUploadOptions = false;
@@ -77,6 +88,26 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   $scope.changeLanguage = function (langKey) {
     $translate.use(langKey).then(function(){}, function(){toastr.error('JSON translate file is invalid')})
   };
+
+  $scope.useTranslation = function() {
+    if(default_language == 'Browser') {
+      var userLang = navigator.language || navigator.userLanguage;
+      if(userLang === 'fr')
+        $translate.use('fr');
+      else
+        $translate.use('en');
+    }
+    else {
+      switch(default_language) {
+        case "English":
+          $translate.use('en');
+          break;
+        case "Français":
+          $translate.use('fr');
+          break;
+      }
+    }
+  }
 
 
   $scope.previewDocID = function() {
@@ -93,6 +124,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
 
     $scope.showSpinner = true;
+    //console.log(config.getAll());
 
     //Warning si file.size > maxFileSize (TBD)
     if(fileInfo.size > maxFileSize) {
@@ -100,7 +132,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
       if(confirm($translate.instant('SIZE_WARNING_MESSAGE'))) {
         $timeout(function() {}, 10).then(function(){
           convert_data($scope.sheetname, function(){
-            document.getElementById("import_form").innerHTML = 
+            document.getElementById("import_form").innerHTML =
               '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + fileInfo.name;
             $scope.showSpinner = false;
             $scope.showUploadOptions = true;
@@ -119,7 +151,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     else {
       $timeout(function() {}, 10).then(function(){
         convert_data($scope.sheetname, function(){
-          document.getElementById("import_form").innerHTML = 
+          document.getElementById("import_form").innerHTML =
             '<p><button class="btn btn-primary btn-metriks" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
           $scope.showSpinner = false;
           $scope.showUploadOptions = true;
@@ -163,7 +195,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                   alert(response.data.error.msg);
                   $scope.showSpinner = false;
                   return;
-                }  
+                }
 
                 $http.put('../api/xlsx_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)  //On attribut le mapping dynamique
                   .then(function onSuccess(response){
@@ -233,7 +265,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                   alert(response.data.error.msg);
                   $scope.showSpinner = false;
                   return;
-                }  
+                }
 
                 bulk_request = createBulk($scope.indexName, $scope.esID);
 
@@ -290,7 +322,7 @@ app.directive('importSheetJs', function($translate) {
               $scope.$parent.showSheetForm = true;
               $scope.$parent.$apply();
             }
-          }; 
+          };
           reader.readAsBinaryString(changeEvent.target.files[0]);
 
           $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
@@ -358,7 +390,7 @@ function get_header_row(sheet) {
     for(C = range.s.c; C <= range.e.c; ++C) {
         var cell = sheet[XLSX.utils.encode_cell({c:C, r:R})] /* find the cell in the first row */
 
-        var hdr = "UNKNOWN " + C; // <-- replace with your desired default 
+        var hdr = "UNKNOWN " + C; // <-- replace with your desired default
         if(cell && cell.t) hdr = XLSX.utils.format_cell(cell);
 
         headers.push(formatHeader(hdr));
@@ -368,9 +400,10 @@ function get_header_row(sheet) {
 
 //Formate le nom du fichier pour le transformer en nom d'index ES correct
 function setESIndexName(name) {
-  
+
   var name = name.split('.')[0];                //on enlève l'extension du fichier
   var name = name.replace(/[^a-zA-Z ]/g, "");   //on enlève aussi les charactères speciaux (modif possible avec UTF?)
+  name = name.toLowerCase();                    //on passe tout en lowercase (contrainte des nom d'index dans ES)
   return name;
 }
 
@@ -433,11 +466,11 @@ function formatJSON(json){
   json.forEach(function(e, i) {
   // Iterate over the keys of object
     Object.keys(e).forEach(function(key) {
-    
+
     // Copy the value
       var val = e[key],
       newKey = key.replace(/\s+/g, '_');
-    
+
     // Remove key-value from object
       delete json[i][key];
 
