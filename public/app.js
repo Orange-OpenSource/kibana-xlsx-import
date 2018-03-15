@@ -90,28 +90,21 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   };
 
   $scope.useTranslation = function() {
-    if(default_language == 'Browser') {
-      var userLang = navigator.language || navigator.userLanguage;
-      if(userLang === 'fr')
-        $translate.use('fr');
-      else
+    switch(default_language) {
+      case "Browers":
+        //Default case already done by the config
+        break;
+      case "English":
         $translate.use('en');
-    }
-    else {
-      switch(default_language) {
-        case "English":
-          $translate.use('en');
-          break;
-        case "Français":
-          $translate.use('fr');
-          break;
-      }
+        break;
+      case "Français":
+        $translate.use('fr');
+        break;
     }
   }
 
 
   $scope.previewDocID = function() {
-    //angular.element('#previewID').val(createDocumentId($scope.esID, jsonData.data[0]));
     $scope.previewID = createDocumentId($scope.esID, jsonData.data[0]);
   }
 
@@ -344,7 +337,7 @@ function convert_data(sheetname, callback) {
   update_sheet_range(wb.Sheets[sheetname]);
   jsonData.header = get_header_row(wb.Sheets[sheetname]);
   jsonData.data = formatJSON(XLSX.utils.sheet_to_json(wb.Sheets[sheetname]));
-
+  console.log(jsonData.header);
   if (typeof callback === "function")
     callback();
 }
