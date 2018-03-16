@@ -160,9 +160,6 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
   $scope.transfer = function() {
 
-    var promises = [];
-    var bulk_request = [];
-
     $scope.indexName = angular.element('#indexName').val();
     $scope.esID = angular.element('#esID').val();
     $scope.showSpinner = true;    //On affiche le spinner
@@ -174,6 +171,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
           console.log(response);
           if(response.data.status != 404) {   //Si l'index existe déjà, on envoi un message et on annule le push
             alert($translate.instant('INDEX_ALREADY_EXIST_MESSAGE'));
+            document.getElementById("message_top").innerHTML = '<div class="alert alert-danger" role="alert"  >' +
+              getDate() + " - " + $translate.instant('INDEX_ALREADY_EXIST_MESSAGE') + '</div>';
             $scope.showSpinner = false;
             return;
           }
@@ -187,6 +186,9 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
                 if(response.data.error != undefined) {  //Handle errors on index creation
                   alert(response.data.error.msg);
+                  document.getElementById("message_top").innerHTML = '<div class="alert alert-danger" role="alert">' +
+                    getDate() + " - " + $translate.instant('FAILED_TRANSFER_MESSAGE') + ' - ' +
+                    response.data.error.msg +'</div>';
                   $scope.showSpinner = false;
                   return;
                 }
@@ -194,29 +196,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                 $http.put('../api/xlsx_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)  //On attribut le mapping dynamique
                   .then(function onSuccess(response){
                     console.log(response);
-
-                    bulk_request = createBulk($scope.indexName, $scope.esID);
-
-                    bulk_request.forEach(function(split_bulk){
-
-                    $http.post('../api/xlsx_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)   //On push les data avec le bulk
-                      .then((response) => {
-                        console.log(response);
-                        promises.push(Promise.resolve(response));
-                      }).then(function(){
-                        if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
-                          $scope.showSpinner = false                    //On arrete le spinner
-                          Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                            alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
-                            document.getElementById("message").innerHTML = '<div class="alert alert-success" role="alert">' +
-                              getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' - index : ' +
-                              $scope.indexName + ' ('+jsonData.data.length+' documents)' +'</div>';
-                          }).catch(reason => {
-                            alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
-                          });
-                        }
-                      });
-                    })
+                      $scope.push();
                   });
               });
           }
@@ -232,29 +212,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
         .then((response) => {
           console.log(response);
           if(response.data.status != 404) {   //Si l'index existe déjà, on push
+            $scope.push();
 
-            bulk_request = createBulk($scope.indexName, $scope.esID);
-
-            bulk_request.forEach(function(split_bulk){
-
-            $http.post('../api/xlsx_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
-              .then((response) => {
-                console.log(response);
-                promises.push(Promise.resolve(response));
-              }).then(function(){
-                if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
-                  $scope.showSpinner = false                    //On arrete le spinner
-                  Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                    alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
-                    document.getElementById("message").innerHTML = '<div class="alert alert-success" role="alert">' +
-                      getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' - index : ' +
-                      $scope.indexName + ' ('+jsonData.data.length+' documents)' +'</div>';
-                  }).catch(reason => {
-                    alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
-                  });
-                }
-              });
-            })
           } else {  //Si il n'existe pas on verifie qu'on peut le créer et on push
 
             $http.post('../api/xlsx_import/'+ $scope.indexName)  //On crée l'index dans ES
@@ -263,36 +222,47 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
                 if(response.data.error != undefined) {  //Handle errors on index creation
                   alert(response.data.error.msg);
+                  document.getElementById("message_top").innerHTML = '<div class="alert alert-danger" role="alert">' +
+                    getDate() + " - " + $translate.instant('FAILED_TRANSFER_MESSAGE') + ' - ' +
+                    response.data.error.msg +'</div>';
                   $scope.showSpinner = false;
                   return;
                 }
 
-                bulk_request = createBulk($scope.indexName, $scope.esID);
+                $scope.push();
 
-                bulk_request.forEach(function(split_bulk){
-
-                $http.post('../api/xlsx_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
-                  .then((response) => {
-                    console.log(response);
-                    promises.push(Promise.resolve(response));
-                  }).then(function(){
-                    if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
-                      $scope.showSpinner = false                    //On arrete le spinner
-                      Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-                        alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
-                        document.getElementById("message").innerHTML = '<div class="alert alert-success" role="alert">' +
-                          getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' - index : ' +
-                          $scope.indexName + ' ('+jsonData.data.length+' documents)' +'</div>';
-                      }).catch(reason => {
-                        alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
-                      });
-                    }
-                  });
-                })
               });
           }
       });
     }
+  }
+
+  $scope.push = function() {
+    var promises = [];
+    var bulk_request = [];
+
+    bulk_request = createBulk($scope.indexName, $scope.esID);
+
+    bulk_request.forEach(function(split_bulk){
+
+    $http.post('../api/xlsx_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
+      .then((response) => {
+        console.log(response);
+        promises.push(Promise.resolve(response));
+      }).then(function(){
+        if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
+          $scope.showSpinner = false                    //On arrete le spinner
+          Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
+            alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
+            document.getElementById("message_top").innerHTML = '<div class="alert alert-success" role="alert">' +
+              getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' - index : ' +
+              $scope.indexName + ' ('+jsonData.data.length+' documents)' +'</div>';
+          }).catch(reason => {
+            alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
+          });
+        }
+      });
+    })
   }
 
 });
@@ -355,13 +325,13 @@ function convert_data(sheetname, callback) {
 //Affichage des données dans une table html après conversion
 function display_UI(message ,tabNames) {
 
-    if(message)
-      document.getElementById("message").innerHTML = '<span class="label label-danger" style="font-size: 14px;">' + message + '</span><br/>';
-    else {
-      document.getElementById("message").innerHTML = '';
-    }
-
     ReactDOM.unmountComponentAtNode(document.getElementById("react_tabs"));
+
+    if(message)
+      document.getElementById("message_top").innerHTML = '<div class="alert alert-warning" role="alert">' + message + '</div>';
+    else {
+      document.getElementById("message_top").innerHTML = '';
+    }
 
     ReactDOM.render(
       <MyTabs names={tabNames}/>,
@@ -397,19 +367,15 @@ function get_header_row(sheet) {
     /* walk every column in the range */
     for(C = range.s.c; C <= range.e.c; ++C) {
         var cell = sheet[XLSX.utils.encode_cell({c:C, r:R})] /* find the cell in the first row */
-        var cell2 = sheet[XLSX.utils.encode_cell({c:C, r:R+1})] /* find the cell in the second row */
 
         var hdr = "UNKNOWN " + C; // <-- replace with your desired default
         if(cell && cell.t) hdr = XLSX.utils.format_cell(cell);
 
         var header = new Object();
         header.value = formatHeader(hdr);
-        header.type = cell2.t;
 
         headers.push(formatHeader(hdr));
-        //headers.push(header);
     }
-    console.log(headers);
     return headers;
 }
 
