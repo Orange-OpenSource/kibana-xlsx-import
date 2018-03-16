@@ -117,7 +117,6 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
 
     $scope.showSpinner = true;
-    //console.log(config.getAll());
 
     //Warning si file.size > maxFileSize (TBD)
     if(fileInfo.size > maxFileSize) {
@@ -126,7 +125,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
         $timeout(function() {}, 10).then(function(){
           convert_data($scope.sheetname, function(){
             document.getElementById("import_form").innerHTML =
-              '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' + fileInfo.name;
+              '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' +
+                fileInfo.name + " - " + $scope.sheetname;
             $scope.showSpinner = false;
             $scope.showUploadOptions = true;
             display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabNames);
@@ -145,7 +145,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
       $timeout(function() {}, 10).then(function(){
         convert_data($scope.sheetname, function(){
           document.getElementById("import_form").innerHTML =
-            '<p><button class="btn btn-primary btn-metriks" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+ fileInfo.name;
+            '<p><button class="btn btn-primary btn-metriks" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+
+              fileInfo.name + " - " + $scope.sheetname;
           $scope.showSpinner = false;
           $scope.showUploadOptions = true;
           display_UI("", tabNames);
@@ -207,6 +208,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                           $scope.showSpinner = false                    //On arrete le spinner
                           Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
                             alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
+                            document.getElementById("message").innerHTML = '<div class="alert alert-success" role="alert">' +
+                              getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') +'</div>';
                           }).catch(reason => {
                             alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
                           });
@@ -242,6 +245,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                   $scope.showSpinner = false                    //On arrete le spinner
                   Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
                     alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
+                    document.getElementById("message").innerHTML = '<div class="alert alert-success" role="alert">' +
+                      getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') +'</div>';
                   }).catch(reason => {
                     alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
                   });
@@ -273,6 +278,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                       $scope.showSpinner = false                    //On arrete le spinner
                       Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
                         alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
+                        document.getElementById("message").innerHTML = '<div class="alert alert-success" role="alert">' +
+                          getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') +'</div>';
                       }).catch(reason => {
                         alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
                       });
@@ -337,7 +344,7 @@ function convert_data(sheetname, callback) {
   update_sheet_range(wb.Sheets[sheetname]);
   jsonData.header = get_header_row(wb.Sheets[sheetname]);
   jsonData.data = formatJSON(XLSX.utils.sheet_to_json(wb.Sheets[sheetname]));
-  console.log(jsonData.header);
+
   if (typeof callback === "function")
     callback();
 }
@@ -382,14 +389,22 @@ function get_header_row(sheet) {
     /* walk every column in the range */
     for(C = range.s.c; C <= range.e.c; ++C) {
         var cell = sheet[XLSX.utils.encode_cell({c:C, r:R})] /* find the cell in the first row */
+        var cell2 = sheet[XLSX.utils.encode_cell({c:C, r:R+1})] /* find the cell in the second row */
 
         var hdr = "UNKNOWN " + C; // <-- replace with your desired default
         if(cell && cell.t) hdr = XLSX.utils.format_cell(cell);
 
+        var header = new Object();
+        header.value = formatHeader(hdr);
+        header.type = cell2.t;
+
         headers.push(formatHeader(hdr));
+        //headers.push(header);
     }
+    console.log(headers);
     return headers;
 }
+
 
 //Formate le nom du fichier pour le transformer en nom d'index ES correct
 function setESIndexName(name) {
@@ -526,4 +541,15 @@ function createDocumentId(template, obj) {
   })
 
   return template;
+}
+
+function getDate() {
+  var d = new Date,
+    dformat = [d.getMonth()+1,
+               d.getDate(),
+               d.getFullYear()].join('/')+' '+
+              [d.getHours(),
+               d.getMinutes(),
+               d.getSeconds()].join(':');
+  return d;
 }

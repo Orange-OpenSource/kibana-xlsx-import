@@ -70,7 +70,7 @@
   <div class="row container">
 
     <div class="col-12-sm">
-
+      
       <form class="form-group" id="import_form">
         <h2><small class="text-muted">{{ 'PLUGIN_DESCRIPTION' | translate }}</small></h2>
         </br>
@@ -106,8 +106,10 @@
             <input type="text" class="form-control" ng-readonly="true" ng-model="previewID"/>
           </div>
         </div>
-        <div class="form-group">
-          <button class="btn btn-primary btn-metriks" type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
+        <div class="form-group row">
+          <div class="form-group col-md-2 nopadding">
+            <button class="btn btn-primary" type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
+          </div>
         </div>
       </div>
       <span us-spinner="{radius:30, width:8, length: 16}" spinner-on="showSpinner"></span>

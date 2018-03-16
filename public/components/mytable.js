@@ -47,7 +47,7 @@ class MyTable extends React.Component {
   		 		</Cell>
   		 	)}
   		 	width={200}
-  		 	key={i} 
+  		 	key={i}
   		 	/>
   		);
   	}
