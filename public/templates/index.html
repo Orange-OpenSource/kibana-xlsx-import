@@ -70,7 +70,7 @@
   <div class="row container">
 
     <div class="col-12-sm">
-      
+
       <form class="form-group" id="import_form">
         <h2><small class="text-muted">{{ 'PLUGIN_DESCRIPTION' | translate }}</small></h2>
         </br>
@@ -78,12 +78,13 @@
       </form>
 
       <div ng-show="showSheetForm">
-        <form class="form-inline" id="sheet_form">
+        <div class="form-inline" id="sheet_form">
           <label>{{ 'CHOOSE_SHEETNAME_LABEL' | translate }}
             <select class="form-control" ng-model="sheetname" ng-options="item for item in sheetnames"></select>
             <button class="btn btn-primary btn-metriks" type="button" ng-click="convert()">{{ 'CONVERT_BUTTON' | translate }}</button>
           </label>
-        </form>
+        </div>
+        </br>
       </div>
 
       <div id="message"></div>

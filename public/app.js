@@ -154,7 +154,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
       })
     }
 
-    $scope.showSheetForm = false;
+    //$scope.showSheetForm = false;
   }
 
 
@@ -209,7 +209,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                           Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
                             alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
                             document.getElementById("message").innerHTML = '<div class="alert alert-success" role="alert">' +
-                              getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') +'</div>';
+                              getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' - index : ' +
+                              $scope.indexName + ' ('+jsonData.data.length+' documents)' +'</div>';
                           }).catch(reason => {
                             alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
                           });
@@ -246,7 +247,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                   Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
                     alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
                     document.getElementById("message").innerHTML = '<div class="alert alert-success" role="alert">' +
-                      getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') +'</div>';
+                      getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' - index : ' +
+                      $scope.indexName + ' ('+jsonData.data.length+' documents)' +'</div>';
                   }).catch(reason => {
                     alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
                   });
@@ -279,7 +281,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                       Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
                         alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
                         document.getElementById("message").innerHTML = '<div class="alert alert-success" role="alert">' +
-                          getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') +'</div>';
+                          getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' - index : ' +
+                          $scope.indexName + ' ('+jsonData.data.length+' documents)' +'</div>';
                       }).catch(reason => {
                         alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
                       });
@@ -354,6 +357,11 @@ function display_UI(message ,tabNames) {
 
     if(message)
       document.getElementById("message").innerHTML = '<span class="label label-danger" style="font-size: 14px;">' + message + '</span><br/>';
+    else {
+      document.getElementById("message").innerHTML = '';
+    }
+
+    ReactDOM.unmountComponentAtNode(document.getElementById("react_tabs"));
 
     ReactDOM.render(
       <MyTabs names={tabNames}/>,
