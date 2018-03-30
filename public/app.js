@@ -311,7 +311,6 @@ app.directive('importSheetJs', function($translate) {
               $scope.$parent.sheetnames = wb.SheetNames;
               $scope.$parent.showSheetForm = true;
               $scope.$parent.$apply();
-              console.log(file);
             }
           };
           if(getExtension(changeEvent.target.files[0].name)[0] != "csv")

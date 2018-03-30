@@ -80,17 +80,18 @@ class MyTabs extends React.Component {
            <div className="form-group row">
              <div className="form-group col-md-2 nopadding">
                <label>{this.props.names[1]}</label>
-               <input type="text" className="form-control" ng-model="indexName" id="indexName"/>
+               <input type="text" className="form-control" ng-model="indexName" id="indexName" style={{marginTop: 4}}/>
              </div>
            </div>
            <div className="form-group row">
              <div className="form-group col-md-4 nopadding">
                <label>{this.props.names[2]}</label>
-               <input type="text" placeholder="Use placeholder {fieldname} to generate the ID" className="form-control" id="esID" onChange={(evt) => this.handleChange(this.props.model, evt)}/>
+               <input type="text" placeholder={this.props.names[4]} className="form-control" id="esID"  style={{marginTop: 4}}
+                  onChange={(evt) => this.handleChange(this.props.model, evt)}/>
              </div>
              <div className="form-group col-md-4 nopadding">
                <label>{this.props.names[3]}</label>
-               <input type="text" className="form-control" readOnly id="previewID" ref="previewID"/>
+               <input type="text" className="form-control" readOnly id="previewID" ref="previewID" style={{marginTop: 4}}/>
              </div>
            </div>
          </div>
