@@ -35,7 +35,7 @@ export default function (kibana) {
           description: 'Trigger for warning file size popup (in Mb)'
         },
         'xlsx-import:default_language': {
-          value: "Browser",
+          value: "English",
           description: "Which language should be used.  \"Browser\" will use the language detected by your browser.",
           options: ["Browser", "English", "Français"],
           type: "select"
