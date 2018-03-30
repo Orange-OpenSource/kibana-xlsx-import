@@ -291,6 +291,7 @@ app.directive('importSheetJs', function($translate) {
 
       $elm.on('change', function (changeEvent) {
         var reader = new FileReader();
+        fileInfo = new Object();
 
         if (!supportedFileType.includes(getExtension(changeEvent.target.files[0].name)[0])) {
           alert($translate.instant("INVALID_EXTENSION_FILE_MESSAGE"));
@@ -300,19 +301,24 @@ app.directive('importSheetJs', function($translate) {
           reader.onload = function (file) {
             if (typeof FileReader !== "undefined") {
 
-              fileInfo = new Object();
               fileInfo.size = (changeEvent.target.files[0].size)/1000000;
               fileInfo.data = reader.result;
               fileInfo.name = changeEvent.target.files[0].name;
+              fileInfo.ext = getExtension(changeEvent.target.files[0].name)[0];
 
-              var wb = XLSX.read(fileInfo.data, {type : 'binary', bookSheets: 'true'});
+              var wb = XLSX.read(fileInfo.data, {type : 'array', bookSheets: 'true'});
 
               $scope.$parent.sheetnames = wb.SheetNames;
               $scope.$parent.showSheetForm = true;
               $scope.$parent.$apply();
+              console.log(file);
             }
           };
-          reader.readAsBinaryString(changeEvent.target.files[0]);
+          if(getExtension(changeEvent.target.files[0].name)[0] != "csv")
+            reader.readAsArrayBuffer(changeEvent.target.files[0]);
+          else {
+            reader.readAsText(changeEvent.target.files[0]);
+          }
 
           $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté
           $scope.$parent.$apply();
@@ -328,7 +334,13 @@ app.directive('importSheetJs', function($translate) {
 function convert_data(sheetname, callback) {
 
   jsonData = new Object();
-  var wb = XLSX.read(fileInfo.data, {type : 'binary'});
+
+  //All csv files are read as UTF-8 (need to fix later)
+  if(fileInfo.ext != "csv")
+    var wb = XLSX.read(fileInfo.data, {type : 'array'});
+  else {
+    var wb = XLSX.read(fileInfo.data, {type : 'binary'});
+  }
 
   update_sheet_range(wb.Sheets[sheetname]);
   jsonData.header = get_header_row(wb.Sheets[sheetname]);
