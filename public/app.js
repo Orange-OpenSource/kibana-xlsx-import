@@ -85,9 +85,6 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   $scope.sheetnames = [];
   $scope.sheetname = '';
 
-  $scope.changeLanguage = function (langKey) {
-    $translate.use(langKey).then(function(){}, function(){toastr.error('JSON translate file is invalid')})
-  };
 
   $scope.useTranslation = function() {
     switch(default_language) {
@@ -95,13 +92,18 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
         //Default case already done by the config
         break;
       case "English":
-        $translate.use('en');
+        $scope.changeLanguage('en');
         break;
       case "Français":
-        $translate.use('fr');
+        $scope.changeLanguage('fr');
         break;
     }
   }
+
+
+  $scope.changeLanguage = function (langKey) {
+    $translate.use(langKey).then(function(){}, function(){toastr.error('JSON translate file is invalid')})
+  };
 
 
   $scope.previewDocID = function() {
@@ -114,7 +116,10 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     if($scope.sheetname === '')
       return;
 
-    var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'), $translate.instant('VIEW_TABS_NAME'), $translate.instant('MAPPING_TAB_NAME')];
+    var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'),
+      $translate.instant('VIEW_TABS_NAME'),
+      $translate.instant('MAPPING_TAB_NAME'),
+      $translate.instant('CONFIG_TAB_NAME')];
 
     $scope.showSpinner = true;
 
@@ -130,6 +135,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
             $scope.showSpinner = false;
             $scope.showUploadOptions = true;
             display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabNames);
+            angular.element('#indexName').val($scope.indexName);
           });
         })
       }
@@ -150,6 +156,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
           $scope.showSpinner = false;
           $scope.showUploadOptions = true;
           display_UI("", tabNames);
+          angular.element('#indexName').val($scope.indexName);
         });
       })
     }
@@ -298,7 +305,7 @@ app.directive('importSheetJs', function($translate) {
           };
           reader.readAsBinaryString(changeEvent.target.files[0]);
 
-          $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté                                            //On affiche le bouton de transfert
+          $scope.$parent.indexName = setESIndexName(changeEvent.target.files[0].name);  //On lui donne la valeur par defaut formaté
           $scope.$parent.$apply();
 
       });
@@ -334,7 +341,7 @@ function display_UI(message ,tabNames) {
     }
 
     ReactDOM.render(
-      <MyTabs names={tabNames}/>,
+      <MyTabs names={tabNames} model={jsonData.data[0]}/>,
       document.getElementById("react_tabs")
     );
 
@@ -462,6 +469,7 @@ function formatJSON(json){
   });
   return json;
 }
+
 
 //Create the document ID by using the template in $scope.esID
 function createDocumentId(template, obj) {
