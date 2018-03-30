@@ -64,32 +64,32 @@ class MyTabs extends React.Component {
   render() {
     return (
     	<div>
-			 <Collapsible trigger={this.props.names[1]} open={true}>
+			 <Collapsible trigger={this.props.tabnames[0]} open={true}>
 	       <div id="view_tab"></div>
 	     </Collapsible>
 
-	     <Collapsible trigger={this.props.names[2]}>
+	     <Collapsible trigger={this.props.tabnames[1]}>
           <form className="form-inline">
 	      		<input className="form-control" id="checkMapping" type="checkbox"/> <label>{this.props.names[0]}</label>
           </form>
 	        <div id="mapping_tab"></div>
 	     </Collapsible>
 
-       <Collapsible trigger={this.props.names[3]}>
+       <Collapsible trigger={this.props.tabnames[2]}>
          <div ng-show="showUploadOptions">
            <div className="form-group row">
              <div className="form-group col-md-2 nopadding">
-               <label>'INDEX_NAME_LABEL'</label>
+               <label>{this.props.names[1]}</label>
                <input type="text" className="form-control" ng-model="indexName" id="indexName"/>
              </div>
            </div>
            <div className="form-group row">
              <div className="form-group col-md-4 nopadding">
-               <label>'ES_ID_LABEL'</label>
+               <label>{this.props.names[2]}</label>
                <input type="text" placeholder="Use placeholder {fieldname} to generate the ID" className="form-control" id="esID" onChange={(evt) => this.handleChange(this.props.model, evt)}/>
              </div>
              <div className="form-group col-md-4 nopadding">
-               <label>'ES_PREVIEW_ID_LABEL'</label>
+               <label>{this.props.names[3]}</label>
                <input type="text" className="form-control" readOnly id="previewID" ref="previewID"/>
              </div>
            </div>

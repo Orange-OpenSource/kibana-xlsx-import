@@ -116,10 +116,19 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     if($scope.sheetname === '')
       return;
 
-    var tabNames = [$translate.instant('PERSONAL_MAPPING_LABEL'),
+    var tabnames = [
       $translate.instant('VIEW_TABS_NAME'),
       $translate.instant('MAPPING_TAB_NAME'),
-      $translate.instant('CONFIG_TAB_NAME')];
+      $translate.instant('SETTINGS_TAB_NAME')
+    ];
+
+    var names = [
+      $translate.instant('PERSONAL_MAPPING_LABEL'),
+      $translate.instant('INDEX_NAME_LABEL'),
+      $translate.instant('KIBANA_ID_LABEL'),
+      $translate.instant('KIBANA_PREVIEW_ID_LABEL'),
+      $translate.instant('KIBANA_ID_PLACEHOLDER')
+    ];
 
     $scope.showSpinner = true;
 
@@ -134,7 +143,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                 fileInfo.name + " - " + $scope.sheetname;
             $scope.showSpinner = false;
             $scope.showUploadOptions = true;
-            display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabNames);
+            display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabnames, names);
             angular.element('#indexName').val($scope.indexName);
           });
         })
@@ -155,7 +164,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
               fileInfo.name + " - " + $scope.sheetname;
           $scope.showSpinner = false;
           $scope.showUploadOptions = true;
-          display_UI("", tabNames);
+          display_UI("", tabnames, names);
           angular.element('#indexName').val($scope.indexName);
         });
       })
@@ -330,7 +339,7 @@ function convert_data(sheetname, callback) {
 }
 
 //Affichage des données dans une table html après conversion
-function display_UI(message ,tabNames) {
+function display_UI(message ,tabnames, names) {
 
     ReactDOM.unmountComponentAtNode(document.getElementById("react_tabs"));
 
@@ -341,7 +350,7 @@ function display_UI(message ,tabNames) {
     }
 
     ReactDOM.render(
-      <MyTabs names={tabNames} model={jsonData.data[0]}/>,
+      <MyTabs tabnames={tabnames} names={names} model={jsonData.data[0]}/>,
       document.getElementById("react_tabs")
     );
 
