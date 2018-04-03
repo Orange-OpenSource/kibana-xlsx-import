@@ -1,5 +1,7 @@
 <div class="app-container xlsx-import" ng-controller="xlsxImport" data-ng-init="useTranslation()">
 
+  <div id="message_top" style="position: fixed; width: 100%; z-index: 99; cursor: pointer;"></div>
+
   <kbn-top-nav name="xlsx-import" config="topNavMenu">
       <div class="kuiLocalNav" ng-show="true" data-test-subj="top-nav">
       <!-- Top row -->
@@ -70,6 +72,7 @@
   <div class="row container">
 
     <div class="col-12-sm">
+    <toaster-container></toaster-container>
 
       <form class="form-group" id="import_form">
         <h2><small class="text-muted">{{ 'PLUGIN_DESCRIPTION' | translate }}</small></h2>
@@ -87,7 +90,7 @@
         </br>
       </div>
 
-      <div id="message_top"></div>
+
       <div id="react_tabs"></div>
 
       <div ng-show="showUploadOptions">

@@ -205,6 +205,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
                   document.getElementById("message_top").innerHTML = '<div class="alert alert-danger" role="alert">' +
                     getDate() + " - " + $translate.instant('FAILED_TRANSFER_MESSAGE') + ' - ' +
                     response.data.error.msg +'</div>';
+                  toaster.pop('info', "title", "text");
                   $scope.showSpinner = false;
                   return;
                 }
@@ -344,7 +345,8 @@ function convert_data(sheetname, callback) {
   update_sheet_range(wb.Sheets[sheetname]);
   jsonData.header = get_header_row(wb.Sheets[sheetname]);
   jsonData.data = formatJSON(XLSX.utils.sheet_to_json(wb.Sheets[sheetname]));
-
+  jsonData.types = get_types(wb.Sheets[sheetname]);
+  console.log(jsonData.types)
   if (typeof callback === "function")
     callback();
 }
@@ -371,7 +373,7 @@ function display_UI(message ,tabnames, names) {
     );
 
     ReactDOM.render(
-      <MyMapping data={jsonData.header} />,
+      <MyMapping data={jsonData} />,
       document.getElementById("mapping_tab")
     );
 }
@@ -398,12 +400,40 @@ function get_header_row(sheet) {
         var hdr = "UNKNOWN " + C; // <-- replace with your desired default
         if(cell && cell.t) hdr = XLSX.utils.format_cell(cell);
 
-        var header = new Object();
-        header.value = formatHeader(hdr);
-
         headers.push(formatHeader(hdr));
     }
     return headers;
+}
+
+//Recupère les types des colonnes de la feuille excel
+function get_types(sheet) {
+    var types = [];
+    var range = XLSX.utils.decode_range(sheet['!ref']);
+    var C, R = range.s.r; /* start in the first row */
+    /* walk every column in the range */
+    for(C = range.s.c; C <= range.e.c; ++C) {
+        var cell = sheet[XLSX.utils.encode_cell({c:C, r:R+1})] /* find the cell in the second row */
+
+        var hdr = "UNKNOWN " + C; // <-- replace with your desired default
+        if(cell && cell.t) {
+          switch(cell.t) {
+            case "s":
+              hdr = "text";
+              break;
+            case "n":
+              hdr = "float";
+              break;
+            case "d":
+              hdr = "date";
+              break;
+            case "b":
+              hdr = "boolean";
+              break;
+          }
+          types.push(hdr);
+        }
+    }
+    return types;
 }
 
 

@@ -30,7 +30,7 @@ class MyTable extends React.Component {
     super(props);
 
     this.state = {
-    	myTableHeader: this.props.data.header, 
+    	myTableHeader: this.props.data.header,
     	myTableData: this.props.data.data.slice(0, this.props.maxElement)
     };
   }
@@ -58,7 +58,7 @@ class MyTable extends React.Component {
         rowsCount={this.state.myTableData.length}
         rowHeight={50}
         headerHeight={50}
-        width={1000}
+        width={this.state.myTableHeader.length * 200}
         height={(this.state.myTableData.length +1) * 50}>
 	        {columns}
       </Table>
