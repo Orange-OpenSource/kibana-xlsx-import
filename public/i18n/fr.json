@@ -11,7 +11,7 @@
     "SETTINGS_TAB_NAME" : "Options",
     "SEND_BUTTON" : "Charger dans ElasticSearch",
     "REFRESH_BUTTON" : "Choisir un nouveau fichier",
-    "CONVERT_BUTTON" : "Convertir",
+    "CONVERT_BUTTON" : "Suivant",
     "SIZE_WARNING_MESSAGE" : "Fichier trop volumineux, souhaitez-vous continuer ?",
     "DISPLAY_LIMIT_MESSAGE" : "Seulement quelques éléments sont affichés",
     "INDEX_ALREADY_EXIST_MESSAGE" : "Nom d'index déjà utilisé, veuillez utiliser un autre nom ou ne pas modifier le mapping",

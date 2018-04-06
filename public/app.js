@@ -7,6 +7,7 @@ import ReactDOM from 'react-dom';
 import MyTable from './components/mytable.js';
 import MyMapping from './components/mymapping.js';
 import MyTabs from './components/mytabs.js';
+import Table from './components/stepOne.js';
 
 import 'ui/autoload/styles';
 import './less/main.less';
@@ -110,6 +111,35 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     $scope.previewID = createDocumentId($scope.esID, jsonData.data[0]);
   }
 
+
+  $scope.step1Job = function() {
+    var wb = XLSX.read(fileInfo.data, {type : 'array'});
+    var range = XLSX.utils.decode_range(wb.Sheets[$scope.sheetname]['!ref']);
+    if(range.e.r > maxDisplayableElement) range.e.r = maxDisplayableElement;
+
+    var exceltojson = new Object();
+    exceltojson.header = get_header_row(wb.Sheets[$scope.sheetname]);;
+    exceltojson.data = formatJSON(XLSX.utils.sheet_to_json(wb.Sheets[$scope.sheetname], {range: range}));
+
+    var columns = exceltojson.header.map((s) => ({
+      field: s,
+      name: s
+    }));
+    console.log(columns);
+    console.log(exceltojson.data);
+    ReactDOM.render(
+      <Table items={exceltojson.data} columns={columns}/>,
+      document.getElementById("dataPreviewContainer")
+    );
+
+    $scope.allowStep2();
+  }
+
+  $scope.allowStep2 = function() {
+    angular.element('#nextButton').removeAttr('disabled');
+  }
+
+  $scope.step2Job = function() {}
 
   $scope.convert = function() {
 
@@ -346,7 +376,10 @@ function convert_data(sheetname, callback) {
   jsonData.header = get_header_row(wb.Sheets[sheetname]);
   jsonData.data = formatJSON(XLSX.utils.sheet_to_json(wb.Sheets[sheetname]));
   jsonData.types = get_types(wb.Sheets[sheetname]);
-  console.log(jsonData.types)
+
+  var range = XLSX.utils.decode_range(wb.Sheets[sheetname]['!ref']);
+  console.log(range);
+
   if (typeof callback === "function")
     callback();
 }
@@ -354,7 +387,7 @@ function convert_data(sheetname, callback) {
 //Affichage des données dans une table html après conversion
 function display_UI(message ,tabnames, names) {
 
-    ReactDOM.unmountComponentAtNode(document.getElementById("react_tabs"));
+    ReactDOM.unmountComponentAtNode(document.getElementById("content"));
 
     if(message)
       document.getElementById("message_top").innerHTML = '<div class="alert alert-warning" role="alert">' + message + '</div>';
@@ -364,7 +397,7 @@ function display_UI(message ,tabnames, names) {
 
     ReactDOM.render(
       <MyTabs tabnames={tabnames} names={names} model={jsonData.data[0]}/>,
-      document.getElementById("react_tabs")
+      document.getElementById("content")
     );
 
     ReactDOM.render(

@@ -72,7 +72,7 @@
   <div class="row container">
 
     <span us-spinner="{radius:30, width:8, length: 16}" spinner-on="showSpinner"></span>
-    
+
     <div class="col-12-sm">
       <div id="progress-img">
         <img src="../plugins/xlsx-import/ressources/progress_step1.png"/>
@@ -81,7 +81,7 @@
       <div class="euiSpacer euiSpacer--m"></div>
 
       <div class="euiPanel euiPanel--paddingLarge">
-        <div class="euiPageContentBody">
+        <div class="euiPageContentBody" id="content">
           <!--<div id="react_tabs"></div>-->
           <div class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsFlexEnd euiFlexGroup--justifyContentSpaceBetween euiFlexGroup--responsive">
             <div class="euiFlexItem euiFlexItem--flexGrowZero">
@@ -91,18 +91,16 @@
                 <input import-sheet-js class="form-control-file" type="file" id="file"><br/>
               </div>
 
-              <div class="euiSpacer euiSpacer--m"></div>
-
               <div class="euiFormRow" id="sheet_form" ng-show="showSheetForm">
                 <label class="euiFormLabel">{{ 'CHOOSE_SHEETNAME_LABEL' | translate }}</label>
                 <div class="euiFormControlLayout">
-                  <select class="euiSelect euiSelect--small" ng-model="sheetname" ng-options="item for item in sheetnames"></select>
+                  <select class="euiSelect euiSelect--small" ng-change="step1Job()" ng-model="sheetname" ng-options="item for item in sheetnames"></select>
                 </div>
               </div>
-
             </div>
+
             <div class="euiFlexItem euiFlexItem--flexGrowZero">
-              <button class="euiButton euiButton--primary" type="button" ng-click="convert()">
+              <button class="euiButton euiButton--primary" id="nextButton" disabled="" type="button" ng-click="convert()">
                 <span class="euiButton__content">
                   <svg class="euiIcon euiButton__icon euiIcon--medium" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16"><defs><path id="arrow_right-a" d="M13.069 5.157L8.384 9.768a.546.546 0 0 1-.768 0L2.93 5.158a.552.552 0 0 0-.771 0 .53.53 0 0 0 0 .759l4.684 4.61c.641.631 1.672.63 2.312 0l4.684-4.61a.53.53 0 0 0 0-.76.552.552 0 0 0-.771 0z"></path></defs><use fill-rule="nonzero" transform="matrix(0 1 1  0 0 0)" xlink:href="#arrow_right-a"></use></svg>
                   <span>{{ 'CONVERT_BUTTON' | translate }}</span>
@@ -111,15 +109,20 @@
             </div>
           </div>
 
-          <div ng-show="showUploadOptions">
-            <div class="form-group row">
-              <div class="form-group col-md-2 nopadding">
-                <button class="btn btn-primary" type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
-              </div>
-            </div>
+          <div class="euiSpacer euiSpacer--m"></div>
+
+          <div class="euiFlexItem euiFlexItem--flexGrowZero" id="dataPreviewContainer">
           </div>
 
           <div id="message_bot"></div>
+        </div>
+
+        <div ng-show="showUploadOptions">
+          <div class="form-group row">
+            <div class="form-group col-md-2 nopadding">
+              <button class="btn btn-primary" type="button" ng-click="transfer()">{{ 'SEND_BUTTON' | translate }}</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

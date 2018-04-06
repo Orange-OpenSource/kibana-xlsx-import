@@ -58,8 +58,8 @@ class MyTable extends React.Component {
         rowsCount={this.state.myTableData.length}
         rowHeight={50}
         headerHeight={50}
-        width={this.state.myTableHeader.length * 200}
-        height={(this.state.myTableData.length +1) * 50}>
+        width={this.state.myTableHeader.length * 201}
+        height={this.state.myTableData.length * 51}>
 	        {columns}
       </Table>
     </div>
