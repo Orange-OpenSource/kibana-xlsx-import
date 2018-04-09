@@ -4,10 +4,11 @@ import uiRoutes from 'ui/routes';
 import template from './templates/index.html';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import MyTable from './components/mytable.js';
-import MyMapping from './components/mymapping.js';
-import MyTabs from './components/mytabs.js';
+//import MyTable from './components/mytable.js';
+//import MyMapping from './components/mymapping.js';
+//import MyTabs from './components/mytabs.js';
 import Table from './components/stepOne.js';
+import StepTwo from './components/stepTwo.js';
 
 import 'ui/autoload/styles';
 import './less/main.less';
@@ -20,6 +21,7 @@ import 'angular-translate-loader-static-files';
 
 let jsonData;                                 // Contient les données de conversion du xlxs
 let fileInfo;                                 // Contient les informations sur le fichier upload (data, name, size)
+let workbook;
 
 let maxFileSize;                              // Taille du fichier xlxs avant warning
 let bulkSize;                                 // Taille maximal des paquets du bulk
@@ -113,20 +115,26 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 
 
   $scope.step1Job = function() {
-    var wb = XLSX.read(fileInfo.data, {type : 'array'});
-    var range = XLSX.utils.decode_range(wb.Sheets[$scope.sheetname]['!ref']);
+
+    //All csv files are read as UTF-8 (need to fix later)
+    if(fileInfo.ext != "csv")
+      workbook = XLSX.read(fileInfo.data, {type : 'array'});
+    else {
+      workbook = XLSX.read(fileInfo.data, {type : 'binary'});
+    }
+
+    var range = XLSX.utils.decode_range(workbook.Sheets[$scope.sheetname]['!ref']);
     if(range.e.r > maxDisplayableElement) range.e.r = maxDisplayableElement;
 
     var exceltojson = new Object();
-    exceltojson.header = get_header_row(wb.Sheets[$scope.sheetname]);;
-    exceltojson.data = formatJSON(XLSX.utils.sheet_to_json(wb.Sheets[$scope.sheetname], {range: range}));
+    exceltojson.header = get_header_row(workbook.Sheets[$scope.sheetname]);
+    exceltojson.data = formatJSON(XLSX.utils.sheet_to_json(workbook.Sheets[$scope.sheetname], {range: range}));
 
     var columns = exceltojson.header.map((s) => ({
       field: s,
       name: s
     }));
-    console.log(columns);
-    console.log(exceltojson.data);
+
     ReactDOM.render(
       <Table items={exceltojson.data} columns={columns}/>,
       document.getElementById("dataPreviewContainer")
@@ -139,7 +147,20 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     angular.element('#nextButton').removeAttr('disabled');
   }
 
-  $scope.step2Job = function() {}
+  $scope.displayStep2 = function() {
+    document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress_step2.png"/>'
+    ReactDOM.render(
+      <StepTwo
+        indexName={$scope.indexName}
+        items={getHeaderWithType(workbook.Sheets[$scope.sheetname])}
+        job={$scope.step2Job} />,
+      document.getElementById("content")
+    );
+  }
+
+  $scope.step2Job = function() {
+    console.log(document.getElementById("checkMapping"))
+  }
 
   $scope.convert = function() {
 
@@ -385,7 +406,7 @@ function convert_data(sheetname, callback) {
 }
 
 //Affichage des données dans une table html après conversion
-function display_UI(message ,tabnames, names) {
+/*function display_UI(message ,tabnames, names) {
 
     ReactDOM.unmountComponentAtNode(document.getElementById("content"));
 
@@ -409,7 +430,7 @@ function display_UI(message ,tabnames, names) {
       <MyMapping data={jsonData} />,
       document.getElementById("mapping_tab")
     );
-}
+}*/
 
 //Mise à jour du fichier en cas d'ouverture avec d'autres logiciel... (libreoffice)
 function update_sheet_range(ws) {
@@ -436,6 +457,45 @@ function get_header_row(sheet) {
         headers.push(formatHeader(hdr));
     }
     return headers;
+}
+
+//Recupère les types des colonnes de la feuille excel
+function getHeaderWithType(sheet) {
+    var types = [];
+    var range = XLSX.utils.decode_range(sheet['!ref']);
+    var C, R = range.s.r; /* start in the first row */
+    /* walk every column in the range */
+    for(C = range.s.c; C <= range.e.c; ++C) {
+        var type = new Object();
+
+        var cell = sheet[XLSX.utils.encode_cell({c:C, r:R})] /* find the cell in the first row */
+        if(cell && cell.t) {
+          type.name = XLSX.utils.format_cell(cell);
+        }
+
+        cell = sheet[XLSX.utils.encode_cell({c:C, r:R+1})] /* find the cell in the second row */
+
+        var hdr = "UNKNOWN " + C; // <-- replace with your desired default
+        if(cell && cell.t) {
+          switch(cell.t) {
+            case "s":
+              hdr = "text";
+              break;
+            case "n":
+              hdr = "float";
+              break;
+            case "d":
+              hdr = "date";
+              break;
+            case "b":
+              hdr = "boolean";
+              break;
+          }
+          type.type = hdr;
+        }
+        types.push(type);
+    }
+    return types;
 }
 
 //Recupère les types des colonnes de la feuille excel
@@ -468,7 +528,6 @@ function get_types(sheet) {
     }
     return types;
 }
-
 
 //Formate le nom du fichier pour le transformer en nom d'index ES correct
 function setESIndexName(name) {
