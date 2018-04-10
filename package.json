@@ -34,10 +34,12 @@
     "angular-translate": "2.8.1",
     "angular-translate-loader-static-files": "2.8.1",
     "angularjs-toaster": "^2.2.0",
+    "axios": "^0.18.0",
     "fixed-data-table-2": "^0.8.6",
     "react-collapsible": "^2.0.3",
     "react-simpletabs": "^0.7.0",
-    "v-accordion": "^1.6.0"
+    "v-accordion": "^1.6.0",
+    "xlsx": "^0.12.8"
   },
   "author": "frederic testaniere",
   "license": "ISC"

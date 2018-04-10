@@ -10,7 +10,7 @@ export default function (server, adminCluster, dataCluster) {
         		reply(response);
     		});
     	}
-    });	
+    });
 
 	//Perform single POST for creating / adding document to an index
     server.route({
@@ -29,7 +29,7 @@ export default function (server, adminCluster, dataCluster) {
         			reply(response);
     		});
     	}
-    });	
+    });
 
     //Perform BULK for creating / adding multiple documents to an index
     server.route({
@@ -47,7 +47,7 @@ export default function (server, adminCluster, dataCluster) {
         			reply(response);
     		});
     	}
-    });	
+    });
 
     //Create a mapping for a selected index and document
     server.route({
@@ -105,5 +105,5 @@ export default function (server, adminCluster, dataCluster) {
                     reply(response);
             });
         }
-    }); 
+    });
 }

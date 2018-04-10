@@ -15,6 +15,8 @@ import {
   EuiButtonEmpty
 } from '@elastic/eui';
 
+import axios from 'axios';
+import XLSX from 'xlsx';
 import MappingTable from './mappingTable.js';
 
 class StepTwo extends Component {
@@ -30,12 +32,25 @@ class StepTwo extends Component {
 
     this.handleNextStep = this.handleNextStep.bind(this);
     this.backClick = this.backClick.bind(this);
+
+    axios.defaults.headers.post['kbn-xsrf'] = "reporting";
   }
 
-  handleNextStep(e) {
+  async handleNextStep(e) {
+    e.preventDefault();
+
     this.setState({uploadButton:{text:"Loading...", loading:true}});
-    this.props.job("bonjour");
-  }
+    var first_worksheet = this.props.workbook.Sheets[this.props.workbook.SheetNames[0]];
+    var data = XLSX.utils.sheet_to_json(first_worksheet);
+
+    try {
+      const response = await axios.post(`../api/xlsx_import/${this.props.indexName}/doc`, data[0])
+      this.props.job();
+    } catch (error) {
+      console.log(error);
+      this.setState({uploadButton:{text:"Import", loading:false}});
+    }
+  };
 
   backClick(e) {
     window.location.reload();
@@ -86,7 +101,7 @@ class StepTwo extends Component {
             </EuiFlexItem>
 
             <EuiFlexItem grow={false}>
-              <EuiButton onClick={this.handleNextStep} iconType="importAction" isLoading={this.state.uploadButton.loading}>
+              <EuiButton fill onClick={this.handleNextStep} iconType="importAction" isLoading={this.state.uploadButton.loading}>
                 {this.state.uploadButton.text}
               </EuiButton>
             </EuiFlexItem>

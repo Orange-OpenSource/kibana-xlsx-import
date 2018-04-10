@@ -150,22 +150,23 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   }
 
   $scope.displayStep2 = function() {
-    document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress_step2.png"/>'
+    document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step2.png"/>'
     ReactDOM.render(
       <StepTwo
         indexName={$scope.indexName}
         items={getHeaderWithType(workbook.Sheets[$scope.sheetname])}
-        job={$scope.step2Job} />,
+        job={$scope.step2Job}
+        workbook={workbook}/>,
       document.getElementById("content")
     );
   }
 
-  $scope.step2Job = function(msg) {
+  $scope.step2Job = function() {
     $scope.displayStep3();
   }
 
   $scope.displayStep3 = function() {
-    document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress_step3.png"/>'
+    document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step3.png"/>'
     ReactDOM.render(
       <StepThree
         indexName={$scope.indexName}
