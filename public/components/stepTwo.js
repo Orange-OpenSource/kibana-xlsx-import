@@ -21,14 +21,24 @@ class StepTwo extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {loading: false};
+    this.state = {
+      uploadButton: {
+        text : "Import",
+        loading: false
+      }
+    };
 
     this.handleNextStep = this.handleNextStep.bind(this);
+    this.backClick = this.backClick.bind(this);
   }
 
   handleNextStep(e) {
-    this.setState({loading:true});
-    this.props.job();
+    this.setState({uploadButton:{text:"Loading...", loading:true}});
+    this.props.job("bonjour");
+  }
+
+  backClick(e) {
+    window.location.reload();
   }
 
   render() {
@@ -52,14 +62,17 @@ class StepTwo extends Component {
           </EuiFlexGroup>
         </EuiFormRow>
 
-        <EuiFormRow>
-          <EuiSwitch label="Use your own mapping ?"/>
-        </EuiFormRow>
-
-        <EuiSpacer size="m" />
+        <EuiSpacer size="s" />
 
         <EuiFormRow>
-          <EuiAccordion id="map" buttonContent="Show mapping">
+          <EuiAccordion id="mapping" buttonContent="Configure mapping">
+
+            <EuiSpacer size="m" />
+
+            <EuiFormRow>
+              <EuiSwitch label="Use your own mapping ?"/>
+            </EuiFormRow>
+
             <MappingTable items={this.props.items}/>
           </EuiAccordion>
         </EuiFormRow>
@@ -67,15 +80,15 @@ class StepTwo extends Component {
         <EuiFormRow>
           <EuiFlexGroup gutterSize="s" alignItems="center">
             <EuiFlexItem grow={false}>
-              <EuiButton onClick={this.handleNextStep} iconType="arrowRight" isLoading={this.state.loading}>
-                Next
-              </EuiButton>
+              <EuiButtonEmpty onClick={this.backClick} size="s" iconType="arrowLeft">
+                back
+              </EuiButtonEmpty>
             </EuiFlexItem>
 
             <EuiFlexItem grow={false}>
-              <EuiButtonEmpty size="s" iconType="arrowLeft">
-                back
-              </EuiButtonEmpty>
+              <EuiButton onClick={this.handleNextStep} iconType="importAction" isLoading={this.state.uploadButton.loading}>
+                {this.state.uploadButton.text}
+              </EuiButton>
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFormRow>

@@ -7,8 +7,10 @@ import ReactDOM from 'react-dom';
 //import MyTable from './components/mytable.js';
 //import MyMapping from './components/mymapping.js';
 //import MyTabs from './components/mytabs.js';
+import {EuiToast} from '@elastic/eui';
 import Table from './components/stepOne.js';
 import StepTwo from './components/stepTwo.js';
+import StepThree from './components/stepThree.js';
 
 import 'ui/autoload/styles';
 import './less/main.less';
@@ -158,8 +160,20 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     );
   }
 
-  $scope.step2Job = function() {
-    console.log(document.getElementById("checkMapping"))
+  $scope.step2Job = function(msg) {
+    $scope.displayStep3();
+  }
+
+  $scope.displayStep3 = function() {
+    document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress_step3.png"/>'
+    ReactDOM.render(
+      <StepThree
+        indexName={$scope.indexName}
+        sheetName={$scope.sheetname}
+        fileName={fileInfo.name}
+        nbDocument={5} />,
+      document.getElementById("content")
+    );
   }
 
   $scope.convert = function() {
