@@ -18,7 +18,7 @@ class StepThree extends Component {
     window.location.reload();
   }
 
-  render() {
+  render() {    
     return (
       <EuiForm>
         <EuiFormRow>

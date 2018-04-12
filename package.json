@@ -28,7 +28,7 @@
     "expect.js": "^0.3.1"
   },
   "dependencies": {
-    "@elastic/eui": "0.0.39",
+    "@elastic/eui": "0.0.40",
     "angular-animate": "^1.6.8",
     "angular-spinner": "^1.0.1",
     "angular-translate": "2.8.1",

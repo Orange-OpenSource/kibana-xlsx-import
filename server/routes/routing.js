@@ -52,7 +52,7 @@ export default function (server, adminCluster, dataCluster) {
     //Create a mapping for a selected index and document
     server.route({
         path: '/api/xlsx_import/{index}/_mapping/{document}',
-        method: 'PUT',
+        method: 'POST',
         handler(req, reply) {
             dataCluster.callWithRequest(req, 'indices.putMapping', {
                 index: req.params.index,

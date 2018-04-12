@@ -142,42 +142,38 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
       document.getElementById("dataPreviewContainer")
     );
 
-    $scope.allowStep2();
-  }
-
-  $scope.allowStep2 = function() {
     angular.element('#nextButton').removeAttr('disabled');
   }
 
+
   $scope.displayStep2 = function() {
     document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step2.png"/>'
+
     ReactDOM.render(
       <StepTwo
         indexName={$scope.indexName}
+        header={get_header_row(workbook.Sheets[$scope.sheetname])}
         items={getHeaderWithType(workbook.Sheets[$scope.sheetname])}
-        job={$scope.step2Job}
+        nextStep={$scope.displayStep3}
         workbook={workbook}/>,
       document.getElementById("content")
     );
   }
 
-  $scope.step2Job = function() {
-    $scope.displayStep3();
-  }
 
-  $scope.displayStep3 = function() {
+  $scope.displayStep3 = function(indexName, nbDocument) {
     document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step3.png"/>'
     ReactDOM.render(
       <StepThree
-        indexName={$scope.indexName}
+        indexName={indexName}
         sheetName={$scope.sheetname}
         fileName={fileInfo.name}
-        nbDocument={5} />,
+        nbDocument={nbDocument} />,
       document.getElementById("content")
     );
   }
 
-  $scope.convert = function() {
+  /*$scope.convert = function() {
 
     if($scope.sheetname === '')
       return;
@@ -237,7 +233,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     }
 
     //$scope.showSheetForm = false;
-  }
+  }*/
 
 
   $scope.transfer = function() {
@@ -320,7 +316,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     }
   }
 
-  $scope.push = function() {
+  /*$scope.push = function() {
     var promises = [];
     var bulk_request = [];
 
@@ -346,7 +342,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
         }
       });
     })
-  }
+  }*/
 
 });
 
@@ -579,7 +575,7 @@ function createMappingJson() {
 }
 
 //Crée les données JSON pour le bulk
-function createBulk(indexName, esId) {
+/*function createBulk(indexName, esId) {
   var bulk_request = [];
   var bulk_package = [];
 
@@ -598,7 +594,7 @@ function createBulk(indexName, esId) {
   bulk_request.push(bulk_package);
 
   return bulk_request;
-}
+}*/
 
 //Replace all space in json header
 function formatHeader(header){

@@ -29,7 +29,6 @@ const MappingTable = (props) => {
   }, {
     field: 'type',
     name: 'Type',
-    truncateText: true,
     render: (name) => (
       <EuiSelect options={options} defaultValue={name}/>
     )
