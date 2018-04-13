@@ -4,9 +4,6 @@ import uiRoutes from 'ui/routes';
 import template from './templates/index.html';
 import React from 'react';
 import ReactDOM from 'react-dom';
-//import MyTable from './components/mytable.js';
-//import MyMapping from './components/mymapping.js';
-//import MyTabs from './components/mytabs.js';
 import {EuiToast} from '@elastic/eui';
 import Table from './components/stepOne.js';
 import StepTwo from './components/stepTwo.js';
@@ -83,9 +80,9 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   ];
 
   $scope.indexName = '';
-  $scope.esID = '';
-  $scope.showUploadOptions = false;
-  $scope.showSpinner = false;
+  //$scope.esID = '';
+  //$scope.showUploadOptions = false;
+  //$scope.showSpinner = false;
   $scope.showSheetForm = false;
   $scope.sheetnames = [];
   $scope.sheetname = '';
@@ -172,178 +169,6 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
       document.getElementById("content")
     );
   }
-
-  /*$scope.convert = function() {
-
-    if($scope.sheetname === '')
-      return;
-
-    var tabnames = [
-      $translate.instant('VIEW_TABS_NAME'),
-      $translate.instant('MAPPING_TAB_NAME'),
-      $translate.instant('SETTINGS_TAB_NAME')
-    ];
-
-    var names = [
-      $translate.instant('PERSONAL_MAPPING_LABEL'),
-      $translate.instant('INDEX_NAME_LABEL'),
-      $translate.instant('KIBANA_ID_LABEL'),
-      $translate.instant('KIBANA_PREVIEW_ID_LABEL'),
-      $translate.instant('KIBANA_ID_PLACEHOLDER')
-    ];
-
-    $scope.showSpinner = true;
-
-    //Warning si file.size > maxFileSize (TBD)
-    if(fileInfo.size > maxFileSize) {
-
-      if(confirm($translate.instant('SIZE_WARNING_MESSAGE'))) {
-        $timeout(function() {}, 10).then(function(){
-          convert_data($scope.sheetname, function(){
-            document.getElementById("import_form").innerHTML =
-              '<button class="btn btn-primary" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> ' +
-                fileInfo.name + " - " + $scope.sheetname;
-            $scope.showSpinner = false;
-            $scope.showUploadOptions = true;
-            display_UI($translate.instant('DISPLAY_LIMIT_MESSAGE'), tabnames, names);
-            angular.element('#indexName').val($scope.indexName);
-          });
-        })
-      }
-      else {
-        //On enleve l'affichage des champs et du spinner si la conversion est annulée
-        $scope.showSpinner = false;
-        $scope.showUploadOptions = false;
-        return;
-      }
-
-    }
-    else {
-      $timeout(function() {}, 10).then(function(){
-        convert_data($scope.sheetname, function(){
-          document.getElementById("import_form").innerHTML =
-            '<p><button class="btn btn-primary btn-metriks" type="button" onclick="location.reload();">'+ $translate.instant('REFRESH_BUTTON') +'</button> '+
-              fileInfo.name + " - " + $scope.sheetname;
-          $scope.showSpinner = false;
-          $scope.showUploadOptions = true;
-          display_UI("", tabnames, names);
-          angular.element('#indexName').val($scope.indexName);
-        });
-      })
-    }
-
-    //$scope.showSheetForm = false;
-  }*/
-
-
-  $scope.transfer = function() {
-
-    $scope.indexName = angular.element('#indexName').val();
-    $scope.esID = angular.element('#esID').val();
-    $scope.showSpinner = true;    //On affiche le spinner
-
-    if(document.getElementById('checkMapping').checked){    //Si l'utilisateur souhaite choisir son propre mapping
-
-      $http.get('../api/xlsx_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
-        .then((response) => {
-          console.log(response);
-          if(response.data.status != 404) {   //Si l'index existe déjà, on envoi un message et on annule le push
-            alert($translate.instant('INDEX_ALREADY_EXIST_MESSAGE'));
-            document.getElementById("message_top").innerHTML = '<div class="alert alert-danger" role="alert"  >' +
-              getDate() + " - " + $translate.instant('INDEX_ALREADY_EXIST_MESSAGE') + '</div>';
-            $scope.showSpinner = false;
-            return;
-          }
-          else {
-
-            var mapping_request = createMappingJson();
-
-            $http.post('../api/xlsx_import/'+ $scope.indexName)  //On crée l'index dans ES
-              .then((response) => {
-                console.log(response);
-
-                if(response.data.error != undefined) {  //Handle errors on index creation
-                  alert(response.data.error.msg);
-                  document.getElementById("message_top").innerHTML = '<div class="alert alert-danger" role="alert">' +
-                    getDate() + " - " + $translate.instant('FAILED_TRANSFER_MESSAGE') + ' - ' +
-                    response.data.error.msg +'</div>';
-                  toaster.pop('info', "title", "text");
-                  $scope.showSpinner = false;
-                  return;
-                }
-
-                $http.put('../api/xlsx_import/'+ $scope.indexName +'/_mapping/doc', mapping_request)  //On attribut le mapping dynamique
-                  .then(function onSuccess(response){
-                    console.log(response);
-                      $scope.push();
-                  });
-              });
-          }
-        }).catch(function onError(response){  //Handle network errors
-            console.log(response);
-            $scope.showSpinner = false
-            return;
-        });
-    }
-    else {    //Si l'utilisateur ne souhaite pas de mapping perso, on push juste les données
-
-        $http.get('../api/xlsx_import/' + $scope.indexName + '/_exists')    //On verifie si l'index existe déjà
-        .then((response) => {
-          console.log(response);
-          if(response.data.status != 404) {   //Si l'index existe déjà, on push
-            $scope.push();
-
-          } else {  //Si il n'existe pas on verifie qu'on peut le créer et on push
-
-            $http.post('../api/xlsx_import/'+ $scope.indexName)  //On crée l'index dans ES
-              .then((response) => {
-                console.log(response);
-
-                if(response.data.error != undefined) {  //Handle errors on index creation
-                  alert(response.data.error.msg);
-                  document.getElementById("message_top").innerHTML = '<div class="alert alert-danger" role="alert">' +
-                    getDate() + " - " + $translate.instant('FAILED_TRANSFER_MESSAGE') + ' - ' +
-                    response.data.error.msg +'</div>';
-                  $scope.showSpinner = false;
-                  return;
-                }
-
-                $scope.push();
-
-              });
-          }
-      });
-    }
-  }
-
-  /*$scope.push = function() {
-    var promises = [];
-    var bulk_request = [];
-
-    bulk_request = createBulk($scope.indexName, $scope.esID);
-
-    bulk_request.forEach(function(split_bulk){
-
-    $http.post('../api/xlsx_import/'+ $scope.indexName +'/doc/_bulk', split_bulk)
-      .then((response) => {
-        console.log(response);
-        promises.push(Promise.resolve(response));
-      }).then(function(){
-        if(promises.length === bulk_request.length) {   //On check si toutes les promesses sont dans le tableau
-          $scope.showSpinner = false                    //On arrete le spinner
-          Promise.all(promises).then(function(){        //On verifie si toutes les promesses sont correctes et on envoi un msg
-            alert($translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' ('+jsonData.data.length+' elements)');
-            document.getElementById("message_top").innerHTML = '<div class="alert alert-success" role="alert">' +
-              getDate() + " - " + $translate.instant('SUCCESS_TRANSFER_MESSAGE') + ' - index : ' +
-              $scope.indexName + ' ('+jsonData.data.length+' documents)' +'</div>';
-          }).catch(reason => {
-            alert($translate.instant('FAILED_TRANSFER_MESSAGE'));
-          });
-        }
-      });
-    })
-  }*/
-
 });
 
 
@@ -390,58 +215,6 @@ app.directive('importSheetJs', function($translate) {
   };
 });
 
-
-
-//Traitement du fichier XLSX -> JSON
-function convert_data(sheetname, callback) {
-
-  jsonData = new Object();
-
-  //All csv files are read as UTF-8 (need to fix later)
-  if(fileInfo.ext != "csv")
-    var wb = XLSX.read(fileInfo.data, {type : 'array'});
-  else {
-    var wb = XLSX.read(fileInfo.data, {type : 'binary'});
-  }
-
-  update_sheet_range(wb.Sheets[sheetname]);
-  jsonData.header = get_header_row(wb.Sheets[sheetname]);
-  jsonData.data = formatJSON(XLSX.utils.sheet_to_json(wb.Sheets[sheetname]));
-  jsonData.types = get_types(wb.Sheets[sheetname]);
-
-  var range = XLSX.utils.decode_range(wb.Sheets[sheetname]['!ref']);
-  console.log(range);
-
-  if (typeof callback === "function")
-    callback();
-}
-
-//Affichage des données dans une table html après conversion
-/*function display_UI(message ,tabnames, names) {
-
-    ReactDOM.unmountComponentAtNode(document.getElementById("content"));
-
-    if(message)
-      document.getElementById("message_top").innerHTML = '<div class="alert alert-warning" role="alert">' + message + '</div>';
-    else {
-      document.getElementById("message_top").innerHTML = '';
-    }
-
-    ReactDOM.render(
-      <MyTabs tabnames={tabnames} names={names} model={jsonData.data[0]}/>,
-      document.getElementById("content")
-    );
-
-    ReactDOM.render(
-      <MyTable data={jsonData} maxElement={maxDisplayableElement}/>,
-      document.getElementById("view_tab")
-    );
-
-    ReactDOM.render(
-      <MyMapping data={jsonData} />,
-      document.getElementById("mapping_tab")
-    );
-}*/
 
 //Mise à jour du fichier en cas d'ouverture avec d'autres logiciel... (libreoffice)
 function update_sheet_range(ws) {
@@ -509,37 +282,6 @@ function getHeaderWithType(sheet) {
     return types;
 }
 
-//Recupère les types des colonnes de la feuille excel
-function get_types(sheet) {
-    var types = [];
-    var range = XLSX.utils.decode_range(sheet['!ref']);
-    var C, R = range.s.r; /* start in the first row */
-    /* walk every column in the range */
-    for(C = range.s.c; C <= range.e.c; ++C) {
-        var cell = sheet[XLSX.utils.encode_cell({c:C, r:R+1})] /* find the cell in the second row */
-
-        var hdr = "UNKNOWN " + C; // <-- replace with your desired default
-        if(cell && cell.t) {
-          switch(cell.t) {
-            case "s":
-              hdr = "text";
-              break;
-            case "n":
-              hdr = "float";
-              break;
-            case "d":
-              hdr = "date";
-              break;
-            case "b":
-              hdr = "boolean";
-              break;
-          }
-          types.push(hdr);
-        }
-    }
-    return types;
-}
-
 //Formate le nom du fichier pour le transformer en nom d'index ES correct
 function setESIndexName(name) {
 
@@ -554,47 +296,6 @@ function getExtension(filename) {
   return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) : undefined;
 }
 
-//Crée les données JSON pour le mapping dynamique
-function createMappingJson() {
-  var mapping_request = '{ "properties": {';
-
-  for(var i = 0; i < jsonData.header.length; i++) {
-
-    if(angular.element('#' + jsonData.header[i]).val() === 'text')
-      mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'", "fields": { "keyword": { "type": "keyword" } } }';
-    else
-      mapping_request += '"'+ jsonData.header[i] +'": { "type": "'+ angular.element('#' + jsonData.header[i]).val() +'" }';
-
-    if(i < jsonData.header.length -1)
-      mapping_request += ','
-    }
-
-    mapping_request += '} }';
-
-    return mapping_request;
-}
-
-//Crée les données JSON pour le bulk
-/*function createBulk(indexName, esId) {
-  var bulk_request = [];
-  var bulk_package = [];
-
-  for(var i = 0; i < jsonData.data.length; i++) {
-    if(esId === '')
-      bulk_package.push({index: { _index: indexName, _type: 'doc' } });
-    else
-      bulk_package.push({index: { _index: indexName, _type: 'doc', _id: createDocumentId(esId, jsonData.data[i]) } });
-    bulk_package.push(jsonData.data[i]);
-
-    if(bulk_package.length >= bulkSize) {
-      bulk_request.push(bulk_package);
-      bulk_package = [];
-    }
-  }
-  bulk_request.push(bulk_package);
-
-  return bulk_request;
-}*/
 
 //Replace all space in json header
 function formatHeader(header){
@@ -676,15 +377,4 @@ function createDocumentId(template, obj) {
   })
 
   return template;
-}
-
-function getDate() {
-  var d = new Date,
-    dformat = [d.getMonth()+1,
-               d.getDate(),
-               d.getFullYear()].join('/')+' '+
-              [d.getHours(),
-               d.getMinutes(),
-               d.getSeconds()].join(':');
-  return d;
 }

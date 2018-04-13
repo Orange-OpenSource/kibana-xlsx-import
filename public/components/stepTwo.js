@@ -24,7 +24,6 @@ import MappingTable from './mappingTable.js';
 
 import axios from 'axios';
 import XLSX from 'xlsx';
-import {addToast} from './toastList.js';
 
 import {
   createBulk,
