@@ -14,13 +14,17 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiButton,
-  EuiButtonEmpty
+  EuiButtonEmpty,
+  EuiGlobalToastList,
+  EuiFormHelpText,
+  EuiLink
 } from '@elastic/eui';
 
 import MappingTable from './mappingTable.js';
 
 import axios from 'axios';
 import XLSX from 'xlsx';
+import {addToast} from './toastList.js';
 
 import {
   createBulk,
@@ -33,22 +37,36 @@ class StepTwo extends Component {
     super(props);
 
     this.state = {
+      indexName: this.props.indexName,
+      indexNameError: false,
       uploadButton: {
         text : "Import",
         loading: false
       },
       switchMap: {
         value: false
-      }
+      },
+      toasts: []
     };
 
+    this.indexNameChange = this.indexNameChange.bind(this);
     this.switchChange = this.switchChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleNextStep = this.handleNextStep.bind(this);
     this.backClick = this.backClick.bind(this);
+    this.addToast = this.addToast.bind(this);
+    this.removeToast = this.removeToast.bind(this);
 
     axios.defaults.headers.post['kbn-xsrf'] = "reporting";
     axios.defaults.headers.put['kbn-xsrf'] = "reporting";
+  }
+
+  indexNameChange(e) {
+    if(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g.test(e.target.value) || (/[A-Z]/.test(e.target.value)))
+      this.setState({indexName: e.target.value, indexNameError: true});
+    else {
+      this.setState({indexName: e.target.value, indexNameError: false});
+    }
   }
 
   switchChange(e) {
@@ -68,23 +86,25 @@ class StepTwo extends Component {
       const json = await XLSX.utils.sheet_to_json(ws);
 
       if(this.state.switchMap.checked) {
-        const resIndex = await axios.post(`../api/xlsx_import/${this.props.indexName}`);
-        if(response.data.status != 404) {
-          //Index already exist, display toast
+        const resIndex = await axios.post(`../api/xlsx_import/${this.state.indexName}`);
+        if(resIndex.data.error != undefined) {
+          this.addToast(resIndex.data.error.msg);
           return
         }
 
         var elements = document.getElementsByClassName('euiSelect');
         const properties = createMapping(elements, this.props.header);
-        const resMap = await axios.post(`../api/xlsx_import/${this.props.indexName}/_mapping/doc`, JSON.parse(properties));
+        const resMap = await axios.post(`../api/xlsx_import/${this.state.indexName}/_mapping/doc`, JSON.parse(properties));
       }
 
-      var bulk = createBulk(json, this.props.indexName);
+      var bulk = createBulk(json, this.state.indexName);
       bulk.forEach(async(split_bulk) => {
-        const response = await axios.post(`../api/xlsx_import/${this.props.indexName}/doc/_bulk`, split_bulk);
+        const response = await axios.post(`../api/xlsx_import/${this.state.indexName}/doc/_bulk`, split_bulk);
+        console.log(response);
+        return
       })
 
-      this.props.nextStep(this.props.indexName, json.length);
+      this.props.nextStep(this.state.indexName, json.length);
 
     } catch (error) {
         console.log(error);
@@ -95,11 +115,44 @@ class StepTwo extends Component {
     window.location.reload();
   }
 
+  addToast = (msg) => {
+    const toast = {
+      title: "Couldn't complete the import",
+      color: "danger",
+      iconType: "alert",
+      text: (
+        <p>
+          {msg}
+        </p>
+      ),
+    }
+
+    this.setState({
+      toasts: this.state.toasts.concat(toast),
+    });
+  };
+
+  removeToast = (removedToast) => {
+    this.setState(prevState => ({
+      toasts: prevState.toasts.filter(toast => toast.id !== removedToast.id),
+    }));
+  };
+
+  removeAllToasts = () => {
+    this.setState({
+      toasts: [],
+    });
+  };
+
   render() {
+    const errors = [
+      "Index name must be all lowercase and don't contains special characters"
+    ];
+
     return (
       <EuiForm>
-        <EuiFormRow label="Index name">
-          <EuiFieldText id="indexName" defaultValue={this.props.indexName}/>
+        <EuiFormRow isInvalid={this.state.indexNameError} label="Index name" error={errors}>
+          <EuiFieldText isInvalid={this.state.indexNameError} id="indexName" value={this.state.indexName} onChange={this.indexNameChange}/>
         </EuiFormRow>
 
         <EuiFormRow
@@ -140,13 +193,18 @@ class StepTwo extends Component {
             </EuiFlexItem>
 
             <EuiFlexItem grow={false}>
-              <EuiButton fill onClick={this.handleNextStep} iconType="importAction" isLoading={this.state.uploadButton.loading}>
+              <EuiButton fill isDisabled={this.state.indexNameError} onClick={this.handleNextStep} iconType="importAction" isLoading={this.state.uploadButton.loading}>
                 {this.state.uploadButton.text}
               </EuiButton>
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFormRow>
 
+        <EuiGlobalToastList
+          toasts={this.state.toasts}
+          dismissToast={this.removeToast}
+          toastLifeTimeMs={6000}
+        />
       </EuiForm>
     );
   }
