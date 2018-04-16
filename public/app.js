@@ -86,6 +86,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   $scope.showSheetForm = false;
   $scope.sheetnames = [];
   $scope.sheetname = '';
+  $scope.firstRow = '';
 
 
   $scope.useTranslation = function() {
@@ -128,6 +129,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     var exceltojson = new Object();
     exceltojson.header = get_header_row(workbook.Sheets[$scope.sheetname]);
     exceltojson.data = formatJSON(XLSX.utils.sheet_to_json(workbook.Sheets[$scope.sheetname], {range: range}));
+    $scope.firstRow = exceltojson.data[0];
 
     var columns = exceltojson.header.map((s) => ({
       field: s,
@@ -151,6 +153,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
         indexName={$scope.indexName}
         header={get_header_row(workbook.Sheets[$scope.sheetname])}
         items={getHeaderWithType(workbook.Sheets[$scope.sheetname])}
+        firstRow = {$scope.firstRow}
         nextStep={$scope.displayStep3}
         workbook={workbook}/>,
       document.getElementById("content")

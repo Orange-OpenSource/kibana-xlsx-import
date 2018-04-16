@@ -27,7 +27,8 @@ import XLSX from 'xlsx';
 
 import {
   createBulk,
-  createMapping
+  createMapping,
+  createKbnCustomId
 } from '../services/services.js';
 
 
@@ -38,6 +39,10 @@ class StepTwo extends Component {
     this.state = {
       indexName: this.props.indexName,
       indexNameError: false,
+      kbnId: {
+        model: "",
+        preview: ""
+      },
       uploadButton: {
         text : "Import",
         loading: false
@@ -49,6 +54,7 @@ class StepTwo extends Component {
     };
 
     this.indexNameChange = this.indexNameChange.bind(this);
+    this.kbnIdChange = this.kbnIdChange.bind(this);
     this.switchChange = this.switchChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleNextStep = this.handleNextStep.bind(this);
@@ -66,6 +72,10 @@ class StepTwo extends Component {
     else {
       this.setState({indexName: e.target.value, indexNameError: false});
     }
+  }
+
+  kbnIdChange(e) {
+    this.setState({kbnId:{model: e.target.value, preview: createKbnCustomId(e.target.value, this.props.firstRow)}});
   }
 
   switchChange(e) {
@@ -96,7 +106,7 @@ class StepTwo extends Component {
         const resMap = await axios.post(`../api/xlsx_import/${this.state.indexName}/_mapping/doc`, JSON.parse(properties));
       }
 
-      var bulk = createBulk(json, this.state.indexName);
+      var bulk = createBulk(json, this.state.indexName, this.state.kbnId.model);
       bulk.forEach(async(split_bulk) => {
         const response = await axios.post(`../api/xlsx_import/${this.state.indexName}/doc/_bulk`, split_bulk);
         console.log(response);
@@ -159,11 +169,11 @@ class StepTwo extends Component {
         helpText="Kibana will provide a unique identifier for each index pattern. If you do not want to use this unique ID, enter a custom one.">
           <EuiFlexGroup gutterSize="s" alignItems="center">
             <EuiFlexItem grow={false}>
-              <EuiFieldText id="kbnID"/>
+              <EuiFieldText id="kbnID" value={this.state.kbnId.model} onChange={this.kbnIdChange}/>
             </EuiFlexItem>
 
             <EuiFlexItem grow={false}>
-              <EuiFieldText id="previewKbnID" placeholder="Custom ID preview" readOnly/>
+              <EuiFieldText id="previewKbnID" placeholder="Custom ID preview" value={this.state.kbnId.preview} readOnly/>
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFormRow>
