@@ -103,7 +103,8 @@ class StepTwo extends Component {
         }
 
         var elements = document.getElementsByClassName('euiSelect');
-        const properties = createMapping(elements, this.props.header);
+        var mappingParameters = document.getElementsByClassName('advjsontext');
+        const properties = createMapping(elements, mappingParameters, this.props.header);
         const resMap = await axios.post(`../api/xlsx_import/${this.state.indexName}/_mapping/doc`, JSON.parse(properties));
       }
 
@@ -111,7 +112,6 @@ class StepTwo extends Component {
       bulk.forEach(async(split_bulk) => {
         const response = await axios.post(`../api/xlsx_import/${this.state.indexName}/doc/_bulk`, split_bulk);
         if(response.data.errors){
-          console.log(response.data.items[0].index.error)
           this.addToast(response.data.items[0].index.error.reason + " " +
             response.data.items[0].index.error.caused_by.reason);
           axios.delete(`../api/xlsx_import/${this.state.indexName}`);
@@ -121,7 +121,8 @@ class StepTwo extends Component {
       })
 
     } catch (error) {
-        this.addToast(error);
+        axios.delete(`../api/xlsx_import/${this.state.indexName}`);
+        this.addToast(error.message);
     }
   };
 
@@ -186,7 +187,7 @@ class StepTwo extends Component {
 
         <EuiSpacer size="s" />
 
-        <EuiFormRow>
+        <EuiFormRow fullWidth={true}>
           <EuiAccordion id="mapping" buttonContent="Configure mapping">
 
             <EuiSpacer size="m" />

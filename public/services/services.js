@@ -20,21 +20,33 @@ function createBulk(json, indexName, kbnCustomId) {
   return bulk_request;
 }
 
-function createMapping(elements, items) {
+function createMapping(elements, advjsons, items) {
   var types = [];
+  var mappingParameters = [];
 
   for(var i=0; i < elements.length; i++){
     types.push(elements[i].value);
   }
 
+  for(var j=0; j < advjsons.length; j++){
+    mappingParameters.push(advjsons[j].value);
+  }
+
+
   var mapping_request = '{ "properties": {';
 
   for(var i = 0; i < elements.length; i++) {
 
-    if(types[i] === 'text')
+    /*if(types[i] === 'text')
       mapping_request += '"'+ items[i] +'": { "type": "'+ types[i] +'", "fields": { "keyword": { "type": "keyword" } } }';
     else
+      mapping_request += '"'+ items[i] +'": { "type": "'+ types[i] +'" }';*/
+
+    if(mappingParameters[i] != undefined && mappingParameters[i] != "")
+      mapping_request += '"'+ items[i] +'": { "type": "'+ types[i] +'", '+ mappingParameters[i] +' }';
+    else {
       mapping_request += '"'+ items[i] +'": { "type": "'+ types[i] +'" }';
+    }
 
     if(i < elements.length -1)
       mapping_request += ','
