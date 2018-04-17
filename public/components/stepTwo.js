@@ -39,6 +39,7 @@ class StepTwo extends Component {
     this.state = {
       indexName: this.props.indexName,
       indexNameError: false,
+      bulkError: false,
       kbnId: {
         model: "",
         preview: ""
@@ -63,7 +64,7 @@ class StepTwo extends Component {
     this.removeToast = this.removeToast.bind(this);
 
     axios.defaults.headers.post['kbn-xsrf'] = "reporting";
-    axios.defaults.headers.put['kbn-xsrf'] = "reporting";
+    axios.defaults.headers.delete['kbn-xsrf'] = "reporting";
   }
 
   indexNameChange(e) {
@@ -109,14 +110,18 @@ class StepTwo extends Component {
       var bulk = createBulk(json, this.state.indexName, this.state.kbnId.model);
       bulk.forEach(async(split_bulk) => {
         const response = await axios.post(`../api/xlsx_import/${this.state.indexName}/doc/_bulk`, split_bulk);
-        console.log(response);
-        return
+        if(response.data.errors){
+          console.log(response.data.items[0].index.error)
+          this.addToast(response.data.items[0].index.error.reason + " " +
+            response.data.items[0].index.error.caused_by.reason);
+          axios.delete(`../api/xlsx_import/${this.state.indexName}`);
+        } else {
+          this.props.nextStep(this.state.indexName, json.length);
+        }
       })
 
-      this.props.nextStep(this.state.indexName, json.length);
-
     } catch (error) {
-        console.log(error);
+        this.addToast(error);
     }
   };
 
@@ -152,6 +157,7 @@ class StepTwo extends Component {
       toasts: [],
     });
   };
+
 
   render() {
     const errors = [

@@ -106,4 +106,23 @@ export default function (server, adminCluster, dataCluster) {
             });
         }
     });
+
+    //creating index
+    server.route({
+        path: '/api/xlsx_import/{index}',
+        method: 'DELETE',
+        handler(req, reply) {
+            dataCluster.callWithRequest(req, 'indices.delete', {
+                index: req.params.index,
+                body: req.payload
+            })
+            .then((response) => {
+                reply(response);
+
+            }).catch((e) => {
+                console.error(e);
+                reply({"error" : e})
+            });
+        }
+    });
 }
