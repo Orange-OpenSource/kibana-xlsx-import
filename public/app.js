@@ -11,11 +11,6 @@ import StepThree from './components/stepThree.js';
 
 import 'ui/autoload/styles';
 import './less/main.less';
-import 'fixed-data-table-2/dist/fixed-data-table.css';
-
-import 'angular-spinner';
-import 'angular-translate';
-import 'angular-translate-loader-static-files';
 
 
 let jsonData;                                 // Contient les données de conversion du xlxs
@@ -29,37 +24,13 @@ let default_language;
 
 const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
 
-var app = uiModules.get('app/xlsx_import', ['angularSpinner', 'pascalprecht.translate']);
+var app = uiModules.get('app/xlsx_import', []);
 
 uiRoutes.enable();
 uiRoutes
 .when('/', {
   template : template
 });
-
-
-app.config(['$translateProvider', function($translateProvider, config){
-  //angular-translate security
-  $translateProvider.useSanitizeValueStrategy('escape');
-
-  //Path for loading translation files [prefix][filename][suffix]
-  $translateProvider.useStaticFilesLoader({
-    prefix: '../plugins/xlsx-import/i18n/',
-    suffix: '.json'
-  });
-
-  // Tell the module what language to use by default
-  var userLang = navigator.language || navigator.userLanguage;
-  if(userLang === 'fr')
-    $translateProvider.preferredLanguage('fr');
-  else
-    $translateProvider.preferredLanguage('en');
-
-}])
-
-app.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
-  usSpinnerConfigProvider.setDefaults({color: 'black'});
-}])
 
 
 app.controller('xlsxImport', function ($scope, $route, $interval, $http, $translate, $timeout, config) {
@@ -69,7 +40,6 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   default_language = config.get('xlsx-import:default_language');
 
   $scope.title = 'XLSX Import';
-  $scope.description = $translate.instant('PLUGIN_DESCRIPTION');
 
   $scope.topNavMenu = [
     {
@@ -80,38 +50,10 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   ];
 
   $scope.indexName = '';
-  //$scope.esID = '';
-  //$scope.showUploadOptions = false;
-  //$scope.showSpinner = false;
   $scope.showSheetForm = false;
   $scope.sheetnames = [];
   $scope.sheetname = '';
   $scope.firstRow = '';
-
-
-  $scope.useTranslation = function() {
-    switch(default_language) {
-      case "Browers":
-        //Default case already done by the config
-        break;
-      case "English":
-        $scope.changeLanguage('en');
-        break;
-      case "Français":
-        $scope.changeLanguage('fr');
-        break;
-    }
-  }
-
-
-  $scope.changeLanguage = function (langKey) {
-    $translate.use(langKey).then(function(){}, function(){toastr.error('JSON translate file is invalid')})
-  };
-
-
-  $scope.previewDocID = function() {
-    $scope.previewID = createDocumentId($scope.esID, jsonData.data[0]);
-  }
 
 
   $scope.step1Job = function() {
@@ -325,59 +267,4 @@ function formatJSON(json){
     });
   });
   return json;
-}
-
-
-//Create the document ID by using the template in $scope.esID
-function createDocumentId(template, obj) {
-  var getFromBetween = {
-    results:[],
-    string:"",
-    getFromBetween:function (sub1,sub2) {
-        if(this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0) return false;
-        var SP = this.string.indexOf(sub1)+sub1.length;
-        var string1 = this.string.substr(0,SP);
-        var string2 = this.string.substr(SP);
-        var TP = string1.length + string2.indexOf(sub2);
-        return this.string.substring(SP,TP);
-    },
-    removeFromBetween:function (sub1,sub2) {
-        if(this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0) return false;
-        var removal = sub1+this.getFromBetween(sub1,sub2)+sub2;
-        this.string = this.string.replace(removal,"");
-    },
-    getAllResults:function (sub1,sub2) {
-        // first check to see if we do have both substrings
-        if(this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0) return;
-
-        // find one result
-        var result = this.getFromBetween(sub1,sub2);
-        // push it to the results array
-        this.results.push(result);
-        // remove the most recently found one from the string
-        this.removeFromBetween(sub1,sub2);
-
-        // if there's more substrings
-        if(this.string.indexOf(sub1) > -1 && this.string.indexOf(sub2) > -1) {
-            this.getAllResults(sub1,sub2);
-        }
-        else return;
-    },
-    get:function (string,sub1,sub2) {
-        this.results = [];
-        this.string = string;
-        this.getAllResults(sub1,sub2);
-        return this.results;
-    }
-  };
-  let keys = getFromBetween.get(template, "{", "}");
-
-  keys.forEach(function(key) {
-    if(obj[key] != undefined)
-      template = template.replace('{'+key+'}', obj[key]);
-    else
-      template = template.replace('{'+key+'}', key);
-  })
-
-  return template;
 }

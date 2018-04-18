@@ -13,12 +13,15 @@ function createBulk(json, indexName, kbnCustomId) {
     if(bulk_package.length >= 1000) {   //TODO : Get this number from config
       bulk_request.push(bulk_package);
       bulk_package = [];
+      if(json[i+1] === undefined)
+        return bulk_request;
     }
   }
   bulk_request.push(bulk_package);
 
   return bulk_request;
 }
+
 
 function createMapping(elements, advjsons, items) {
   var types = [];
@@ -32,6 +35,7 @@ function createMapping(elements, advjsons, items) {
     mappingParameters.push(advjsons[j].value);
   }
 
+  console.log(mappingParameters)
 
   var mapping_request = '{ "properties": {';
 

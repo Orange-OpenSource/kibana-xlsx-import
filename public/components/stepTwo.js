@@ -17,7 +17,8 @@ import {
   EuiButtonEmpty,
   EuiGlobalToastList,
   EuiFormHelpText,
-  EuiLink
+  EuiLink,
+  EuiProgress
 } from '@elastic/eui';
 
 import MappingTable from './mappingTable.js';
@@ -84,16 +85,14 @@ class StepTwo extends Component {
   }
 
   handleClick(e){
-    this.setState({uploadButton:{text:"Loading...", loading:true}}, function() {
-      this.handleNextStep();
-    });
+    this.handleNextStep();
   }
 
   async handleNextStep() {
     var ws = this.props.workbook.Sheets[this.props.workbook.SheetNames[0]];
 
     try {
-      const json = await XLSX.utils.sheet_to_json(ws);
+      const json = XLSX.utils.sheet_to_json(ws);
 
       if(this.state.switchMap.checked) {
         const resIndex = await axios.post(`../api/xlsx_import/${this.state.indexName}`);
@@ -105,26 +104,41 @@ class StepTwo extends Component {
         var elements = document.getElementsByClassName('euiSelect');
         var mappingParameters = document.getElementsByClassName('advjsontext');
         const properties = createMapping(elements, mappingParameters, this.props.header);
+        console.log(properties)
         const resMap = await axios.post(`../api/xlsx_import/${this.state.indexName}/_mapping/doc`, JSON.parse(properties));
       }
 
       var bulk = createBulk(json, this.state.indexName, this.state.kbnId.model);
-      bulk.forEach(async(split_bulk) => {
-        const response = await axios.post(`../api/xlsx_import/${this.state.indexName}/doc/_bulk`, split_bulk);
-        if(response.data.errors){
-          this.addToast(response.data.items[0].index.error.reason + " " +
-            response.data.items[0].index.error.caused_by.reason);
-          axios.delete(`../api/xlsx_import/${this.state.indexName}`);
-        } else {
-          this.props.nextStep(this.state.indexName, json.length);
+
+      var request = new Promise(async(resolve, reject) => {
+        this.setState({uploadButton:{text:"Loading...", loading:true}});
+        for(var i = 0; i < bulk.length; i++ ) {
+          const response = await axios.post(`../api/xlsx_import/${this.state.indexName}/doc/_bulk`, bulk[i]);
+          if(response.data.errors) {
+            reject(response.data.items[i].index.error.reason + " " +
+              response.data.items[i].index.error.caused_by.reason);
+            continue
+          }
+          else if(i === bulk.length -1){
+            resolve();
+          }
         }
-      })
+      });
+
+      request.then(() => {
+        this.props.nextStep(this.state.indexName, json.length);
+      },(reason) => {
+        this.addToast(reason);
+        axios.delete(`../api/xlsx_import/${this.state.indexName}`);
+        this.setState({uploadButton:{text:"Import", loading:false}});
+      });
 
     } catch (error) {
         axios.delete(`../api/xlsx_import/${this.state.indexName}`);
         this.addToast(error.message);
     }
   };
+
 
   backClick(e) {
     window.location.reload();

@@ -1,6 +1,6 @@
 {
   "name": "xlsx-import",
-  "version": "6.2.3-react-beta",
+  "version": "6.2.3-react-1",
   "description": "Import XLSX to JSON",
   "main": "index.js",
   "kibana": {
@@ -29,16 +29,7 @@
   },
   "dependencies": {
     "@elastic/eui": "0.0.40",
-    "angular-animate": "^1.6.8",
-    "angular-spinner": "^1.0.1",
-    "angular-translate": "2.8.1",
-    "angular-translate-loader-static-files": "2.8.1",
-    "angularjs-toaster": "^2.2.0",
     "axios": "^0.18.0",
-    "fixed-data-table-2": "^0.8.6",
-    "react-collapsible": "^2.0.3",
-    "react-simpletabs": "^0.7.0",
-    "v-accordion": "^1.6.0",
     "xlsx": "^0.12.8"
   },
   "author": "frederic testaniere",
