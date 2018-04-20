@@ -16,15 +16,39 @@ import {
   EuiSelect
 } from '@elastic/eui';
 
+import XLSX from 'xlsx';
+
 
 class StepOne extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      file: {},
+      workbook: {},
+      selectItem: {
+        options: [{}],
+        disabled: true
+      },
     };
   }
+
+  onChange = (file) => {
+    var reader = new FileReader();
+    reader.onload = async (file) => {
+      var wb = await XLSX.read(reader.result, {type : 'array'});
+      var options = wb.SheetNames.map((s) => ({
+        value: s,
+        text: s
+      }));
+      this.setState({workbook: wb, selectItem:{options: this.state.selectItem.options.concat(options), disabled: false} });
+
+    };
+    reader.readAsArrayBuffer(file.target.files[0]);
+  };
+
+  selectChange = (item) => {
+    console.log(item)
+  };
 
   render() {
     const items = [];
@@ -41,11 +65,14 @@ class StepOne extends Component {
             </EuiFormRow>
 
             <EuiFormRow>
-              <input import-sheet-js class="form-control-file" type="file" id="file" />
+              <input type="file" onChange={file => { this.onChange(file); }}/>
             </EuiFormRow>
 
             <EuiFormRow label="Select the sheet to import">
-              <EuiSelect options={[]} disabled/>
+              <EuiSelect
+                options={this.state.selectItem.options}
+                disabled={this.state.selectItem.disabled}
+                onChange={item => { this.selectChange(item); }} />
             </EuiFormRow>
 
           </EuiFlexItem>
