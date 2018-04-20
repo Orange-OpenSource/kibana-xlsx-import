@@ -71,8 +71,6 @@
 
   <div class="row container">
 
-    <span us-spinner="{radius:30, width:8, length: 16}" spinner-on="showSpinner"></span>
-
     <div class="col-12-sm">
       <div id="progress-img">
         <img src="../plugins/xlsx-import/ressources/progress-step1.png"/>
@@ -81,9 +79,9 @@
       <div class="euiSpacer euiSpacer--m"></div>
 
       <div class="euiPanel euiPanel--paddingLarge">
-        <div class="euiPageContentBody" id="content">
+        <div class="euiPageContentBody" id="content" ng-init="test()">
 
-          <div class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsFlexEnd euiFlexGroup--justifyContentSpaceBetween euiFlexGroup--responsive">
+          <div class="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsFlexEnd euiFlexGroup--responsive">
             <div class="euiFlexItem euiFlexItem--flexGrowZero">
               <div class="euiFormRow" id="import_form">
                 <div class="euiTitle euiTitle--small">Import your xlsx and csv file to ElasticSearch</div>
@@ -95,6 +93,7 @@
                 <label class="euiFormLabel">Select the sheet to convert</label>
                 <div class="euiFormControlLayout">
                   <select class="euiSelect euiSelect--small" ng-change="step1Job()" ng-model="sheetname" ng-options="item for item in sheetnames"></select>
+                  <svg class="euiIcon euiIcon--medium euiFormControlLayout__icon euiFormControlLayout__icon--right" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16"><defs><path id="arrow_down-a" d="M13.069 5.157L8.384 9.768a.546.546 0 0 1-.768 0L2.93 5.158a.552.552 0 0 0-.771 0 .53.53 0 0 0 0 .759l4.684 4.61c.641.631 1.672.63 2.312 0l4.684-4.61a.53.53 0 0 0 0-.76.552.552 0 0 0-.771 0z"></path></defs><use fill-rule="nonzero" xlink:href="#arrow_down-a"></use></svg>
                 </div>
               </div>
             </div>
@@ -102,7 +101,7 @@
             <div class="euiFlexItem euiFlexItem--flexGrowZero">
               <button class="euiButton euiButton--primary" id="nextButton" disabled="" type="button" ng-click="displayStep2()">
                 <span class="euiButton__content">
-                  <svg class="euiIcon euiIcon--medium euiFormControlLayout__icon euiFormControlLayout__icon--right" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16"><defs><path id="arrow_down-a" d="M13.069 5.157L8.384 9.768a.546.546 0 0 1-.768 0L2.93 5.158a.552.552 0 0 0-.771 0 .53.53 0 0 0 0 .759l4.684 4.61c.641.631 1.672.63 2.312 0l4.684-4.61a.53.53 0 0 0 0-.76.552.552 0 0 0-.771 0z"></path></defs><use fill-rule="nonzero" xlink:href="#arrow_down-a"></use></svg>
+                  <svg class="euiIcon euiIcon--medium euiButton__icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16"><defs><path id="arrow_right-a" d="M13.069 5.157L8.384 9.768a.546.546 0 0 1-.768 0L2.93 5.158a.552.552 0 0 0-.771 0 .53.53 0 0 0 0 .759l4.684 4.61c.641.631 1.672.63 2.312 0l4.684-4.61a.53.53 0 0 0 0-.76.552.552 0 0 0-.771 0z"></path></defs><use fill-rule="nonzero" transform="matrix(0 1 1 0 0 0)" xlink:href="#arrow_right-a"></use></svg>
                   <span>Next</span>
                 </span>
               </button>

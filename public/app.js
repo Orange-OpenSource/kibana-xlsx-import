@@ -1,11 +1,12 @@
-import moment from 'moment';
 import { uiModules } from 'ui/modules';
 import uiRoutes from 'ui/routes';
+import chrome from 'ui/chrome';
 import template from './templates/index.html';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {EuiToast} from '@elastic/eui';
-import Table from './components/stepOne.js';
+import PreviewTable from './components/previewTable.js';
+import StepOne from './components/stepOne.js';
 import StepTwo from './components/stepTwo.js';
 import StepThree from './components/stepThree.js';
 
@@ -33,7 +34,7 @@ uiRoutes
 });
 
 
-app.controller('xlsxImport', function ($scope, $route, $interval, $http, $translate, $timeout, config) {
+app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeout, config) {
   maxFileSize = config.get('xlsx-import:filesize_warning');
   bulkSize = config.get('xlsx-import:bulk_package_size');
   maxDisplayableElement = config.get('xlsx-import:displayed_elements');
@@ -55,6 +56,13 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
   $scope.sheetname = '';
   $scope.firstRow = '';
 
+
+  $scope.test = function() {
+    ReactDOM.render(
+      <StepOne />,
+      document.getElementById("content")
+    );
+  }
 
   $scope.step1Job = function() {
 
@@ -79,7 +87,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
     }));
 
     ReactDOM.render(
-      <Table items={exceltojson.data} columns={columns}/>,
+      <PreviewTable items={exceltojson.data} columns={columns}/>,
       document.getElementById("dataPreviewContainer")
     );
 
@@ -97,7 +105,9 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
         items={getHeaderWithType(workbook.Sheets[$scope.sheetname])}
         firstRow = {$scope.firstRow}
         nextStep={$scope.displayStep3}
-        workbook={workbook}/>,
+        workbook={workbook}
+        sheetname={$scope.sheetname}
+      />,
       document.getElementById("content")
     );
   }
@@ -117,7 +127,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $transl
 });
 
 
-app.directive('importSheetJs', function($translate) {
+app.directive('importSheetJs', function() {
   return {
     scope: { opts: '=' },
     link: function ($scope, $elm, $attrs) {

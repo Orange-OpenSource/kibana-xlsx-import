@@ -89,7 +89,7 @@ class StepTwo extends Component {
   }
 
   async handleNextStep() {
-    var ws = this.props.workbook.Sheets[this.props.workbook.SheetNames[0]];
+    var ws = this.props.workbook.Sheets[this.props.sheetname];
 
     try {
       const json = XLSX.utils.sheet_to_json(ws);
