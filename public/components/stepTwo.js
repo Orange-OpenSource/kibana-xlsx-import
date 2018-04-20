@@ -108,7 +108,7 @@ class StepTwo extends Component {
         const resMap = await axios.post(`../api/xlsx_import/${this.state.indexName}/_mapping/doc`, JSON.parse(properties));
       }
 
-      var bulk = createBulk(json, this.state.indexName, this.state.kbnId.model);
+      var bulk = createBulk(json, this.state.indexName, this.state.kbnId.model, this.props.bulksize);
 
       var request = new Promise(async(resolve, reject) => {
         this.setState({uploadButton:{text:"Loading...", loading:true}});

@@ -18,10 +18,8 @@ let jsonData;                                 // Contient les données de conver
 let fileInfo;                                 // Contient les informations sur le fichier upload (data, name, size)
 let workbook;
 
-let maxFileSize;                              // Taille du fichier xlxs avant warning
 let bulkSize;                                 // Taille maximal des paquets du bulk
 let maxDisplayableElement;                    // Nombre d'element afficher dans la previs des données
-let default_language;
 
 const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
 
@@ -35,10 +33,7 @@ uiRoutes
 
 
 app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeout, config) {
-  maxFileSize = config.get('xlsx-import:filesize_warning');
   bulkSize = config.get('xlsx-import:bulk_package_size');
-  maxDisplayableElement = config.get('xlsx-import:displayed_elements');
-  default_language = config.get('xlsx-import:default_language');
 
   $scope.title = 'XLSX Import';
 
@@ -107,6 +102,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
         nextStep={$scope.displayStep3}
         workbook={workbook}
         sheetname={$scope.sheetname}
+        bulksize={bulkSize}
       />,
       document.getElementById("content")
     );

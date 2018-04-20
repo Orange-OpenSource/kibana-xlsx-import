@@ -1,4 +1,4 @@
-function createBulk(json, indexName, kbnCustomId) {
+function createBulk(json, indexName, kbnCustomId, BULKSIZE) {
   var bulk_request = [];
   var bulk_package = [];
 
@@ -10,7 +10,7 @@ function createBulk(json, indexName, kbnCustomId) {
       bulk_package.push({index: { _index: indexName, _type: 'doc' } });
     bulk_package.push(json[i]);
 
-    if(bulk_package.length >= 1000) {   //TODO : Get this number from config
+    if(bulk_package.length >= BULKSIZE) {
       bulk_request.push(bulk_package);
       bulk_package = [];
       if(json[i+1] === undefined)
