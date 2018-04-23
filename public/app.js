@@ -54,7 +54,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
 
 
   $scope.test = function() {
-  /*  ReactDOM.render(
+    /*ReactDOM.render(
       <StepOne />,
       document.getElementById("content")
     );*/

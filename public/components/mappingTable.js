@@ -1,8 +1,13 @@
-import React from 'react';
+import React, {Fragment} from 'react';
+import ReactDOMServer from 'react-dom/server';
 import {
   EuiBasicTable,
   EuiSelect,
-  EuiFieldText
+  EuiFieldText,
+  EuiToolTip,
+  EuiIcon,
+  EuiLink,
+  EuiTextArea
 } from '@elastic/eui';
 
 const MappingTable = (props) => {
@@ -31,13 +36,19 @@ const MappingTable = (props) => {
     field: 'type',
     name: 'Type',
     render: (name) => (
-      <EuiSelect options={options} defaultValue={name}/>
+      <EuiSelect options={options} defaultValue={name} onChange={props.onChangeType}/>
     )
   }, {
     field: 'advjson',
-    name: 'Advanced JSON',
+    name: (
+        <p>
+          Advanced JSON {' '}
+          <EuiToolTip position="right" content="See the content of the tooltip">
+            <EuiIcon tabIndex="0" type="iInCircle" color="primary" title="Icon with tooltip" />
+          </EuiToolTip>
+        </p> ),
     render: () => (
-      <EuiFieldText className="advjsontext" placeholder='"fielddata": true, "format": "yyyy-MM-dd", ...' />
+      <EuiTextArea className="advjsontext" rows={4} placeholder='"fielddata": true, "format": "yyyy-MM-dd", ...' />
     )
   }];
 

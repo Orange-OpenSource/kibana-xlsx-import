@@ -58,10 +58,12 @@ class StepTwo extends Component {
     this.indexNameChange = this.indexNameChange.bind(this);
     this.kbnIdChange = this.kbnIdChange.bind(this);
     this.switchChange = this.switchChange.bind(this);
+    this.onChangeType = this.onChangeType.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleNextStep = this.handleNextStep.bind(this);
     this.backClick = this.backClick.bind(this);
-    this.addToast = this.addToast.bind(this);
+    this.addErrorToast = this.addErrorToast.bind(this);
+    this.addMappingToast = this.addMappingToast.bind(this);
     this.removeToast = this.removeToast.bind(this);
 
     axios.defaults.headers.post['kbn-xsrf'] = "reporting";
@@ -81,7 +83,14 @@ class StepTwo extends Component {
   }
 
   switchChange(e) {
-    this.setState({switchMap:{checked: e.target.checked}});
+    this.setState({switchMap:{value: e.target.checked}});
+  }
+
+  onChangeType() {
+    if(!this.state.switchMap.value) {
+        this.setState({switchMap:{value: true}});
+        this.addMappingToast();
+    }
   }
 
   handleClick(e){
@@ -97,7 +106,7 @@ class StepTwo extends Component {
       if(this.state.switchMap.checked) {
         const resIndex = await axios.post(`../api/xlsx_import/${this.state.indexName}`);
         if(resIndex.data.error != undefined) {
-          this.addToast(resIndex.data.error.msg);
+          this.addErrorToast(resIndex.data.error.msg);
           return
         }
 
@@ -128,14 +137,14 @@ class StepTwo extends Component {
       request.then(() => {
         this.props.nextStep(this.state.indexName, json.length);
       },(reason) => {
-        this.addToast(reason);
+        this.addErrorToast(reason);
         axios.delete(`../api/xlsx_import/${this.state.indexName}`);
         this.setState({uploadButton:{text:"Import", loading:false}});
       });
 
     } catch (error) {
         axios.delete(`../api/xlsx_import/${this.state.indexName}`);
-        this.addToast(error.message);
+        this.addErrorToast(error.message);
     }
   };
 
@@ -144,7 +153,7 @@ class StepTwo extends Component {
     window.location.reload();
   }
 
-  addToast = (msg) => {
+  addErrorToast = (msg) => {
     const toast = {
       title: "Couldn't complete the import",
       color: "danger",
@@ -152,6 +161,21 @@ class StepTwo extends Component {
       text: (
         <p>
           {msg}
+        </p>
+      ),
+    }
+
+    this.setState({
+      toasts: this.state.toasts.concat(toast),
+    });
+  };
+
+  addMappingToast = () => {
+    const toast = {
+      title: "Mapping change detected",
+      text: (
+        <p>
+          Custom mapping enable.
         </p>
       ),
     }
@@ -207,10 +231,10 @@ class StepTwo extends Component {
             <EuiSpacer size="m" />
 
             <EuiFormRow>
-              <EuiSwitch label="Use your own mapping?" value={this.state.switchMap.value} onChange={this.switchChange}/>
+              <EuiSwitch label="Use your own mapping?" checked={this.state.switchMap.value} onChange={this.switchChange}/>
             </EuiFormRow>
 
-            <MappingTable items={this.props.items}/>
+            <MappingTable items={this.props.items} onChangeType={this.onChangeType}/>
           </EuiAccordion>
         </EuiFormRow>
 

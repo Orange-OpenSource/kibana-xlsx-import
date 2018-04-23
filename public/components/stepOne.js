@@ -13,6 +13,7 @@ import {
   EuiTitle,
   EuiSpacer,
   EuiButton,
+  EuiLoadingKibana,
   EuiSelect
 } from '@elastic/eui';
 
@@ -79,6 +80,12 @@ class StepOne extends Component {
 
           <EuiFlexItem grow={false}>
             <EuiButton iconType="arrowRight" disabled>Next</EuiButton>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+
+        <EuiFlexGroup justifyContent="spaceAround">
+          <EuiFlexItem grow={false}>
+            <EuiLoadingKibana size="xl"/>
           </EuiFlexItem>
         </EuiFlexGroup>
       </Fragment>
