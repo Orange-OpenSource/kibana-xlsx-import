@@ -71,7 +71,7 @@ class StepTwo extends Component {
   }
 
   indexNameChange(e) {
-    if(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g.test(e.target.value) || (/[A-Z]/.test(e.target.value)))
+    if(/[~`!#$%\^&*+=\\[\]\\';,/{}|\\":<>\?]/g.test(e.target.value) || (/[A-Z]/.test(e.target.value)))
       this.setState({indexName: e.target.value, indexNameError: true});
     else {
       this.setState({indexName: e.target.value, indexNameError: false});
