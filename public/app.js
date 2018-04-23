@@ -4,7 +4,7 @@ import chrome from 'ui/chrome';
 import template from './templates/index.html';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {EuiToast} from '@elastic/eui';
+import {EuiText} from '@elastic/eui';
 import PreviewTable from './components/previewTable.js';
 import StepOne from './components/stepOne.js';
 import StepTwo from './components/stepTwo.js';
@@ -69,26 +69,36 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
       workbook = XLSX.read(fileInfo.data, {type : 'binary'});
     }
 
-    var range = XLSX.utils.decode_range(workbook.Sheets[$scope.sheetname]['!ref']);
-    if(range.e.r > maxDisplayableElement) range.e.r = maxDisplayableElement;
+    if(workbook.Sheets[$scope.sheetname]['!ref'] != undefined){
+      var range = XLSX.utils.decode_range(workbook.Sheets[$scope.sheetname]['!ref']);
+      if(range.e.r > maxDisplayableElement) range.e.r = maxDisplayableElement;
 
-    var exceltojson = new Object();
-    exceltojson.header = get_header_row(workbook.Sheets[$scope.sheetname]);
-    exceltojson.data = formatJSON(XLSX.utils.sheet_to_json(workbook.Sheets[$scope.sheetname], {range: range}));
-    $scope.firstRow = exceltojson.data[0];
+      var exceltojson = new Object();
+      exceltojson.header = get_header_row(workbook.Sheets[$scope.sheetname]);
+      exceltojson.data = formatJSON(XLSX.utils.sheet_to_json(workbook.Sheets[$scope.sheetname], {range: range}));
+      $scope.firstRow = exceltojson.data[0];
 
-    var columns = exceltojson.header.map((s) => ({
-      field: s,
-      name: s,
-      truncateText: true
-    }));
+      var columns = exceltojson.header.map((s) => ({
+        field: s,
+        name: s,
+        truncateText: true
+      }));
 
-    ReactDOM.render(
-      <PreviewTable items={exceltojson.data} columns={columns}/>,
-      document.getElementById("dataPreviewContainer")
-    );
+      ReactDOM.render(
+        <PreviewTable items={exceltojson.data} columns={columns}/>,
+        document.getElementById("dataPreviewContainer")
+      );
 
-    angular.element('#nextButton').removeAttr('disabled');
+      angular.element('#nextButton').attr('disabled', false);
+
+    } else {
+      ReactDOM.render(
+        <EuiText color="danger"><p>No data found</p></EuiText>,
+        document.getElementById("dataPreviewContainer")
+      );
+
+      angular.element('#nextButton').attr('disabled', true);
+    }
   }
 
 
