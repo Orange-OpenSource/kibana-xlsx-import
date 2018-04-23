@@ -79,7 +79,8 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
 
     var columns = exceltojson.header.map((s) => ({
       field: s,
-      name: s
+      name: s,
+      truncateText: true
     }));
 
     ReactDOM.render(
