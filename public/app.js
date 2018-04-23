@@ -34,6 +34,7 @@ uiRoutes
 
 app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeout, config) {
   bulkSize = config.get('xlsx-import:bulk_package_size');
+  maxDisplayableElement = config.get('xlsx-import:displayed_rows');
 
   $scope.title = 'XLSX Import';
 
@@ -133,7 +134,6 @@ app.directive('importSheetJs', function() {
         fileInfo = new Object();
 
         if (!supportedFileType.includes(getExtension(changeEvent.target.files[0].name)[0])) {
-          alert($translate.instant("INVALID_EXTENSION_FILE_MESSAGE"));
           return
         }
 
