@@ -5,6 +5,7 @@ import template from './templates/index.html';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {EuiText} from '@elastic/eui';
+import Main from './components/main.js';
 import PreviewTable from './components/previewTable.js';
 import StepOne from './components/stepOne.js';
 import StepTwo from './components/stepTwo.js';
@@ -53,14 +54,14 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
   $scope.firstRow = '';
 
 
-  $scope.test = function() {
-    /*ReactDOM.render(
-      <StepOne />,
-      document.getElementById("main")
-    );*/
+  $scope.on = function() {
+    ReactDOM.render(
+      <Main nextStep={$scope.displayStep2}/>,
+      document.getElementById("myapp")
+    );
   }
 
-  $scope.step1Job = function() {
+  /*$scope.step1Job = function() {
 
     //All csv files are read as UTF-8 (need to fix later)
     if(fileInfo.ext != "csv")
@@ -99,21 +100,21 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
 
       angular.element('#nextButton').attr('disabled', true);
     }
-  }
+  }*/
 
 
-  $scope.displayStep2 = function() {
+  $scope.displayStep2 = function(indexname, workbook, sheetname, firstrow) {
     //document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step2.png"/>'
 
     ReactDOM.render(
       <StepTwo
-        indexName={$scope.indexName}
-        header={get_header_row(workbook.Sheets[$scope.sheetname])}
-        items={getHeaderWithType(workbook.Sheets[$scope.sheetname])}
-        firstRow = {$scope.firstRow}
+        indexName={indexname}
+        header={get_header_row(workbook.Sheets[sheetname])}
+        items={getHeaderWithType(workbook.Sheets[sheetname])}
+        firstRow = {firstrow}
         nextStep={$scope.displayStep3}
         workbook={workbook}
-        sheetname={$scope.sheetname}
+        sheetname={sheetname}
         bulksize={bulkSize}
       />,
       document.getElementById("main")
@@ -121,13 +122,13 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
   }
 
 
-  $scope.displayStep3 = function(indexName, nbDocument) {
+  $scope.displayStep3 = function(indexName, sheetname , filename, nbDocument) {
     //document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step3.png"/>'
     ReactDOM.render(
       <StepThree
         indexName={indexName}
-        sheetName={$scope.sheetname}
-        fileName={fileInfo.name}
+        sheetName={sheetname}
+        fileName={filename}
         nbDocument={nbDocument} />,
       document.getElementById("main")
     );
@@ -135,7 +136,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
 });
 
 
-app.directive('importSheetJs', function() {
+/*app.directive('importSheetJs', function() {
   return {
     scope: { opts: '=' },
     link: function ($scope, $elm, $attrs) {
@@ -175,7 +176,7 @@ app.directive('importSheetJs', function() {
       });
     }
   };
-});
+});*/
 
 
 //Mise à jour du fichier en cas d'ouverture avec d'autres logiciel... (libreoffice)

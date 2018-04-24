@@ -33,14 +33,14 @@ import {
   createMapping,
   createKbnCustomId
 } from '../services/services.js';
-
+import {setESIndexName} from '../services/sheetServices.js';
 
 class StepTwo extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      indexName: this.props.indexName,
+      indexName: setESIndexName(this.props.indexName),
       indexNameError: false,
       bulkError: false,
       kbnId: {
@@ -143,7 +143,7 @@ class StepTwo extends Component {
       });
 
       request.then(() => {
-        this.props.nextStep(this.state.indexName, json.length);
+        this.props.nextStep(this.state.indexName, this.props.sheetname, this.props.indexName ,json.length);
       },(reason) => {
         this.addErrorToast(reason);
         axios.delete(`../api/xlsx_import/${this.state.indexName}`);
@@ -221,9 +221,6 @@ class StepTwo extends Component {
 
     return (
       <Fragment>
-        <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step2.png" />
-        <EuiSpacer size="m" />
-        <EuiPanel paddingSize="l">
           <EuiForm>
             <EuiFormRow isInvalid={this.state.indexNameError} label="Index name" error={errors}>
               <EuiFieldText isInvalid={this.state.indexNameError} id="indexName" value={this.state.indexName} onChange={this.indexNameChange}/>
@@ -282,7 +279,6 @@ class StepTwo extends Component {
           </EuiForm>
           <EuiSpacer size="m" />
           <EuiProgress value={this.state.progress.current} max={100} color="secondary" size="s" />
-        </EuiPanel>
       </Fragment>
     );
   }

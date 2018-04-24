@@ -40,13 +40,7 @@ const MappingTable = (props) => {
     )
   }, {
     field: 'advjson',
-    name: (
-        <p>
-          Advanced JSON {' '}
-          <EuiToolTip position="right" content="See the content of the tooltip">
-            <EuiIcon tabIndex="0" type="iInCircle" color="primary" title="Icon with tooltip" />
-          </EuiToolTip>
-        </p> ),
+    name: 'Advanced JSON',
     render: () => (
       <EuiTextArea className="advjsontext" rows={4} placeholder='"fielddata": true, "format": "yyyy-MM-dd", ...' />
     )

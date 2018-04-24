@@ -22,9 +22,6 @@ class StepThree extends Component {
   render() {
     return (
       <Fragment>
-        <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step3.png" />
-        <EuiSpacer size="m" />
-        <EuiPanel paddingSize="l">
           <EuiForm>
             <EuiFormRow>
               <EuiCallOut
@@ -47,7 +44,6 @@ class StepThree extends Component {
               </EuiFlexGroup>
             </EuiFormRow>
           </EuiForm>
-        </EuiPanel>
       </Fragment>
     );
   }
