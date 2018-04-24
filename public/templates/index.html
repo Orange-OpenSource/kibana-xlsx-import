@@ -1,7 +1,5 @@
 <div class="app-container xlsx-import" ng-controller="xlsxImport">
 
-  <div id="message_top" style="position: fixed; margin-left:50%; z-index: 99; cursor: pointer;"></div>
-
   <kbn-top-nav name="xlsx-import" config="topNavMenu">
       <div class="kuiLocalNav" ng-show="true" data-test-subj="top-nav">
       <!-- Top row -->
@@ -71,7 +69,7 @@
 
   <div class="row container">
 
-    <div class="col-12-sm">
+    <div class="col-12-sm" id="main">
       <div id="progress-img">
         <img src="../plugins/xlsx-import/ressources/progress-step1.png"/>
       </div>

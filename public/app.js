@@ -56,7 +56,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
   $scope.test = function() {
     /*ReactDOM.render(
       <StepOne />,
-      document.getElementById("content")
+      document.getElementById("main")
     );*/
   }
 
@@ -103,7 +103,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
 
 
   $scope.displayStep2 = function() {
-    document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step2.png"/>'
+    //document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step2.png"/>'
 
     ReactDOM.render(
       <StepTwo
@@ -116,20 +116,20 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
         sheetname={$scope.sheetname}
         bulksize={bulkSize}
       />,
-      document.getElementById("content")
+      document.getElementById("main")
     );
   }
 
 
   $scope.displayStep3 = function(indexName, nbDocument) {
-    document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step3.png"/>'
+    //document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step3.png"/>'
     ReactDOM.render(
       <StepThree
         indexName={indexName}
         sheetName={$scope.sheetname}
         fileName={fileInfo.name}
         nbDocument={nbDocument} />,
-      document.getElementById("content")
+      document.getElementById("main")
     );
   }
 });

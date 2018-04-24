@@ -14,7 +14,8 @@ import {
   EuiSpacer,
   EuiButton,
   EuiLoadingKibana,
-  EuiSelect
+  EuiSelect,
+  EuiPanel
 } from '@elastic/eui';
 
 import XLSX from 'xlsx';
@@ -57,37 +58,39 @@ class StepOne extends Component {
 
     return(
       <Fragment>
-        <EuiFlexGroup gutterSize="l" alignItems="flexEnd">
-          <EuiFlexItem grow={false}>
-            <EuiFormRow>
-              <EuiTitle size="s">
-                <h1>Import your xlsx and csv file to ElasticSearch</h1>
-              </EuiTitle>
-            </EuiFormRow>
+        <EuiPanel>
+          <EuiFlexGroup gutterSize="l" alignItems="flexEnd">
+            <EuiFlexItem grow={false}>
+              <EuiFormRow>
+                <EuiTitle size="s">
+                  <h1>Import your xlsx and csv file to ElasticSearch</h1>
+                </EuiTitle>
+              </EuiFormRow>
 
-            <EuiFormRow>
-              <input type="file" onChange={file => { this.onChange(file); }}/>
-            </EuiFormRow>
+              <EuiFormRow>
+                <input type="file" onChange={file => { this.onChange(file); }}/>
+              </EuiFormRow>
 
-            <EuiFormRow label="Select the sheet to import">
-              <EuiSelect
-                options={this.state.selectItem.options}
-                disabled={this.state.selectItem.disabled}
-                onChange={item => { this.selectChange(item); }} />
-            </EuiFormRow>
+              <EuiFormRow label="Select the sheet to import">
+                <EuiSelect
+                  options={this.state.selectItem.options}
+                  disabled={this.state.selectItem.disabled}
+                  onChange={item => { this.selectChange(item); }} />
+              </EuiFormRow>
 
-          </EuiFlexItem>
+            </EuiFlexItem>
 
-          <EuiFlexItem grow={false}>
-            <EuiButton iconType="arrowRight" disabled>Next</EuiButton>
-          </EuiFlexItem>
-        </EuiFlexGroup>
+            <EuiFlexItem grow={false}>
+              <EuiButton iconType="arrowRight" disabled>Next</EuiButton>
+            </EuiFlexItem>
+          </EuiFlexGroup>
 
-        <EuiFlexGroup justifyContent="spaceAround">
-          <EuiFlexItem grow={false}>
-            <EuiLoadingKibana size="xl"/>
-          </EuiFlexItem>
-        </EuiFlexGroup>
+          <EuiFlexGroup justifyContent="spaceAround">
+            <EuiFlexItem grow={false}>
+              <EuiLoadingKibana size="xl"/>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiPanel>
       </Fragment>
     );
   }

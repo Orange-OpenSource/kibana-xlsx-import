@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {
   EuiCallOut,
   EuiSpacer,
@@ -6,7 +6,8 @@ import {
   EuiForm,
   EuiFormRow,
   EuiFlexItem,
-  EuiFlexGroup
+  EuiFlexGroup,
+  EuiPanel
 } from '@elastic/eui';
 
 class StepThree extends Component {
@@ -18,30 +19,36 @@ class StepThree extends Component {
     window.location.reload();
   }
 
-  render() {    
+  render() {
     return (
-      <EuiForm>
-        <EuiFormRow>
-          <EuiCallOut
-            title= "Your file have been imported !"
-            color="success"
-            iconType="check">
-              <EuiSpacer size="s"/>
-              <p>{this.props.nbDocument} document(s) have been imported into {this.props.indexName}.</p>
-              <p>File name : {this.props.fileName}</p>
-              <p>Sheet name : {this.props.sheetName}</p>
-          </EuiCallOut>
-        </EuiFormRow>
-        <EuiFormRow>
-          <EuiFlexGroup gutterSize="s" alignItems="center">
-            <EuiFlexItem grow={false}>
-              <EuiButtonEmpty onClick={this.handleClick} size="s" iconType="arrowRight">
-                Import a new file
-              </EuiButtonEmpty>
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </EuiFormRow>
-      </EuiForm>
+      <Fragment>
+        <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step3.png" />
+        <EuiSpacer size="m" />
+        <EuiPanel paddingSize="l">
+          <EuiForm>
+            <EuiFormRow>
+              <EuiCallOut
+                title= "Your file have been imported !"
+                color="success"
+                iconType="check">
+                  <EuiSpacer size="s"/>
+                  <p>{this.props.nbDocument} document(s) have been imported into {this.props.indexName}.</p>
+                  <p>File name : {this.props.fileName}</p>
+                  <p>Sheet name : {this.props.sheetName}</p>
+              </EuiCallOut>
+            </EuiFormRow>
+            <EuiFormRow>
+              <EuiFlexGroup gutterSize="s" alignItems="center">
+                <EuiFlexItem grow={false}>
+                  <EuiButtonEmpty onClick={this.handleClick} size="s" iconType="arrowRight">
+                    Import a new file
+                  </EuiButtonEmpty>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiFormRow>
+          </EuiForm>
+        </EuiPanel>
+      </Fragment>
     );
   }
 }

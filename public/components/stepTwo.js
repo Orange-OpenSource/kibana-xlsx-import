@@ -1,5 +1,5 @@
 import React, {
-  Component
+  Component, Fragment
 } from 'react';
 
 import ReactDOM from 'react-dom';
@@ -18,7 +18,9 @@ import {
   EuiGlobalToastList,
   EuiFormHelpText,
   EuiLink,
-  EuiProgress
+  EuiProgress,
+  EuiPanel,
+  EuiImage
 } from '@elastic/eui';
 
 import MappingTable from './mappingTable.js';
@@ -51,6 +53,10 @@ class StepTwo extends Component {
       },
       switchMap: {
         value: false
+      },
+      progress:{
+        show: false,
+        current: 0
       },
       toasts: []
     };
@@ -120,8 +126,10 @@ class StepTwo extends Component {
       var bulk = createBulk(json, this.state.indexName, this.state.kbnId.model, this.props.bulksize);
 
       var request = new Promise(async(resolve, reject) => {
-        this.setState({uploadButton:{text:"Loading...", loading:true}});
+        this.setState({uploadButton:{text:"Loading...", loading:true}, progress:{show: true}});
+        console.log(bulk.length)
         for(var i = 0; i < bulk.length; i++ ) {
+          this.setState({progress:{current: (i/bulk.length)*100}});
           const response = await axios.post(`../api/xlsx_import/${this.state.indexName}/doc/_bulk`, bulk[i]);
           if(response.data.errors) {
             reject(response.data.items[i].index.error.reason + " " +
@@ -203,63 +211,79 @@ class StepTwo extends Component {
       "Index name must be all lowercase and don't contains special characters"
     ];
 
+    let progressBar = null;
+
+    if(this.state.progress.show) {
+      progressBar = (
+        <EuiProgress value={this.state.progress.current} max={100} color="secondary" size="s" />
+      );
+    }
+
     return (
-      <EuiForm>
-        <EuiFormRow isInvalid={this.state.indexNameError} label="Index name" error={errors}>
-          <EuiFieldText isInvalid={this.state.indexNameError} id="indexName" value={this.state.indexName} onChange={this.indexNameChange}/>
-        </EuiFormRow>
-
-        <EuiFormRow
-        label="Kibana custom ID"
-        helpText="Kibana will provide a unique identifier for each index pattern. If you do not want to use this unique ID, enter a custom one.">
-          <EuiFlexGroup gutterSize="s" alignItems="center">
-            <EuiFlexItem grow={false}>
-              <EuiFieldText id="kbnID" value={this.state.kbnId.model} onChange={this.kbnIdChange}/>
-            </EuiFlexItem>
-
-            <EuiFlexItem grow={false}>
-              <EuiFieldText id="previewKbnID" placeholder="Custom ID preview" value={this.state.kbnId.preview} readOnly/>
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </EuiFormRow>
-
-        <EuiSpacer size="s" />
-
-        <EuiFormRow fullWidth={true}>
-          <EuiAccordion id="mapping" buttonContent="Configure mapping">
-
-            <EuiSpacer size="m" />
-
-            <EuiFormRow>
-              <EuiSwitch label="Use your own mapping?" checked={this.state.switchMap.value} onChange={this.switchChange}/>
+      <Fragment>
+        <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step2.png" />
+        <EuiSpacer size="m" />
+        <EuiPanel paddingSize="l">
+          <EuiForm>
+            <EuiFormRow isInvalid={this.state.indexNameError} label="Index name" error={errors}>
+              <EuiFieldText isInvalid={this.state.indexNameError} id="indexName" value={this.state.indexName} onChange={this.indexNameChange}/>
             </EuiFormRow>
 
-            <MappingTable items={this.props.items} onChangeType={this.onChangeType}/>
-          </EuiAccordion>
-        </EuiFormRow>
+            <EuiFormRow
+            label="Kibana custom ID"
+            helpText="Kibana will provide a unique identifier for each index pattern. If you do not want to use this unique ID, enter a custom one.">
+              <EuiFlexGroup gutterSize="s" alignItems="center">
+                <EuiFlexItem grow={false}>
+                  <EuiFieldText id="kbnID" value={this.state.kbnId.model} onChange={this.kbnIdChange}/>
+                </EuiFlexItem>
 
-        <EuiFormRow>
-          <EuiFlexGroup gutterSize="s" alignItems="center">
-            <EuiFlexItem grow={false}>
-              <EuiButtonEmpty onClick={this.backClick} size="s" iconType="arrowLeft">
-                back
-              </EuiButtonEmpty>
-            </EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                  <EuiFieldText id="previewKbnID" placeholder="Custom ID preview" value={this.state.kbnId.preview} readOnly/>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiFormRow>
 
-            <EuiFlexItem grow={false}>
-              <EuiButton fill isDisabled={this.state.indexNameError} onClick={this.handleNextStep} iconType="importAction" isLoading={this.state.uploadButton.loading}>
-                {this.state.uploadButton.text}
-              </EuiButton>
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </EuiFormRow>
+            <EuiSpacer size="s" />
 
-        <EuiGlobalToastList
-          toasts={this.state.toasts}
-          dismissToast={this.removeToast}
-          toastLifeTimeMs={6000}
-        />
-      </EuiForm>
+            <EuiFormRow fullWidth={true}>
+              <EuiAccordion id="mapping" buttonContent="Configure mapping">
+
+                <EuiSpacer size="m" />
+
+                <EuiFormRow>
+                  <EuiSwitch label="Use your own mapping?" checked={this.state.switchMap.value} onChange={this.switchChange}/>
+                </EuiFormRow>
+
+                <MappingTable items={this.props.items} onChangeType={this.onChangeType}/>
+              </EuiAccordion>
+            </EuiFormRow>
+
+            <EuiFormRow>
+              <EuiFlexGroup gutterSize="s" alignItems="center">
+                <EuiFlexItem grow={false}>
+                  <EuiButtonEmpty onClick={this.backClick} size="s" iconType="arrowLeft">
+                    back
+                  </EuiButtonEmpty>
+                </EuiFlexItem>
+
+                <EuiFlexItem grow={false}>
+                  <EuiButton fill isDisabled={this.state.indexNameError} onClick={this.handleNextStep} iconType="importAction" isLoading={this.state.uploadButton.loading}>
+                    {this.state.uploadButton.text}
+                  </EuiButton>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiFormRow>
+
+            <EuiGlobalToastList
+              toasts={this.state.toasts}
+              dismissToast={this.removeToast}
+              toastLifeTimeMs={6000}
+            />
+          </EuiForm>
+          <EuiSpacer size="m" />
+          <EuiProgress value={this.state.progress.current} max={100} color="secondary" size="s" />
+        </EuiPanel>
+      </Fragment>
     );
   }
 }
