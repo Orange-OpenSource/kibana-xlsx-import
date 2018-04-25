@@ -1,6 +1,6 @@
 {
   "name": "xlsx-import",
-  "version": "6.2.3-react-lastest",
+  "version": "6.2.3-react-latest",
   "description": "Import XLSX to JSON",
   "main": "index.js",
   "kibana": {

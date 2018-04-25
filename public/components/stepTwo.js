@@ -109,7 +109,7 @@ class StepTwo extends Component {
     try {
       const json = XLSX.utils.sheet_to_json(ws);
 
-      if(this.state.switchMap.checked) {
+      if(this.state.switchMap.value) {
         const resIndex = await axios.post(`../api/xlsx_import/${this.state.indexName}`);
         if(resIndex.data.error != undefined) {
           this.addErrorToast(resIndex.data.error.msg);
