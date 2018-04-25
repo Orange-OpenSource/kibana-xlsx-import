@@ -50,7 +50,7 @@ const Main = (props) => {
 
       <EuiPageBody>
         <EuiPageContent>
-          <EuiPageContentHeader>
+          <EuiPageContentHeader id="step">
             <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step1.png" />
           </EuiPageContentHeader>
           <EuiPageContentBody id="main">

@@ -4,7 +4,7 @@ import chrome from 'ui/chrome';
 import template from './templates/index.html';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {EuiText} from '@elastic/eui';
+import {EuiImage} from '@elastic/eui';
 import Main from './components/main.js';
 import PreviewTable from './components/previewTable.js';
 import StepOne from './components/stepOne.js';
@@ -14,10 +14,10 @@ import StepThree from './components/stepThree.js';
 import 'ui/autoload/styles';
 import './less/main.less';
 
-
+/*
 let jsonData;                                 // Contient les données de conversion du xlxs
 let fileInfo;                                 // Contient les informations sur le fichier upload (data, name, size)
-let workbook;
+let workbook;*/
 
 let bulkSize;                                 // Taille maximal des paquets du bulk
 let maxDisplayableElement;                    // Nombre d'element afficher dans la previs des données
@@ -47,11 +47,11 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
     }
   ];
 
-  $scope.indexName = '';
+  /*$scope.indexName = '';
   $scope.showSheetForm = false;
   $scope.sheetnames = [];
   $scope.sheetname = '';
-  $scope.firstRow = '';
+  $scope.firstRow = '';*/
 
 
   $scope.on = function() {
@@ -107,6 +107,11 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
     //document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step2.png"/>'
 
     ReactDOM.render(
+      <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step2.png" />,
+      document.getElementById("step")
+    );
+
+    ReactDOM.render(
       <StepTwo
         indexName={indexname}
         header={get_header_row(workbook.Sheets[sheetname])}
@@ -124,6 +129,11 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
 
   $scope.displayStep3 = function(indexName, sheetname , filename, nbDocument) {
     //document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step3.png"/>'
+    ReactDOM.render(
+      <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step3.png" />,
+      document.getElementById("step")
+    );
+
     ReactDOM.render(
       <StepThree
         indexName={indexName}

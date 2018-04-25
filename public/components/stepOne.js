@@ -50,6 +50,13 @@ class StepOne extends Component {
   }
 
   onFileChange = (file) => {
+    //UI reset
+    this.setState({
+      selectItem:{options: [{value: "", text: ""}]},
+      data:{loaded: true, items: [], columns: []},
+      disableButton: true
+    });
+
     var reader = new FileReader();
     reader.onload = async (file) => {
       var wb = await XLSX.read(reader.result, {type : 'array'});
@@ -65,19 +72,29 @@ class StepOne extends Component {
   };
 
   async onSheetChange(item) {
-    this.setState({sheetname: item.target.value});
+    this.setState({data:{loaded: false}, sheetname: item.target.value});
 
-    let range = XLSX.utils.decode_range(this.state.workbook.Sheets[item.target.value]['!ref']);
-    if(range.e.r > 5) range.e.r = 5; //TODO : use config instead
+    if(item.target.value === "") {
+      this.setState({data:{loaded: true, items: [], columns: []}, disableButton: true});
+      return
+    }
 
-    let columns = get_header_row(this.state.workbook.Sheets[item.target.value]).map((s) => ({
-      field: s,
-      name: s,
-      truncateText: true
-    }));
+    if(this.state.workbook.Sheets[item.target.value]['!ref'] != undefined) {
+      let range = XLSX.utils.decode_range(this.state.workbook.Sheets[item.target.value]['!ref']);
+      if(range.e.r > 5) range.e.r = 5; //TODO : use config instead
 
-    let items = await formatJSON(XLSX.utils.sheet_to_json(this.state.workbook.Sheets[item.target.value], {range: range}));
-    this.setState({data:{loaded: true, items: items, columns: columns}, disableButton: false});
+      let columns = get_header_row(this.state.workbook.Sheets[item.target.value]).map((s) => ({
+        field: s,
+        name: s,
+        truncateText: true
+      }));
+
+      let items = await formatJSON(XLSX.utils.sheet_to_json(this.state.workbook.Sheets[item.target.value], {range: range}));
+      this.setState({data:{loaded: true, items: items, columns: columns}, disableButton: false});
+    }
+    else {
+      this.setState({data:{loaded: true, items: [], columns: []}, disableButton: true});
+    }
   };
 
   onNextClick(e) {
@@ -135,7 +152,7 @@ class StepOne extends Component {
           </EuiFlexItem>
         </EuiFlexGroup>
 
-        <EuiSpacer size="m" />
+        <EuiSpacer size="l" />
 
         {previewTable}
 
