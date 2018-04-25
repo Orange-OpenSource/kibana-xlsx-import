@@ -52,4 +52,8 @@ function formatHeader(header){
   return header.replace(/ /g,"_");
 }
 
-export default { get_header_row, formatJSON, setESIndexName }
+function getExtension(filename) {
+  return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) : undefined;
+}
+
+export default { get_header_row, formatJSON, setESIndexName, getExtension }

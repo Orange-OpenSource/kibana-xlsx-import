@@ -16,7 +16,7 @@ import {
   EuiLoadingKibana,
   EuiSelect,
   EuiPanel,
-  EuiImage
+  EuiImage,
 } from '@elastic/eui';
 
 import PreviewTable from './previewTable.js';
@@ -25,7 +25,8 @@ import XLSX from 'xlsx';
 
 import {
   get_header_row,
-  formatJSON
+  formatJSON,
+  getExtension
 } from '../services/sheetServices.js';
 
 
@@ -45,7 +46,8 @@ class StepOne extends Component {
         items: [],
         columns: []
       },
-      disableButton: true
+      disableButton: true,
+      loading: false
     };
   }
 
@@ -53,21 +55,32 @@ class StepOne extends Component {
     //UI reset
     this.setState({
       selectItem:{options: [{value: "", text: ""}]},
-      data:{loaded: true, items: [], columns: []},
-      disableButton: true
+      data:{loaded: false, items: [], columns: []},
+      disableButton: true,
+      loading: true,
     });
 
     var reader = new FileReader();
     reader.onload = async (file) => {
-      var wb = await XLSX.read(reader.result, {type : 'array'});
+
+      if(getExtension(this.state.filename)[0] != "csv"){
+        var wb = await XLSX.read(reader.result, {type : 'array'});
+      } else {
+        var wb = await XLSX.read(reader.result, {type : 'binary'});
+      }
+
       var options = wb.SheetNames.map((s) => ({
         value: s,
         text: s
       }));
-      this.setState({workbook: wb, selectItem:{options: this.state.selectItem.options.concat(options)}});
-
+      this.setState({workbook: wb, selectItem:{options: this.state.selectItem.options.concat(options)}, loading: false});
     };
-    reader.readAsArrayBuffer(file.target.files[0]);
+
+    if(getExtension(file.target.files[0].name)[0] != "csv")
+      reader.readAsArrayBuffer(file.target.files[0]);
+    else {
+      reader.readAsText(file.target.files[0]);
+    };
     this.setState({filename: file.target.files[0].name});
   };
 
@@ -104,6 +117,7 @@ class StepOne extends Component {
   render() {
     let sheetSelector = null;
     let previewTable = null;
+    let renderLoading = null;
 
     if(!(Object.keys(this.state.workbook).length === 0 && this.state.workbook.constructor === Object)) {
       sheetSelector = (
@@ -121,6 +135,16 @@ class StepOne extends Component {
         <PreviewTable
           items={this.state.data.items}
           columns={this.state.data.columns} />
+      );
+    }
+
+    if(this.state.loading) {
+      renderLoading = (
+        <EuiFlexGroup justifyContent="spaceAround">
+          <EuiFlexItem grow={false}>
+            <EuiLoadingKibana size="xl"/>
+          </EuiFlexItem>
+        </EuiFlexGroup>
       );
     }
 
@@ -151,6 +175,8 @@ class StepOne extends Component {
             </EuiButton>
           </EuiFlexItem>
         </EuiFlexGroup>
+
+        {renderLoading}
 
         <EuiSpacer size="l" />
 
