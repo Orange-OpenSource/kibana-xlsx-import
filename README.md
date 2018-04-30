@@ -6,7 +6,7 @@
 ## Installation
 Use this example or manually pick a [release](https://github.com/kyushy/kibana-xlsx-import/releases)  
 <pre>
-/opt/kibana/bin/kibana-plugin install https://github.com/kyushy/kibana-xlsx-import/releases/download/6.2.3/xlsx-import-6.2.3-react-lastest.zip
+/opt/kibana/bin/kibana-plugin install https://github.com/kyushy/kibana-xlsx-import/releases/download/6.2.3/xlsx-import-6.2.3-react-latest.zip
 </pre>
 
 ---
@@ -25,14 +25,14 @@ Use this example or manually pick a [release](https://github.com/kyushy/kibana-x
 For every field you can choose the type and apply more options with the advanced JSON.  
 The list of parameters can be found here, https://www.elastic.co/guide/en/elasticsearch/reference/6.2/mapping-params.html
 
-#### Use a custom Kibana ID 
+#### Use a custom Kibana ID
 To create a custom Kibana ID with your field values you can use a template with placeholder {fieldname}.  
 In our example, if I use the following template `{ID}-{Nom}` this will lead us to the following ID for the first document :
-  - `1-Toto` 
+  - `1-Toto`
 
 ### You're done !  
-  
-  
+
+
 ### Advanced settings  
 
 In the kibana advanced setting you can find those parameters  
@@ -40,11 +40,11 @@ __Warning :__ All those options might cause crash or slowing the plugin.
 
   - `xlsx-import:bulk_package_size`  
   Allow you to define the number of json item you want to send per bulk package  
-  
+
   - `xlsx-import:displayed_rows`  
   Define the number of rows which will be displayed in the preview
-  
-  
+
+
 ---
 ## development
 
