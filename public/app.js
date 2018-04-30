@@ -10,6 +10,7 @@ import PreviewTable from './components/previewTable.js';
 import StepOne from './components/stepOne.js';
 import StepTwo from './components/stepTwo.js';
 import StepThree from './components/stepThree.js';
+import XLSX from 'xlsx';
 
 import 'ui/autoload/styles';
 import './less/main.less';
@@ -26,14 +27,82 @@ const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisabl
 
 var app = uiModules.get('app/xlsx_import', []);
 
-uiRoutes.enable();
+/*uiRoutes.enable();
 uiRoutes
 .when('/', {
   template : template
+});*/
+
+app.config($locationProvider => {
+  $locationProvider.html5Mode({
+    enabled: false,
+    requireBase: false,
+    rewriteLinks: false,
+  });
 });
+app.config(stateManagementConfigProvider =>
+  stateManagementConfigProvider.disable()
+);
+
+function RootController($scope, $element, config) {
+  const domNode = $element[0];
+  bulkSize = config.get('xlsx-import:bulk_package_size');
+  maxDisplayableElement = config.get('xlsx-import:displayed_rows');
+
+  // render react to DOM
+  ReactDOM.render( <Main nextStep={displayStep2}/>, domNode);
+
+  // unmount react on controller destroy
+  $scope.$on('$destroy', () => {
+    unmountComponentAtNode(domNode);
+  });
 
 
-app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeout, config) {
+  function displayStep2(indexname, workbook, sheetname, firstrow) {
+    //document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step2.png"/>'
+
+    ReactDOM.render(
+      <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step2.png" />,
+      document.getElementById("step")
+    );
+
+    ReactDOM.render(
+      <StepTwo
+        indexName={indexname}
+        header={get_header_row(workbook.Sheets[sheetname])}
+        items={getHeaderWithType(workbook.Sheets[sheetname])}
+        firstRow = {firstrow}
+        nextStep={displayStep3}
+        workbook={workbook}
+        sheetname={sheetname}
+        bulksize={bulkSize}
+      />,
+      document.getElementById("main")
+    );
+  }
+
+
+  function displayStep3(indexName, sheetname , filename, nbDocument) {
+    //document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step3.png"/>'
+    ReactDOM.render(
+      <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step3.png" />,
+      document.getElementById("step")
+    );
+
+    ReactDOM.render(
+      <StepThree
+        indexName={indexName}
+        sheetName={sheetname}
+        fileName={filename}
+        nbDocument={nbDocument} />,
+      document.getElementById("main")
+    );
+  }
+}
+
+chrome.setRootController("xlsx_import", RootController);
+
+/*app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeout, config) {
   bulkSize = config.get('xlsx-import:bulk_package_size');
   maxDisplayableElement = config.get('xlsx-import:displayed_rows');
 
@@ -47,11 +116,11 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
     }
   ];
 
-  /*$scope.indexName = '';
+  $scope.indexName = '';
   $scope.showSheetForm = false;
   $scope.sheetnames = [];
   $scope.sheetname = '';
-  $scope.firstRow = '';*/
+  $scope.firstRow = '';
 
 
   $scope.on = function() {
@@ -100,7 +169,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
 
       angular.element('#nextButton').attr('disabled', true);
     }
-  }*/
+  }
 
 
   $scope.displayStep2 = function(indexname, workbook, sheetname, firstrow) {
@@ -143,7 +212,7 @@ app.controller('xlsxImport', function ($scope, $route, $interval, $http, $timeou
       document.getElementById("main")
     );
   }
-});
+});*/
 
 
 /*app.directive('importSheetJs', function() {
