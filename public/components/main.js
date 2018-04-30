@@ -32,7 +32,7 @@ const Main = (props) => {
           <EuiHeaderSection>
             <EuiHeaderSectionItem border="right">
               <EuiHeaderBreadcrumb>
-                <EuiIcon type="importAction" size="m" />
+                <EuiIcon type="addDataApp" size="original"/>
               </EuiHeaderBreadcrumb>
             </EuiHeaderSectionItem>
 
