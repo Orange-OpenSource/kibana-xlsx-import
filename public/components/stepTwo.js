@@ -56,7 +56,8 @@ class StepTwo extends Component {
       },
       progress:{
         show: false,
-        current: 0
+        current: 0,
+        color: "secondary"
       },
       toasts: []
     };
@@ -100,6 +101,7 @@ class StepTwo extends Component {
   }
 
   handleClick(e){
+    this.setState({progress:{show: true, current:0, color: "secondary"}});
     this.handleNextStep();
   }
 
@@ -119,25 +121,34 @@ class StepTwo extends Component {
         var elements = document.getElementsByClassName('euiSelect');
         var mappingParameters = document.getElementsByClassName('advjsontext');
         const properties = createMapping(elements, mappingParameters, this.props.header);
-        console.log(properties)
         const resMap = await axios.post(`../api/xlsx_import/${this.state.indexName}/_mapping/doc`, JSON.parse(properties));
+        if(resMap.data.error != undefined) {
+          this.addErrorToast(resMap.data.error.msg);
+          axios.delete(`../api/xlsx_import/${this.state.indexName}`);
+          return
+        }
       }
 
       var bulk = createBulk(json, this.state.indexName, this.state.kbnId.model, this.props.bulksize);
 
       var request = new Promise(async(resolve, reject) => {
-        this.setState({uploadButton:{text:"Loading...", loading:true}, progress:{show: true}});
+        this.setState({uploadButton:{text:"Loading...", loading:true}});
         console.log(bulk.length)
         for(var i = 0; i < bulk.length; i++ ) {
           this.setState({progress:{current: (i/bulk.length)*100}});
           const response = await axios.post(`../api/xlsx_import/${this.state.indexName}/doc/_bulk`, bulk[i]);
-          if(response.data.errors) {
-            reject(response.data.items[i].index.error.reason + " " +
-              response.data.items[i].index.error.caused_by.reason);
-            continue
-          }
-          else if(i === bulk.length -1){
-            resolve();
+          try {
+            if(response.data.errors) {
+              console.log(response.data.items[i]);
+              reject(response.data.items[i].index.error.reason + " " +
+                response.data.items[i].index.error.caused_by.reason);
+              continue
+            }
+            else if(i === bulk.length -1){
+              resolve();
+            }
+          } catch (error) {
+            reject("Something wrong happened, check your advanced JSON");
           }
         }
       });
@@ -147,7 +158,7 @@ class StepTwo extends Component {
       },(reason) => {
         this.addErrorToast(reason);
         axios.delete(`../api/xlsx_import/${this.state.indexName}`);
-        this.setState({uploadButton:{text:"Import", loading:false}});
+        this.setState({uploadButton:{text:"Import", loading:false}, progress:{show: false, color: "danger"}});
       });
 
     } catch (error) {
@@ -278,7 +289,7 @@ class StepTwo extends Component {
             />
           </EuiForm>
           <EuiSpacer size="m" />
-          <EuiProgress value={this.state.progress.current} max={100} color="secondary" size="s" />
+          <EuiProgress value={this.state.progress.current} max={100} color={this.state.progress.color} size="s" />
       </Fragment>
     );
   }

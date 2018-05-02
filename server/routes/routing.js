@@ -40,12 +40,13 @@ export default function (server, adminCluster, dataCluster) {
         	dataCluster.callWithRequest(req, 'bulk', {
         		body: req.payload
         	})
-        	.then(function (err, response) {
-        		if(err)
-        			reply(err);
-        		else
-        			reply(response);
-    		});
+          .then((response) => {
+              reply(response);
+
+          }).catch((e) => {
+              console.error(e);
+              reply({"error" : e})
+          });
     	}
     });
 
