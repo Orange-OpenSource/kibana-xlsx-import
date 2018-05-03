@@ -13,13 +13,6 @@ export default function (kibana) {
         description: 'Import XLSX to JSON',
         main: 'plugins/xlsx-import/app',
         icon: 'plugins/xlsx-import/ressources/icon.svg',
-        injectVars: function (server, options) {
-          var config = server.config();
-          return {
-            kbnIndex: config.get('kibana.index'),
-            esApiVersion: config.get('elasticsearch.apiVersion'),
-          };
-        }
       },
 
       uiSettingDefaults: {

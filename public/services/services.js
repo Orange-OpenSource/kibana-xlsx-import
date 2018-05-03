@@ -27,24 +27,27 @@ function createMapping(elements, advjsons, items) {
   var types = [];
   var mappingParameters = [];
 
+  let properties = {};
+
   for(var i=0; i < elements.length; i++){
+
     types.push(elements[i].value);
+    mappingParameters.push(advjsons[i].value);
+
+    properties[items[i]] = { "type": types[i] };
+
+    if (mappingParameters[i]) {
+      properties[items[i]] = Object.assign({}, properties[items[i]], JSON.parse(mappingParameters[i]));
+    }
+
   }
+  
+  return {"properties" : properties};
 
-  for(var j=0; j < advjsons.length; j++){
-    mappingParameters.push(advjsons[j].value);
-  }
-
-  console.log(mappingParameters)
-
-  var mapping_request = '{ "properties": {';
+  //console.log(mappingParameters)
+  /*var mapping_request = '{ "properties": {';
 
   for(var i = 0; i < elements.length; i++) {
-
-    /*if(types[i] === 'text')
-      mapping_request += '"'+ items[i] +'": { "type": "'+ types[i] +'", "fields": { "keyword": { "type": "keyword" } } }';
-    else
-      mapping_request += '"'+ items[i] +'": { "type": "'+ types[i] +'" }';*/
 
     if(mappingParameters[i] != undefined && mappingParameters[i] != "")
       mapping_request += '"'+ items[i] +'": { "type": "'+ types[i] +'", '+ mappingParameters[i] +' }';
@@ -56,9 +59,10 @@ function createMapping(elements, advjsons, items) {
       mapping_request += ','
     }
 
-    mapping_request += '} }';
+    mapping_request += '} }';*/
 
-    return mapping_request;
+
+
 }
 
 function createKbnCustomId(template, obj) {

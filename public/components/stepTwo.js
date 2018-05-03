@@ -42,7 +42,7 @@ class StepTwo extends Component {
     this.state = {
       indexName: setESIndexName(this.props.indexName),
       indexNameError: false,
-      bulkError: false,
+      networkError: false,
       kbnId: {
         model: "",
         preview: ""
@@ -65,7 +65,7 @@ class StepTwo extends Component {
     this.indexNameChange = this.indexNameChange.bind(this);
     this.kbnIdChange = this.kbnIdChange.bind(this);
     this.switchChange = this.switchChange.bind(this);
-    this.onChangeType = this.onChangeType.bind(this);
+    this.onChangeMapping = this.onChangeMapping.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleNextStep = this.handleNextStep.bind(this);
     this.backClick = this.backClick.bind(this);
@@ -93,7 +93,7 @@ class StepTwo extends Component {
     this.setState({switchMap:{value: e.target.checked}});
   }
 
-  onChangeType() {
+  onChangeMapping() {
     if(!this.state.switchMap.value) {
         this.setState({switchMap:{value: true}});
         this.addMappingToast();
@@ -111,17 +111,24 @@ class StepTwo extends Component {
     try {
       const json = XLSX.utils.sheet_to_json(ws);
 
+      /*if(this.state.networkError) {
+        console.log("deleting index after lost connection...")
+        await axios.delete(`../api/xlsx_import/${this.state.indexName}`);
+      }*/
+
       if(this.state.switchMap.value) {
+        console.log("creating index", this.state.indexName)
         const resIndex = await axios.post(`../api/xlsx_import/${this.state.indexName}`);
         if(resIndex.data.error != undefined) {
           this.addErrorToast(resIndex.data.error.msg);
           return
         }
 
+        console.log("applying mapping")
         var elements = document.getElementsByClassName('euiSelect');
         var mappingParameters = document.getElementsByClassName('advjsontext');
         const properties = createMapping(elements, mappingParameters, this.props.header);
-        const resMap = await axios.post(`../api/xlsx_import/${this.state.indexName}/_mapping/doc`, JSON.parse(properties));
+        const resMap = await axios.post(`../api/xlsx_import/${this.state.indexName}/_mapping/doc`, properties);
         if(resMap.data.error != undefined) {
           this.addErrorToast(resMap.data.error.msg);
           axios.delete(`../api/xlsx_import/${this.state.indexName}`);
@@ -132,17 +139,21 @@ class StepTwo extends Component {
       var bulk = createBulk(json, this.state.indexName, this.state.kbnId.model, this.props.bulksize);
 
       var request = new Promise(async(resolve, reject) => {
+        console.log("sending documents to", this.state.indexName)
         this.setState({uploadButton:{text:"Loading...", loading:true}});
-        console.log(bulk.length)
         for(var i = 0; i < bulk.length; i++ ) {
           this.setState({progress:{current: (i/bulk.length)*100}});
           const response = await axios.post(`../api/xlsx_import/${this.state.indexName}/doc/_bulk`, bulk[i]);
           try {
             if(response.data.errors) {
-              console.log(response.data.items[i]);
               reject(response.data.items[i].index.error.reason + " " +
                 response.data.items[i].index.error.caused_by.reason);
-              continue
+              return
+            }
+            else if(response.data.error != undefined) {
+              this.setState({networkError : true});
+              reject(response.data.error.message);
+              return
             }
             else if(i === bulk.length -1){
               resolve();
@@ -163,7 +174,7 @@ class StepTwo extends Component {
 
     } catch (error) {
         axios.delete(`../api/xlsx_import/${this.state.indexName}`);
-        this.addErrorToast(error.message);
+        this.addErrorToast(error.message, "Verify your advanced JSON or your fields name");
     }
   };
 
@@ -262,7 +273,7 @@ class StepTwo extends Component {
                   <EuiSwitch label="Use your own mapping?" checked={this.state.switchMap.value} onChange={this.switchChange}/>
                 </EuiFormRow>
 
-                <MappingTable items={this.props.items} onChangeType={this.onChangeType}/>
+                <MappingTable items={this.props.items} onChangeMapping={this.onChangeMapping}/>
               </EuiAccordion>
             </EuiFormRow>
 

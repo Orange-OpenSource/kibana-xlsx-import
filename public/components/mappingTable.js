@@ -36,13 +36,17 @@ const MappingTable = (props) => {
     field: 'type',
     name: 'Type',
     render: (name) => (
-      <EuiSelect options={options} defaultValue={name} onChange={props.onChangeType}/>
+      <EuiSelect options={options} defaultValue={name} onChange={props.onChangeMapping}/>
     )
   }, {
     field: 'advjson',
     name: 'Advanced JSON',
     render: () => (
-      <EuiTextArea className="advjsontext" rows={4} placeholder='"fielddata": true, "format": "yyyy-MM-dd", ...' />
+      <EuiTextArea
+        className="advjsontext"
+        rows={4}
+        placeholder='"fielddata": true, "format": "yyyy-MM-dd", ...'
+        onInput={props.onChangeMapping} />
     )
   }];
 
