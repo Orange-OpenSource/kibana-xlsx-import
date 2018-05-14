@@ -41,9 +41,10 @@ function formatJSON(json){
 //Formate le nom du fichier pour le transformer en nom d'index ES correct
 function setESIndexName(name) {
 
-  var name = name.split('.')[0];                //on enlève l'extension du fichier
-  var name = name.replace(/[^a-zA-Z ]/g, "");   //on enlève aussi les charactères speciaux (modif possible avec UTF?)
-  name = name.toLowerCase();                    //on passe tout en lowercase (contrainte des nom d'index dans ES)
+  var name = name.split('.')[0];              //removing extension
+  name = name.replace(/\s/g, '');             //removing space
+  name = name.replace(/[^a-zA-Z ]/g, "");     //removing special characters
+  name = name.toLowerCase();                  //lowercase
   return name;
 }
 
