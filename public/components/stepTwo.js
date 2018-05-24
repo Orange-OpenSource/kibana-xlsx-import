@@ -33,7 +33,7 @@ import {
   createMapping,
   createKbnCustomId
 } from '../services/services.js';
-import {setESIndexName} from '../services/sheetServices.js';
+import {setESIndexName, formatJSON} from '../services/sheetServices.js';
 
 class StepTwo extends Component {
   constructor(props) {
@@ -109,7 +109,7 @@ class StepTwo extends Component {
     var ws = this.props.workbook.Sheets[this.props.sheetname];
 
     try {
-      const json = XLSX.utils.sheet_to_json(ws);
+      const json = formatJSON(XLSX.utils.sheet_to_json(ws));
 
       /*if(this.state.networkError) {
         console.log("deleting index after lost connection...")
