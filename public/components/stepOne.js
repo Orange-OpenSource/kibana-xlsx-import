@@ -53,36 +53,46 @@ class StepOne extends Component {
   }
 
   onFileChange = (file) => {
-    //UI reset
-    this.setState({
-      selectItem:{options: [{value: "", text: ""}]},
-      data:{loaded: false, items: [], columns: []},
-      disableButton: true,
-      loading: true,
-    });
+    if(file.length > 0) {
+      //UI reset
+      this.setState({
+        selectItem:{options: [{value: "", text: ""}]},
+        data:{loaded: false, items: [], columns: []},
+        disableButton: true,
+        loading: true,
+      });
 
-    var reader = new FileReader();
-    reader.onload = async (file) => {
+      var reader = new FileReader();
+      reader.onload = async (file) => {
 
-      if(getExtension(this.state.filename)[0] != "csv"){
-        var wb = await XLSX.read(reader.result, {type : 'array'});
-      } else {
-        var wb = await XLSX.read(reader.result, {type : 'binary'});
-      }
+        if(getExtension(this.state.filename)[0] != "csv"){
+          var wb = await XLSX.read(reader.result, {type : 'array'});
+        } else {
+          var wb = await XLSX.read(reader.result, {type : 'binary'});
+        }
 
-      var options = wb.SheetNames.map((s) => ({
-        value: s,
-        text: s
-      }));
-      this.setState({workbook: wb, selectItem:{options: this.state.selectItem.options.concat(options)}, loading: false});
-    };
+        var options = wb.SheetNames.map((s) => ({
+          value: s,
+          text: s
+        }));
+        this.setState({workbook: wb, selectItem:{options: this.state.selectItem.options.concat(options)}, loading: false});
+      };
 
-    if(getExtension(file.target.files[0].name)[0] != "csv")
-      reader.readAsArrayBuffer(file.target.files[0]);
+      if(getExtension(file[0].name)[0] != "csv")
+        reader.readAsArrayBuffer(file[0]);
+      else {
+        reader.readAsText(file[0]);
+      };
+      this.setState({filename: file[0].name});
+    }
     else {
-      reader.readAsText(file.target.files[0]);
-    };
-    this.setState({filename: file.target.files[0].name});
+      this.setState({
+        selectItem:{options: [{value: "", text: ""}]},
+        data:{loaded: false, items: [], columns: []},
+        disableButton: true,
+        workbook: {}
+      });
+    }
   };
 
   async onSheetChange(item) {
@@ -116,20 +126,12 @@ class StepOne extends Component {
   }
 
   render() {
-    let sheetSelector = null;
+    let sheetDisabled = true;
     let previewTable = null;
     let renderLoading = null;
 
-    if(!(Object.keys(this.state.workbook).length === 0 && this.state.workbook.constructor === Object)) {
-      sheetSelector = (
-        <EuiFormRow label="Select the sheet to import">
-          <EuiSelect
-            options={this.state.selectItem.options}
-            disabled={this.state.selectItem.disabled}
-            onChange={item => { this.onSheetChange(item); }} />
-        </EuiFormRow>
-      );
-    }
+    if(!(Object.keys(this.state.workbook).length === 0 && this.state.workbook.constructor === Object))
+      sheetDisabled = false
 
     if(this.state.data.loaded) {
       previewTable = (
@@ -151,7 +153,7 @@ class StepOne extends Component {
 
     return(
       <Fragment>
-        <EuiFlexGroup gutterSize="l" alignItems="flexEnd">
+        <EuiFlexGroup gutterSize="l">
           <EuiFlexItem grow={false}>
             <EuiFormRow>
               <EuiTitle size="s">
@@ -160,21 +162,38 @@ class StepOne extends Component {
             </EuiFormRow>
 
             <EuiFormRow>
-              <input type="file" onChange={file => { this.onFileChange(file); }}/>
+              <EuiFilePicker
+              id="asdf2"
+              initialPromptText="Select or drag and drop file"
+              onChange={file => { this.onFileChange(file); }}
+              />
             </EuiFormRow>
 
-            {sheetSelector}
+            <EuiFormRow>
+              <EuiFlexGroup gutterSize="l" alignItems="flexEnd" justifyContent="spaceBetween" style={{marginLeft: "0px"}}>
+                <EuiFormRow label="Select the sheet to import">
+                  <EuiFlexItem grow={false}>
+                    <EuiSelect
+                      options={this.state.selectItem.options}
+                      disabled={sheetDisabled}
+                      onChange={item => { this.onSheetChange(item); }} />
+                  </EuiFlexItem>
+                </EuiFormRow>
+                <EuiFormRow>
+                  <EuiFlexItem grow={false}>
+                    <EuiButton
+                      iconType="arrowRight"
+                      disabled={this.state.disableButton}
+                      onClick={e => { this.onNextClick(e); }}>
+                        Next
+                    </EuiButton>
+                  </EuiFlexItem>
+                </EuiFormRow>
+              </EuiFlexGroup>
+            </EuiFormRow>
 
           </EuiFlexItem>
 
-          <EuiFlexItem grow={false}>
-            <EuiButton
-              iconType="arrowRight"
-              disabled={this.state.disableButton}
-              onClick={e => { this.onNextClick(e); }}>
-                Next
-            </EuiButton>
-          </EuiFlexItem>
         </EuiFlexGroup>
 
         {renderLoading}

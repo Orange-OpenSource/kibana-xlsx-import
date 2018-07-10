@@ -17,10 +17,16 @@ import {
   EuiHeaderSectionItemButton,
   EuiHeaderLogo,
   EuiImage,
-  EuiIcon
+  EuiIcon,
+  EuiTitle,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiStepsHorizontal
 } from '@elastic/eui';
 
 import StepOne from './stepOne.js';
+
+import "@elastic/eui/dist/eui_theme_k6_light.css";
 
 const Main = (props) => {
 
@@ -28,20 +34,18 @@ const Main = (props) => {
     <EuiPage>
 
       <EuiPageHeader>
-        <EuiHeader style={{width: "100%"}}>
+        <EuiHeader style={{width: "100%", height: "70px"}}>
           <EuiHeaderSection>
-            <EuiHeaderSectionItem border="right">
-              <EuiHeaderBreadcrumb>
-                <EuiIcon type="addDataApp" size="original"/>
-              </EuiHeaderBreadcrumb>
+            <EuiHeaderSectionItem border="right" style={{width: "5%"}}>
+              <EuiFlexGroup justifyContent="center" style={{paddingTop: "15px"}}>
+                <EuiFlexItem grow={false}>
+                  <EuiIcon type="addDataApp" size="xxl"/>
+                </EuiFlexItem>
+              </EuiFlexGroup>
             </EuiHeaderSectionItem>
 
             <EuiHeaderSectionItem>
-              <EuiHeaderBreadcrumbs>
-               <EuiHeaderBreadcrumb>
-                 XLSX Import
-               </EuiHeaderBreadcrumb>
-             </EuiHeaderBreadcrumbs>
+              <EuiTitle style={{paddingTop: "20px", paddingLeft: "10px"}}><h2>XLSX Import</h2></EuiTitle>
             </EuiHeaderSectionItem>
 
           </EuiHeaderSection>
@@ -51,7 +55,7 @@ const Main = (props) => {
       <EuiPageBody>
         <EuiPageContent>
           <EuiPageContentHeader id="step">
-            <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step1.png" />
+            <EuiStepsHorizontal steps={props.steps} style={{backgroundColor: "white"}}/>
           </EuiPageContentHeader>
           <EuiPageContentBody id="main">
             <StepOne nextStep={props.nextStep}/>

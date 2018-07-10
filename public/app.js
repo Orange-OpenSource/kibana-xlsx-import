@@ -4,7 +4,7 @@ import chrome from 'ui/chrome';
 import template from './templates/index.html';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {EuiImage} from '@elastic/eui';
+import {EuiImage, EuiStepsHorizontal} from '@elastic/eui';
 import Main from './components/main.js';
 import PreviewTable from './components/previewTable.js';
 import StepOne from './components/stepOne.js';
@@ -23,7 +23,29 @@ let workbook;*/
 let bulkSize;                                 // Taille maximal des paquets du bulk
 let maxDisplayableElement;                    // Nombre d'element afficher dans la previs des données
 
+let horizontalSteps = [
+  {
+    title: 'Choose a file',
+    isSelected: true,
+    isComplete: false,
+    onClick: () => window.location = "#"
+  },
+  {
+    title: 'Setup your index',
+    isSelected: false,
+    isComplete: false,
+    onClick: () => window.location = "#"
+  },
+  {
+    title: 'Done !',
+    isSelected: false,
+    isComplete: false,
+    onClick: () => window.location = "#"
+  }
+]
+
 const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
+
 
 var app = uiModules.get('app/xlsx_import', []);
 
@@ -50,7 +72,7 @@ function RootController($scope, $element, config) {
   maxDisplayableElement = config.get('xlsx-import:displayed_rows');
 
   // render react to DOM
-  ReactDOM.render( <Main nextStep={displayStep2}/>, domNode);
+  ReactDOM.render( <Main steps={horizontalSteps} nextStep={displayStep2}/>, domNode);
 
   // unmount react on controller destroy
   $scope.$on('$destroy', () => {
@@ -60,9 +82,12 @@ function RootController($scope, $element, config) {
 
   function displayStep2(indexname, workbook, sheetname, firstrow) {
     //document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step2.png"/>'
+    horizontalSteps[0].isSelected = false;
+    horizontalSteps[0].isComplete = true;
+    horizontalSteps[1].isSelected = true;
 
     ReactDOM.render(
-      <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step2.png" />,
+      <EuiStepsHorizontal steps={horizontalSteps} style={{backgroundColor: "white"}}/>,
       document.getElementById("step")
     );
 
@@ -84,8 +109,12 @@ function RootController($scope, $element, config) {
 
   function displayStep3(indexName, sheetname , filename, nbDocument) {
     //document.getElementById("progress-img").innerHTML = '<img src="../plugins/xlsx-import/ressources/progress-step3.png"/>'
+    horizontalSteps[1].isSelected = false;
+    horizontalSteps[1].isComplete = true;
+    horizontalSteps[2].isSelected = true;
+
     ReactDOM.render(
-      <EuiImage alt="steps" url="../plugins/xlsx-import/ressources/progress-step3.png" />,
+      <EuiStepsHorizontal steps={horizontalSteps} style={{backgroundColor: "white"}}/>,
       document.getElementById("step")
     );
 

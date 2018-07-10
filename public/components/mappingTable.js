@@ -36,7 +36,7 @@ const MappingTable = (props) => {
     field: 'type',
     name: 'Type',
     render: (name) => (
-      <EuiSelect options={options} defaultValue={name} onChange={props.onChangeMapping}/>
+      <EuiSelect options={options} value={name} onChange={props.onChangeMapping}/>
     )
   }, {
     field: 'advjson',
