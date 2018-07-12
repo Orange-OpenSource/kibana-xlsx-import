@@ -45,7 +45,7 @@ const MappingTable = (props) => {
       <EuiTextArea
         className="advjsontext"
         rows={4}
-        placeholder='"fielddata": true, "format": "yyyy-MM-dd", ...'
+        placeholder='"{fielddata": true, "format": "yyyy/MM/dd", ...}'
         onInput={props.onChangeMapping} />
     )
   }];

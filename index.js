@@ -12,7 +12,8 @@ export default function (kibana) {
         title: 'XLSX Import',
         description: 'Import XLSX to JSON',
         main: 'plugins/xlsx-import/app',
-        icon: 'plugins/xlsx-import/ressources/icon.svg',
+        url: '/app/xlsx-import',
+        icon: 'plugins/xlsx-import/ressources/icon.svg'
       },
 
       uiSettingDefaults: {

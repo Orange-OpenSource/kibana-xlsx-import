@@ -1,34 +1,35 @@
 Arguments: 
-  /home/ftestaniere/.nvm/versions/node/v8.11.3/bin/node /usr/share/yarn/bin/yarn.js install --non-interactive --mutex file
+  /home/ftestaniere/.nvm/versions/node/v8.11.0/bin/node /usr/share/yarn/bin/yarn.js start
 
 PATH: 
-  /home/ftestaniere/ELK/kibana-extra/kibana-xlsx-import/node_modules/.bin:/home/ftestaniere/ELK/kibana-extra/node_modules/.bin:/home/ftestaniere/ELK/node_modules/.bin:/home/ftestaniere/node_modules/.bin:/home/node_modules/.bin:/node_modules/.bin:/home/ftestaniere/.nvm/versions/node/v8.11.3/bin:/home/ftestaniere/ELK/kibana-extra/kibana-xlsx-import/node_modules/.bin:/home/ftestaniere/.config/yarn/link/node_modules/.bin:/home/ftestaniere/ELK/kibana-extra/kibana-xlsx-import/node_modules/.bin:/home/ftestaniere/.config/yarn/link/node_modules/.bin:/home/ftestaniere/.yarn/bin:/home/ftestaniere/.nvm/versions/node/v8.11.3/libexec/lib/node_modules/npm/bin/node-gyp-bin:/home/ftestaniere/.nvm/versions/node/v8.11.3/lib/node_modules/npm/bin/node-gyp-bin:/home/ftestaniere/.nvm/versions/node/v8.11.3/bin/node_modules/npm/bin/node-gyp-bin:/home/ftestaniere/.nvm/versions/node/v8.11.3/bin:/home/ftestaniere/bin:/home/ftestaniere/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin
+  /home/ftestaniere/.nvm/versions/node/v8.11.0/bin:/home/ftestaniere/bin:/home/ftestaniere/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin
 
 Yarn version: 
-  1.6.0
+  1.7.0
 
 Node version: 
-  8.11.3
+  8.11.0
 
 Platform: 
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@elastic%2feui: ETIMEDOUT
-      at Timeout._onTimeout (/usr/share/yarn/lib/cli.js:133819:19)
-      at ontimeout (timers.js:498:11)
-      at tryOnTimeout (timers.js:323:5)
-      at Timer.listOnTimeout (timers.js:290:5)
+  SyntaxError: /home/ftestaniere/ELK/kibana-extra/kibana-xlsx-import/package.json: Unexpected token } in JSON at position 158
+      at JSON.parse (<anonymous>)
+      at /usr/share/yarn/lib/cli.js:1130:59
+      at Generator.next (<anonymous>)
+      at step (/usr/share/yarn/lib/cli.js:98:30)
+      at /usr/share/yarn/lib/cli.js:109:13
+      at <anonymous>
 
 npm manifest: 
   {
     "name": "xlsx-import",
-    "version": "6.2.4-react-latest",
+    "version": "6.3.1-latest",
     "description": "Import XLSX to JSON",
     "main": "index.js",
     "kibana": {
       "version": "6.3.1",
-      "templateVersion": "7.2.3"
     },
     "scripts": {
       "preinstall": "node ../../kibana/preinstall_check",
@@ -54,7 +55,7 @@ npm manifest:
       "expect.js": "^0.3.1"
     },
     "dependencies": {
-      "@elastic/eui": "1.0.0",
+      "@elastic/eui": "0.0.52",
       "axios": "^0.18.0",
       "xlsx": "^0.12.8"
     },
@@ -160,9 +161,9 @@ Lockfile:
       glob-all "^3.1.0"
       webpack "3.6.0"
   
-  "@elastic/eui@1.1.0":
-    version "1.1.0"
-    resolved "https://sfy-search-registry-common.artifactory.packages.install-os.multis.p.fti.net:443/api/npm/virt-sfy-metriks-npm/@elastic/eui/-/eui-1.1.0.tgz#f4aa5702358133dd8c26295ba7c6a243c35616be"
+  "@elastic/eui@1.0.0":
+    version "1.0.0"
+    resolved "https://registry.yarnpkg.com/@elastic/eui/-/eui-1.0.0.tgz#70096bce6a1ff1cd44caec8a7e293f2c5cc5cfc5"
     dependencies:
       classnames "^2.2.5"
       core-js "^2.5.1"

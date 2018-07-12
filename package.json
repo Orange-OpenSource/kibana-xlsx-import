@@ -4,8 +4,7 @@
   "description": "Import XLSX to JSON",
   "main": "index.js",
   "kibana": {
-    "version": "6.3.1",
-    "templateVersion": "7.2.3"
+    "version": "6.3.1"
   },
   "scripts": {
     "preinstall": "node ../../kibana/preinstall_check",
