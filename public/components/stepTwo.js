@@ -20,7 +20,8 @@ import {
   EuiLink,
   EuiProgress,
   EuiPanel,
-  EuiImage
+  EuiImage,
+  EuiComboBox
 } from '@elastic/eui';
 
 import MappingTable from './mappingTable.js';
@@ -36,6 +37,7 @@ import {
 import {setESIndexName, formatJSON} from '../services/sheetServices.js';
 
 class StepTwo extends Component {
+
   constructor(props) {
     super(props);
 
@@ -43,6 +45,8 @@ class StepTwo extends Component {
       indexName: setESIndexName(this.props.indexName),
       indexNameError: false,
       networkError: false,
+      options: [],
+      selectedAnonOptions: [],
       kbnId: {
         model: "",
         preview: ""
@@ -64,6 +68,7 @@ class StepTwo extends Component {
 
     this.indexNameChange = this.indexNameChange.bind(this);
     this.kbnIdChange = this.kbnIdChange.bind(this);
+    this.onChangeAnonColumns = this.onChangeAnonColumns.bind(this);
     this.switchChange = this.switchChange.bind(this);
     this.onChangeMapping = this.onChangeMapping.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -77,6 +82,13 @@ class StepTwo extends Component {
     axios.defaults.headers.delete['kbn-xsrf'] = "reporting";
   }
 
+  componentDidMount() {
+    const opt = this.props.header.map((s) => ({
+        label: s
+    }));
+    this.setState({ options: opt });
+  }
+
   indexNameChange(e) {
     if(/[~`!#$%\^&*+=\\[\]\\';,/{}|\\":<>\?]/g.test(e.target.value) || (/[A-Z]/.test(e.target.value)))
       this.setState({indexName: e.target.value, indexNameError: true});
@@ -87,6 +99,10 @@ class StepTwo extends Component {
 
   kbnIdChange(e) {
     this.setState({kbnId:{model: e.target.value, preview: createKbnCustomId(e.target.value, this.props.firstRow)}});
+  }
+
+  onChangeAnonColumns(e) {
+    this.setState({ selectedAnonOptions: e });
   }
 
   switchChange(e) {
@@ -115,6 +131,15 @@ class StepTwo extends Component {
         console.log("deleting index after lost connection...")
         await axios.delete(`../api/xlsx_import/${this.state.indexName}`);
       }*/
+      if(this.state.selectedAnonOptions.length > 0) {
+        console.log("filtering json...")
+        const filter = this.state.selectedAnonOptions.map((s) => (
+            s.label
+        ));
+        const filteredJson = json.map((j) => (
+          filter.forEach(e => delete j[e])
+        ));
+      }
 
       if(this.state.switchMap.value) {
         console.log("creating index", this.state.indexName)
@@ -260,6 +285,13 @@ class StepTwo extends Component {
                   <EuiFieldText id="previewKbnID" placeholder="Custom ID preview" value={this.state.kbnId.preview} readOnly/>
                 </EuiFlexItem>
               </EuiFlexGroup>
+            </EuiFormRow>
+
+            <EuiFormRow label="Removing columns">
+                  <EuiComboBox
+                    options={this.state.options}
+                    selectedOptions={this.state.selectedAnonOptions}
+                    onChange={this.onChangeAnonColumns} />
             </EuiFormRow>
 
             <EuiSpacer size="s" />
