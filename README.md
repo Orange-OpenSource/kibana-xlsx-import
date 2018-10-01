@@ -4,19 +4,19 @@
 
 ---
 ## Installation
-Use this example or manually pick a [release](https://github.com/kyushy/kibana-xlsx-import/releases)  
+Use this example or manually pick a [release](https://github.com/Orange-OpenSource/kibana-xlsx-import/releases)  
 <pre>
-/opt/kibana/bin/kibana-plugin install https://github.com/kyushy/kibana-xlsx-import/releases/download/6.2.3/xlsx-import-6.2.3-react-latest.zip
+/opt/kibana/bin/kibana-plugin install https://github.com/Orange-OpenSource/kibana-xlsx-import/releases/download/6.3.2/xlsx-import-6.3.2-latest.zip
 </pre>
 
 ---
 ## How to use
 
 ### 1 - Select your file and sheet
-![](https://raw.githubusercontent.com/kyushy/kibana-xlsx-import/master/assets/step1.png)
+![](https://raw.githubusercontent.com/Orange-OpenSource/kibana-xlsx-import/master/assets/step1.png)
 
 ### 2 - Configure  
-![](https://raw.githubusercontent.com/kyushy/kibana-xlsx-import/master/assets/step2.png)  
+![](https://raw.githubusercontent.com/Orange-OpenSource/kibana-xlsx-import/master/assets/step2.png)  
 ```diff
 - If you want to define your own mapping, you have to use an index name which doesn't already exist.
 - Index name must be all lower case.
