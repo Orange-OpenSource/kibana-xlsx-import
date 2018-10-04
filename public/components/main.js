@@ -32,27 +32,25 @@ const Main = (props) => {
 
   return(
     <EuiPage>
-
-      <EuiPageHeader>
-        <EuiHeader style={{width: "100%", height: "70px"}}>
-          <EuiHeaderSection>
-            <EuiHeaderSectionItem border="right" style={{width: "5%"}}>
-              <EuiFlexGroup justifyContent="center" style={{paddingTop: "15px"}}>
-                <EuiFlexItem grow={false}>
-                  <EuiIcon type="addDataApp" size="xxl"/>
-                </EuiFlexItem>
-              </EuiFlexGroup>
-            </EuiHeaderSectionItem>
-
-            <EuiHeaderSectionItem>
-              <EuiTitle style={{paddingTop: "20px", paddingLeft: "10px"}}><h2>XLSX Import</h2></EuiTitle>
-            </EuiHeaderSectionItem>
-
-          </EuiHeaderSection>
-        </EuiHeader>
-      </EuiPageHeader>
-
       <EuiPageBody>
+        <EuiPageHeader>
+          <EuiHeader style={{width: "100%"}}> 
+            <EuiHeaderSection>
+              <EuiHeaderSectionItem border="right">
+                <EuiFlexGroup justifyContent="center" style={{padding: "5px"}}>
+                  <EuiFlexItem grow={false}>
+                    <EuiIcon type="importAction" size="xxl"/>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiHeaderSectionItem>
+              <EuiHeaderSectionItem>
+                <EuiTitle style={{padding: "12px 5px 5px 15px"}}><h2>XLSX Import</h2></EuiTitle>
+              </EuiHeaderSectionItem>
+
+            </EuiHeaderSection>
+          </EuiHeader>
+        </EuiPageHeader>
+
         <EuiPageContent>
           <EuiPageContentHeader id="step">
             <EuiStepsHorizontal steps={props.steps} style={{backgroundColor: "white"}}/>
