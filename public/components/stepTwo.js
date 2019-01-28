@@ -129,7 +129,7 @@ class StepTwo extends Component {
 
       /*if(this.state.networkError) {
         console.log("deleting index after lost connection...")
-        await axios.delete(`../api/xlsx_import/${this.state.indexName}`);
+        await axios.delete(`../api/kibana-xlsx-import/${this.state.indexName}`);
       }*/
       if(this.state.selectedAnonOptions.length > 0) {
         console.log("filtering json...")
@@ -143,7 +143,7 @@ class StepTwo extends Component {
 
       if(this.state.switchMap.value) {
         console.log("creating index", this.state.indexName)
-        const resIndex = await axios.post(`../api/xlsx_import/${this.state.indexName}`);
+        const resIndex = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}`);
         if(resIndex.data.error != undefined) {
           this.addErrorToast(resIndex.data.error.msg);
           return
@@ -153,10 +153,10 @@ class StepTwo extends Component {
         var elements = document.getElementsByClassName('euiSelect');
         var mappingParameters = document.getElementsByClassName('advjsontext');
         const properties = createMapping(elements, mappingParameters, this.props.header);
-        const resMap = await axios.post(`../api/xlsx_import/${this.state.indexName}/_mapping/doc`, properties);
+        const resMap = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}/_mapping/doc`, properties);
         if(resMap.data.error != undefined) {
           this.addErrorToast(resMap.data.error.msg);
-          axios.delete(`../api/xlsx_import/${this.state.indexName}`);
+          axios.delete(`../api/kibana-xlsx-import/${this.state.indexName}`);
           return
         }
       }
@@ -168,7 +168,7 @@ class StepTwo extends Component {
         this.setState({uploadButton:{text:"Loading...", loading:true}});
         for(var i = 0; i < bulk.length; i++ ) {
           this.setState({progress:{current: (i/bulk.length)*100}});
-          const response = await axios.post(`../api/xlsx_import/${this.state.indexName}/doc/_bulk`, bulk[i]);
+          const response = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}/doc/_bulk`, bulk[i]);
           try {
             if(response.data.errors) {
               reject(response.data.items[i].index.error.reason + " " +
@@ -193,12 +193,12 @@ class StepTwo extends Component {
         this.props.nextStep(this.state.indexName, this.props.sheetname, this.props.indexName ,json.length);
       },(reason) => {
         this.addErrorToast(reason);
-        axios.delete(`../api/xlsx_import/${this.state.indexName}`);
+        axios.delete(`../api/kibana-xlsx-import/${this.state.indexName}`);
         this.setState({uploadButton:{text:"Import", loading:false}, progress:{show: false, color: "danger"}});
       });
 
     } catch (error) {
-        axios.delete(`../api/xlsx_import/${this.state.indexName}`);
+        axios.delete(`../api/kibana-xlsx-import/${this.state.indexName}`);
         this.addErrorToast(error.message, "Verify your advanced JSON or your fields name");
     }
   };

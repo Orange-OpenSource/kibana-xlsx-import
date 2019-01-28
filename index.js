@@ -5,23 +5,23 @@ export default function (kibana) {
   return new kibana.Plugin({
 
     require: ['elasticsearch'],
-    name: 'xlsx-import',
+    name: 'kibana-xlsx-import',
     uiExports: {
 
       app: {
         title: 'XLSX Import',
         description: 'Import XLSX to JSON',
-        main: 'plugins/xlsx-import/app',
-        url: '/app/xlsx-import',
-        icon: 'plugins/xlsx-import/ressources/icon.svg'
+        main: 'plugins/kibana-xlsx-import/app',
+        url: '/app/kibana-xlsx-import',
+        icon: 'plugins/kibana-xlsx-import/ressources/icon.svg'
       },
 
       uiSettingDefaults: {
-        'xlsx-import:bulk_package_size': {
+        'kibana-xlsx-import:bulk_package_size': {
           value: 1000,
           description: 'The number of json item send in one bulk request'
         },
-        'xlsx-import:displayed_rows': {
+        'kibana-xlsx-import:displayed_rows': {
           value: 5,
           description: 'Number of row displayed in the preview'
         }

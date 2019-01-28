@@ -6,7 +6,7 @@
 ## Installation
 Use this example or manually pick a [release](https://github.com/Orange-OpenSource/kibana-xlsx-import/releases)  
 <pre>
-/opt/kibana/bin/kibana-plugin install https://github.com/Orange-OpenSource/kibana-xlsx-import/releases/download/6.3.2/xlsx-import-6.3.2-latest.zip
+/opt/kibana/bin/kibana-plugin install https://github.com/Orange-OpenSource/kibana-xlsx-import/releases/download/6.5.4/kibana-xlsx-import-6.5.4-latest.zip
 </pre>
 
 ---
@@ -38,10 +38,10 @@ In our example, if I use the following template `{ID}-{Nom}` this will lead us t
 In the kibana advanced setting you can find those parameters  
 __Warning :__ All those options might cause crash or slowing the plugin.  
 
-  - `xlsx-import:bulk_package_size`  
+  - `kibana-xlsx-import:bulk_package_size`  
   Allow you to define the number of json item you want to send per bulk package  
 
-  - `xlsx-import:displayed_rows`  
+  - `kibana-xlsx-import:displayed_rows`  
   Define the number of rows which will be displayed in the preview
 
 
