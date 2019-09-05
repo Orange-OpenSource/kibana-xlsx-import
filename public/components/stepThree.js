@@ -15,7 +15,7 @@ class StepThree extends Component {
     super(props);
   }
 
-  handleClick = () => {
+  handleClickNewImport = () => {
     window.location.reload();
   }
 
@@ -37,7 +37,16 @@ class StepThree extends Component {
             <EuiFormRow>
               <EuiFlexGroup gutterSize="s" alignItems="center">
                 <EuiFlexItem grow={false}>
-                  <EuiButtonEmpty onClick={this.handleClick} size="s" iconType="arrowRight">
+                  <EuiButtonEmpty href="../app/kibana#/management/kibana/index_patterns" size="s" iconType="arrowRight">
+                    Create the index pattern
+                  </EuiButtonEmpty>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiFormRow>
+            <EuiFormRow>
+              <EuiFlexGroup gutterSize="s" alignItems="center">
+                <EuiFlexItem grow={false}>
+                  <EuiButtonEmpty onClick={this.handleClickNewImport} size="s" iconType="arrowRight">
                     Import a new file
                   </EuiButtonEmpty>
                 </EuiFlexItem>

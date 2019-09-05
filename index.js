@@ -13,7 +13,7 @@ export default function (kibana) {
         description: 'Import XLSX to JSON',
         main: 'plugins/kibana-xlsx-import/app',
         url: '/app/kibana-xlsx-import',
-        icon: 'plugins/kibana-xlsx-import/ressources/icon.svg'
+        euiIconType: 'importAction'
       },
 
       uiSettingDefaults: {
