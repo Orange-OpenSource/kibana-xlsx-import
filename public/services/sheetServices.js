@@ -1,49 +1,73 @@
 import XLSX from 'xlsx';
+import moment from 'moment-timezone';
 
 //Recupère le header de la feuille excel
-function get_header_row(sheet) {
+function getHeaderRowWithType(sheet) {
     var headers = [];
     var range = XLSX.utils.decode_range(sheet['!ref']);
-    var C, R = range.s.r; /* start in the first row */
+
+    var C; 
+    var headerCell;
+    var firstValueCell;
+
+    const typesMapping = {
+      "s": "text",
+      "n": "float",
+      "d": "date",
+      "b": "boolean"
+    }
     /* walk every column in the range */
     for(C = range.s.c; C <= range.e.c; ++C) {
-        var cell = sheet[XLSX.utils.encode_cell({c:C, r:R})] /* find the cell in the first row */
+      headerCell = sheet[XLSX.utils.encode_cell({c:C, r:0})] /* find the cell in the first row */
+      firstValueCell = sheet[XLSX.utils.encode_cell({c:C, r:1})]
 
-        var hdr = "UNKNOWN " + C; // <-- replace with your desired default
-        if(cell && cell.t) hdr = XLSX.utils.format_cell(cell);
+      if (headerCell || firstValueCell) {
 
-        headers.push(formatHeader(hdr));
+        headers.push({
+          name: headerCell && formatHeader(XLSX.utils.format_cell(headerCell)),
+          type: typesMapping[(firstValueCell && firstValueCell.t) || 's']
+        })
+      }
+      
     }
-    return headers;
+    return headers
 }
 
 //Replace all space in json data keys
-function formatJSON(json){
+function formatJSON(json, columns, timezone = false){
+
+  const dateColumns = columns.filter(c => (c.type === "date"))
+
   // Iterate over array
   json.forEach(function(e, i) {
   // Iterate over the keys of object
     Object.keys(e).forEach(function(key) {
 
-    // Copy the value
+      // Copy the value
       var val = e[key],
       newKey = key.replace(/\s+/g, '_');
 
-    // Remove key-value from object
+      // check date object and manage timezone
+      if (timezone && dateColumns.filter(c => (newKey === c.name)).length > 0) {
+        val = moment(val).tz(timezone).format()
+      }
+
+      // Remove key-value from object
       delete json[i][key];
 
-    // Add value with new key
+      // Add value with new key
       json[i][newKey] = val;
     });
   });
   return json;
 }
 
-//Formate le nom du fichier pour le transformer en nom d'index ES correct
+//Transform filename to a valid ES index name
 function setESIndexName(name) {
 
   var name = name.split('.')[0];              //removing extension
   name = name.replace(/\s/g, '');             //removing space
-  name = name.replace(/[^a-zA-Z ]/g, "");     //removing special characters
+  name = name.replace(/[^a-zA-Z0-9]/g, "");   //removing special characters
   name = name.toLowerCase();                  //lowercase
   return name;
 }
@@ -57,4 +81,4 @@ function getExtension(filename) {
   return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) : undefined;
 }
 
-export default { get_header_row, formatJSON, setESIndexName, getExtension }
+export default { getHeaderRowWithType, formatJSON, setESIndexName, getExtension }

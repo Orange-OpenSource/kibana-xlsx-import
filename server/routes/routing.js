@@ -15,35 +15,15 @@ export default function (server, adminCluster, dataCluster) {
         }
     });
 
-	//Perform single POST for creating / adding document to an index
-    server.route({
-    	path: '/api/kibana-xlsx-import/{index}/{document}',
-        method: 'POST',
-        async handler(req, h) {
-            try {
-            	const {err, response} = await dataCluster.callWithRequest(req, 'index', {
-            		index: req.params.index,
-            		type: req.params.document,
-            		body: req.payload
-            	})
-                if (err) {
-                    return err;
-                }
-                return response;
-            } catch (e) {
-                console.error(e);
-                return {"error": e};
-            }
-        }
-    });
-
     //Perform BULK for creating / adding multiple documents to an index
     server.route({
-    	path: '/api/kibana-xlsx-import/{index}/{document}/_bulk',
+    	path: '/api/kibana-xlsx-import/{index}/_bulk',
         method: 'POST',
         async handler(req, h) {
         	try {
+                const pipeline = req.query.pipeline || false;
                 const response = await dataCluster.callWithRequest(req, 'bulk', {
+                    ...(pipeline && { pipeline }),
                     body: req.payload
                 })
                 return response;
@@ -54,18 +34,18 @@ export default function (server, adminCluster, dataCluster) {
         }
     });
 
-    //Create a mapping for a selected index and document
+    //Create a mapping for a selected index
     server.route({
-        path: '/api/kibana-xlsx-import/{index}/_mapping/{document}',
+        path: '/api/kibana-xlsx-import/{index}/_mapping',
         method: 'POST',
         async handler(req, h) {
             try {
-                const response = await dataCluster.callWithRequest(req, 'indices.putMapping', {
+                return (await dataCluster.callWithRequest(req, 'indices.putMapping', {
                     index: req.params.index,
-                    type: req.params.document,
-                    body: req.payload,
-                })
-                return response;
+                    body: {
+                        properties: req.payload
+                    }
+                }))
             } catch(e) {
                 console.error(e);
                 return {"error": e};
