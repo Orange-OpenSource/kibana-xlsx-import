@@ -1,13 +1,26 @@
-function createBulk(json, indexName, kbnCustomId, BULKSIZE) {
+import uuid from 'short-uuid';
+
+function createBulk(json, indexName, kbnCustomId = '', BULKSIZE = 1000) {
   var bulk_request = [];
   var bulk_package = [];
 
+  let line = 2 // +2 == (header line + begin from 1 not from 0)
+
   for(var i = 0; i < json.length; i++) {
 
-    if(kbnCustomId != '')
-      bulk_package.push({index: { _index: indexName, _type: 'doc', _id: createKbnCustomId(kbnCustomId, json[i]) } });
-    else
-      bulk_package.push({index: { _index: indexName, _type: 'doc' } });
+    const keys = {
+      // all columns name are usable to create custom document id 
+      ...json[i],
+      // or special reserved variable
+      "_line": line,
+      "_uid": getUID()
+    }
+
+    bulk_package.push({index: { 
+      _index: indexName, 
+      ...(kbnCustomId !== '' && { _id: createKbnCustomId(kbnCustomId, keys) }) 
+    } });
+
     bulk_package.push(json[i]);
 
     if(bulk_package.length >= BULKSIZE) {
@@ -16,53 +29,16 @@ function createBulk(json, indexName, kbnCustomId, BULKSIZE) {
       if(json[i+1] === undefined)
         return bulk_request;
     }
+
+    line++
   }
   bulk_request.push(bulk_package);
 
   return bulk_request;
 }
 
-
-function createMapping(elements, advjsons, items) {
-  var types = [];
-  var mappingParameters = [];
-
-  let properties = {};
-
-  for(var i=0; i < elements.length; i++){
-
-    types.push(elements[i].value);
-    mappingParameters.push(advjsons[i].value);
-
-    properties[items[i]] = { "type": types[i] };
-
-    if (mappingParameters[i]) {
-      properties[items[i]] = Object.assign({}, properties[items[i]], JSON.parse(mappingParameters[i]));
-    }
-
-  }
-  
-  return {"properties" : properties};
-
-  //console.log(mappingParameters)
-  /*var mapping_request = '{ "properties": {';
-
-  for(var i = 0; i < elements.length; i++) {
-
-    if(mappingParameters[i] != undefined && mappingParameters[i] != "")
-      mapping_request += '"'+ items[i] +'": { "type": "'+ types[i] +'", '+ mappingParameters[i] +' }';
-    else {
-      mapping_request += '"'+ items[i] +'": { "type": "'+ types[i] +'" }';
-    }
-
-    if(i < elements.length -1)
-      mapping_request += ','
-    }
-
-    mapping_request += '} }';*/
-
-
-
+function getUID() {
+  return uuid.generate()
 }
 
 function createKbnCustomId(template, obj) {
@@ -118,4 +94,4 @@ function createKbnCustomId(template, obj) {
   return template;
 }
 
-export default { createBulk, createMapping, createKbnCustomId }
+export default { createBulk, createKbnCustomId, getUID }

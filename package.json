@@ -1,6 +1,6 @@
 {
   "name": "kibana-xlsx-import",
-  "version": "7..4.0-1",
+  "version": "7.4.0-2",
   "description": "Import XLSX to JSON",
   "main": "index.js",
   "kibana": {
@@ -30,10 +30,12 @@
     "expect.js": "^0.3.1"
   },
   "dependencies": {
-    "@elastic/eui": "4.4.1",
-    "axios": "^0.18.0",
-    "react-dom": "^16.8.3",
-    "xlsx": "^0.12.8"
+    "@elastic/eui": "13.6.1",
+    "axios": "^0.19.0",
+    "react-dom": "^16.8.0",
+    "short-uuid": "^3.1.1",
+    "uuid": "^3.3.3",
+    "xlsx": "^0.15.3"
   },
   "author": "frederic testaniere",
   "license": "ISC"
