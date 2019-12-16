@@ -26,7 +26,7 @@ import {
 
 import moment from 'moment-timezone'
 
-import MappingTable from './mappingTable.js'
+import MappingTable, { getMappingByColumns } from './mappingTable.js'
 
 import axios from 'axios'
 import XLSX from 'xlsx'
@@ -170,15 +170,18 @@ class StepTwo extends Component {
         }
 
         console.log("applying mapping")
-        let customMapping = this.state.customColumns.reduce(function(acc, cur, i) { // transform array columns to mapping object
-          acc[cur.name] = { type: cur.type || "text" } // default value "text" if no type
-          return acc;
-        }, {});
+        let customMapping = getMappingByColumns(this.state.customColumns)
+        if (customMapping === false) {
+          throw {
+            message: "Invalid JSON syntax in your mapping.",
+            tips: "Unable to applying the mapping. Check your configuration."
+          }
+        }
         const resMap = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}/_mapping`, customMapping);
-        if(resMap.data.error != undefined) {
+        if (resMap.data.error != undefined) {
           throw {
             message: resMap.data.error.msg,
-            tips: "Unable to applying the mapping. Check your advanced JSON configuration."
+            tips: "Unable to applying the mapping. Check your configuration."
           }
         }
       }

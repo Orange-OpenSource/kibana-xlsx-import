@@ -5,21 +5,33 @@ import {
   EuiTextArea
 } from '@elastic/eui'
 
-export function getInitialMapping(items) {
+export function getMappingByColumns(columns) {
+
+  let nbJsonInvalid = 0
 
   // get the initial items list and convert it to a mapping properties content
-  let initialMappingObj = items.reduce(function(acc, cur, i) {
-    acc[cur.name] = { type: cur.type || "text" } // default value "text" if no type
+  let mappingObj = columns.reduce(function(acc, cur, i) {
+
+    if (cur.isJsonInvalid) {
+      nbJsonInvalid++
+      return acc
+    }
+
+    acc[cur.name] = { 
+      type: cur.type || "text", // default value "text" if no type
+      ...cur.json
+    } 
     return acc;
   }, {});
 
-  return initialMappingObj
+  if (nbJsonInvalid > 0) {
+    return false
+  }
+
+  return mappingObj
 }
 
 const MappingTable = ({ items, onChangeColumns }) => {
-
-  // get the initial items list and convert it to a mapping properties object
-  //let initialMappingObj = getInitialMapping(items)
 
   const [mappingArr, setMappingArr] = useState(items); 
 
@@ -41,6 +53,30 @@ const MappingTable = ({ items, onChangeColumns }) => {
     setMappingArr(newMappingArr)
 
     onChangeColumns(newMappingArr)
+  }
+
+  // specific process to parse JSON and detect potential syntax error
+  const handlePropertyJsonChange = (item, updatedContent) => {
+
+    let parsedContent = updatedContent.json
+    try {
+      if (parsedContent) {
+        parsedContent = {
+          json: JSON.parse(parsedContent),
+          isJsonInvalid: false
+        }
+      }
+    }
+    catch (err) {
+      parsedContent = {
+        json: parsedContent,
+        isJsonInvalid: true
+      }
+
+    }
+    
+    // update the given item with new type or advanced json content
+    handlePropertyChange(item, parsedContent)
   }
 
   const options = [
@@ -70,14 +106,18 @@ const MappingTable = ({ items, onChangeColumns }) => {
       <EuiSelect options={options} defaultValue={name} onChange={(e) => { handlePropertyChange(item.name, {type: e.target.value})} }/>
     )
   }, {
-    field: 'advjson',
+    field: 'json',
     name: 'Advanced JSON',
     render: (name, item) => (
       <EuiTextArea
         className="advjsontext"
+        isInvalid={item.isJsonInvalid}
         rows={4}
-        placeholder='{fielddata": true, "format": "yyyy/MM/dd", ...}'
-        onChange={(e) => { handlePropertyChange(item.name, e.target.value ? JSON.parse(e.target.value) : "")} } />
+        placeholder={`{
+  "type": "${item.type}",
+  ...
+}`}
+        onChange={(e) => { handlePropertyJsonChange(item.name, {json: e.target.value})} } />
     )
   }];
 
