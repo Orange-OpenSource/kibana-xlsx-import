@@ -21,7 +21,7 @@ export function getMappingByColumns(columns) {
       type: cur.type || "text", // default value "text" if no type
       ...cur.json
     } 
-    return acc;
+    return acc
   }, {});
 
   if (nbJsonInvalid > 0) {

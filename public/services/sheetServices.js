@@ -5,10 +5,12 @@ import moment from 'moment-timezone';
 function getHeaderRowWithType(sheet) {
     var headers = [];
     var range = XLSX.utils.decode_range(sheet['!ref']);
+    
 
-    var C; 
-    var headerCell;
-    var firstValueCell;
+    var C
+    let U = 1 
+    var headerCell
+    var firstValueCell
 
     const typesMapping = {
       "s": "text",
@@ -23,8 +25,17 @@ function getHeaderRowWithType(sheet) {
 
       if (headerCell || firstValueCell) {
 
+        if (!headerCell || !XLSX.utils.format_cell(headerCell).trim())
+        {
+          headerCell = `UNKNOWN_${U}`
+          U++
+        }
+        else {
+          headerCell = formatHeader(XLSX.utils.format_cell(headerCell).trim())
+        }
+
         headers.push({
-          name: headerCell && formatHeader(XLSX.utils.format_cell(headerCell)),
+          name: headerCell,
           type: typesMapping[(firstValueCell && firstValueCell.t) || 's']
         })
       }
