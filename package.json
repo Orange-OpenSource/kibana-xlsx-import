@@ -1,14 +1,14 @@
 {
   "name": "kibana-xlsx-import",
-  "version": "7.1.1-1",
+  "version": "7.4.0-2",
   "description": "Import XLSX to JSON",
   "main": "index.js",
   "kibana": {
-    "version": "7.1.1"
+    "version": "kibana"
   },
   "scripts": {
-    "preinstall": "node ../../kibana/preinstall_check",
-    "kbn": "node ../../kibana/scripts/kbn",
+    "preinstall": "node ../../preinstall_check",
+    "kbn": "node ../../scripts/kbn",
     "lint": "eslint **/*.js",
     "start": "plugin-helpers start",
     "test:server": "plugin-helpers test:server",
@@ -16,9 +16,9 @@
     "build": "plugin-helpers build"
   },
   "devDependencies": {
-    "@elastic/eslint-config-kibana": "link:../../kibana/packages/eslint-config-kibana",
+    "@elastic/eslint-config-kibana": "link:../../packages/eslint-config-kibana",
     "@elastic/eslint-import-resolver-kibana": "^0.9.0",
-    "@kbn/plugin-helpers": "link:../../kibana/packages/kbn-plugin-helpers",
+    "@kbn/plugin-helpers": "link:../../packages/kbn-plugin-helpers",
     "babel-eslint": "^8.0.2",
     "eslint": "^4.11.0",
     "eslint-plugin-babel": "^4.1.1",
@@ -30,10 +30,12 @@
     "expect.js": "^0.3.1"
   },
   "dependencies": {
-    "@elastic/eui": "4.4.1",
-    "axios": "^0.18.0",
-    "react-dom": "^16.8.3",
-    "xlsx": "^0.12.8"
+    "@elastic/eui": "13.6.1",
+    "axios": "^0.19.0",
+    "react-dom": "^16.8.0",
+    "short-uuid": "^3.1.1",
+    "uuid": "^3.3.3",
+    "xlsx": "^0.15.3"
   },
   "author": "frederic testaniere",
   "license": "ISC"

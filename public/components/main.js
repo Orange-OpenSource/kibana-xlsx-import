@@ -26,7 +26,7 @@ import {
 
 import StepOne from './stepOne.js';
 
-import "@elastic/eui/dist/eui_theme_k6_light.css";
+//import "@elastic/eui/dist/eui_theme_k6_light.css";
 
 const Main = (props) => {
 

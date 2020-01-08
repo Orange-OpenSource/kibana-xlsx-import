@@ -80,7 +80,7 @@ function RootController($scope, $element, config) {
   });
 
 
-  function displayStep2(indexname, workbook, sheetname, firstrow) {
+  function displayStep2(fileName, sheetName, workbook, firstRow, columns) {
     //document.getElementById("progress-img").innerHTML = '<img src="../plugins/kibana-xlsx-import/ressources/progress-step2.png"/>'
     horizontalSteps[0].isSelected = false;
     horizontalSteps[0].isComplete = true;
@@ -93,13 +93,12 @@ function RootController($scope, $element, config) {
 
     ReactDOM.render(
       <StepTwo
-        indexName={indexname}
-        header={get_header_row(workbook.Sheets[sheetname])}
-        items={getHeaderWithType(workbook.Sheets[sheetname])}
-        firstRow = {firstrow}
+        fileName={fileName}
+        sheetName={sheetName}
+        columns={columns}
+        firstRow = {firstRow}
         nextStep={displayStep3}
         workbook={workbook}
-        sheetname={sheetname}
         bulksize={bulkSize}
       />,
       document.getElementById("main")
@@ -107,7 +106,7 @@ function RootController($scope, $element, config) {
   }
 
 
-  function displayStep3(indexName, sheetname , filename, nbDocument) {
+  function displayStep3(indexName, sheetName, fileName, nbDocument) {
     //document.getElementById("progress-img").innerHTML = '<img src="../plugins/kibana-xlsx-import/ressources/progress-step3.png"/>'
     horizontalSteps[1].isSelected = false;
     horizontalSteps[1].isComplete = true;
@@ -121,8 +120,8 @@ function RootController($scope, $element, config) {
     ReactDOM.render(
       <StepThree
         indexName={indexName}
-        sheetName={sheetname}
-        fileName={filename}
+        sheetName={sheetName}
+        fileName={fileName}
         nbDocument={nbDocument} />,
       document.getElementById("main")
     );
@@ -130,67 +129,4 @@ function RootController($scope, $element, config) {
 }
 
 chrome.setRootController("root", RootController);
-
-
-//Recupère le header de la feuille excel
-function get_header_row(sheet) {
-    var headers = [];
-    var range = XLSX.utils.decode_range(sheet['!ref']);
-    var C, R = range.s.r; /* start in the first row */
-    /* walk every column in the range */
-    for(C = range.s.c; C <= range.e.c; ++C) {
-        var cell = sheet[XLSX.utils.encode_cell({c:C, r:R})] /* find the cell in the first row */
-
-        var hdr = "UNKNOWN " + C; // <-- replace with your desired default
-        if(cell && cell.t) hdr = XLSX.utils.format_cell(cell);
-
-        headers.push(formatHeader(hdr));
-    }
-    return headers;
-}
-
-//Recupère les types des colonnes de la feuille excel
-function getHeaderWithType(sheet) {
-    var types = [];
-    var range = XLSX.utils.decode_range(sheet['!ref']);
-    var C, R = range.s.r; /* start in the first row */
-    /* walk every column in the range */
-    for(C = range.s.c; C <= range.e.c; ++C) {
-        var type = new Object();
-
-        var cell = sheet[XLSX.utils.encode_cell({c:C, r:R})] /* find the cell in the first row */
-        if(cell && cell.t) {
-          type.name = XLSX.utils.format_cell(cell);
-        }
-
-        cell = sheet[XLSX.utils.encode_cell({c:C, r:R+1})] /* find the cell in the second row */
-
-        var hdr = "UNKNOWN " + C; // <-- replace with your desired default
-        if(cell && cell.t) {
-          switch(cell.t) {
-            case "s":
-              hdr = "text";
-              break;
-            case "n":
-              hdr = "float";
-              break;
-            case "d":
-              hdr = "date";
-              break;
-            case "b":
-              hdr = "boolean";
-              break;
-          }
-          type.type = hdr;
-        }
-        types.push(type);
-    }
-    return types;
-}
-
-
-//Replace all space in json header
-function formatHeader(header){
-  return header.replace(/ /g,"_");
-}
 

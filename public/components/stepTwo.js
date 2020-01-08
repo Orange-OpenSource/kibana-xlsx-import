@@ -1,63 +1,77 @@
 import React, {
   Component, Fragment
-} from 'react';
-
-import ReactDOM from 'react-dom';
+} from 'react'
 
 import {
-  EuiForm,
-  EuiFormRow,
-  EuiFieldText,
   EuiSwitch,
   EuiAccordion,
-  EuiSpacer,
-  EuiFlexGroup,
-  EuiFlexItem,
   EuiButton,
   EuiButtonEmpty,
-  EuiGlobalToastList,
+  EuiComboBox,
+  EuiFieldText,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiForm,
+  EuiFormRow,
   EuiFormHelpText,
-  EuiLink,
-  EuiProgress,
-  EuiPanel,
+  EuiGlobalToastList,
+  EuiIconTip,
   EuiImage,
-  EuiComboBox
-} from '@elastic/eui';
+  EuiLink,
+  EuiPanel,
+  EuiProgress,
+  EuiSpacer,
+} from '@elastic/eui'
 
-import MappingTable from './mappingTable.js';
 
-import axios from 'axios';
-import XLSX from 'xlsx';
+import moment from 'moment-timezone'
+
+import MappingTable, { getMappingByColumns } from './mappingTable.js'
+
+import axios from 'axios'
+import XLSX from 'xlsx'
 
 import {
   createBulk,
-  createMapping,
-  createKbnCustomId
+  createKbnCustomId,
+  getUID
 } from '../services/services.js';
 import {setESIndexName, formatJSON} from '../services/sheetServices.js';
 
 class StepTwo extends Component {
 
   constructor(props) {
+
     super(props);
 
+    this.firstRow = {
+      ...this.props.firstRow,
+      _line: "1337",
+      _uid: getUID()
+    }
+
+    this.anonOptions = this.props.columns.map((c) => ({label: c.name}))
+
+    this.tzOptions = moment.tz.names().map(tz => ({label: tz}))
+
     this.state = {
-      indexName: setESIndexName(this.props.indexName),
+      indexName: setESIndexName(this.props.fileName) + '_' + setESIndexName(this.props.sheetName),
       indexNameError: false,
       networkError: false,
-      options: [],
       selectedAnonOptions: [],
+      selectedTzOption: [{ label: moment.tz.guess() }],
       kbnId: {
-        model: "",
-        preview: ""
+        model: "line{_line}-{_uid}",
+        preview: createKbnCustomId("line{_line}-{_uid}", this.firstRow)
       },
       uploadButton: {
         text : "Import",
         loading: false
       },
-      switchMap: {
-        value: false
-      },
+      customColumns: this.props.columns,
+      enableCustomColumns: false,
+      pipeline: "",
+      enablePipeline: false,
       progress:{
         show: false,
         current: 0,
@@ -66,27 +80,29 @@ class StepTwo extends Component {
       toasts: []
     };
 
-    this.indexNameChange = this.indexNameChange.bind(this);
-    this.kbnIdChange = this.kbnIdChange.bind(this);
-    this.onChangeAnonColumns = this.onChangeAnonColumns.bind(this);
-    this.switchChange = this.switchChange.bind(this);
-    this.onChangeMapping = this.onChangeMapping.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleNextStep = this.handleNextStep.bind(this);
-    this.backClick = this.backClick.bind(this);
-    this.addErrorToast = this.addErrorToast.bind(this);
-    this.addMappingToast = this.addMappingToast.bind(this);
-    this.removeToast = this.removeToast.bind(this);
+    this.indexNameChange        = this.indexNameChange.bind(this);
+    this.kbnIdChange            = this.kbnIdChange.bind(this);
+    this.onChangeAnonColumns    = this.onChangeAnonColumns.bind(this);
+    this.onToggleCustomColumns  = this.onToggleCustomColumns.bind(this);
+    this.onTogglePipeline       = this.onTogglePipeline.bind(this);
+    this.onChangeColumns        = this.onChangeColumns.bind(this);
+    this.onChangePipeline       = this.onChangePipeline.bind(this);
+    this.onChangeTimezone             = this.onChangeTimezone.bind(this);
+    this.handleClick            = this.handleClick.bind(this);
+    this.handleNextStep         = this.handleNextStep.bind(this);
+    this.backClick              = this.backClick.bind(this);
+    this.addErrorToast          = this.addErrorToast.bind(this);
+    this.addMappingToast        = this.addMappingToast.bind(this);
+    this.removeToast            = this.removeToast.bind(this);
+    this.getFilteredColumns     = this.getFilteredColumns.bind(this);
 
     axios.defaults.headers.post['kbn-xsrf'] = "reporting";
     axios.defaults.headers.delete['kbn-xsrf'] = "reporting";
   }
 
-  componentDidMount() {
-    const opt = this.props.header.map((s) => ({
-        label: s
-    }));
-    this.setState({ options: opt });
+  // Return the anonymised-filtered items list
+  getFilteredColumns() {
+    return this.state.customColumns.filter(column => (!this.state.selectedAnonOptions.map(a => a.label).includes(column.name)))
   }
 
   indexNameChange(e) {
@@ -98,22 +114,36 @@ class StepTwo extends Component {
   }
 
   kbnIdChange(e) {
-    this.setState({kbnId:{model: e.target.value, preview: createKbnCustomId(e.target.value, this.props.firstRow)}});
+
+    this.setState({
+      kbnId: {
+        model: e.target.value, 
+        preview: createKbnCustomId(e.target.value, this.firstRow)}
+      });
   }
 
   onChangeAnonColumns(e) {
     this.setState({ selectedAnonOptions: e });
   }
 
-  switchChange(e) {
-    this.setState({switchMap:{value: e.target.checked}});
+  onChangeTimezone(e) {
+    this.setState({ selectedTzOption: e });
   }
 
-  onChangeMapping() {
-    if(!this.state.switchMap.value) {
-        this.setState({switchMap:{value: true}});
-        this.addMappingToast();
-    }
+  onToggleCustomColumns(e) {
+    this.setState({enableCustomColumns: e.target.checked});
+  }
+
+  onTogglePipeline(e) {
+    this.setState({enablePipeline: e.target.checked});
+  }
+
+  onChangeColumns(columns) {
+    this.setState({customColumns: columns});
+  }
+
+  onChangePipeline(e) {
+    this.setState({pipeline: e.target.value});
   }
 
   handleClick(e){
@@ -122,101 +152,157 @@ class StepTwo extends Component {
   }
 
   async handleNextStep() {
-    var ws = this.props.workbook.Sheets[this.props.sheetname];
 
     try {
-      const json = formatJSON(XLSX.utils.sheet_to_json(ws));
+     
+      this.setState({uploadButton:{text:"Initializing index...", loading:true}});
+      
+      if (this.state.enableCustomColumns) {
+        console.log("creating index", this.state.indexName)
+        const resIndex = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}`);
+        console.log(resIndex.data)
+        if(resIndex.data.error != undefined) {
+          throw {
+            message: resIndex.data.error.msg, 
+            tips: "Unable to create the index.",
+            skipDelete: true // index probably already exists. don't delete it
+          } 
+        }
 
-      /*if(this.state.networkError) {
-        console.log("deleting index after lost connection...")
-        await axios.delete(`../api/kibana-xlsx-import/${this.state.indexName}`);
-      }*/
-      if(this.state.selectedAnonOptions.length > 0) {
-        console.log("filtering json...")
-        const filter = this.state.selectedAnonOptions.map((s) => (
-            s.label
-        ));
-        const filteredJson = json.map((j) => (
+        console.log("applying mapping")
+        let customMapping = getMappingByColumns(this.state.customColumns)
+        if (customMapping === false) {
+          throw {
+            message: "Invalid JSON syntax in your mapping.",
+            tips: "Unable to applying the mapping. Check your configuration."
+          }
+        }
+        const resMap = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}/_mapping`, customMapping);
+        if (resMap.data.error != undefined) {
+          throw {
+            message: resMap.data.error.msg,
+            tips: "Unable to applying the mapping. Check your configuration."
+          }
+        }
+      }
+
+      this.setState({uploadButton:{text:"Reading data...", loading:true}});
+
+      const tz = this.state.selectedTzOption[0].label
+      const ws = this.props.workbook.Sheets[this.props.sheetName];
+      const json = formatJSON(XLSX.utils.sheet_to_json(ws, {
+        raw: false,
+        dateNF:'YYYY-MM-DD"T"HH:MM:SS'
+      }), this.state.customColumns, tz);
+
+      if (this.state.selectedAnonOptions.length > 0) {
+        console.log("filtering anonymised fields from json ...")
+        const filter = this.state.selectedAnonOptions.map(s => s.label);
+        json.map((j) => (
           filter.forEach(e => delete j[e])
         ));
       }
 
-      if(this.state.switchMap.value) {
-        console.log("creating index", this.state.indexName)
-        const resIndex = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}`);
-        if(resIndex.data.error != undefined) {
-          this.addErrorToast(resIndex.data.error.msg);
-          return
-        }
+      var bulk = createBulk(
+        json, 
+        this.state.indexName, 
+        this.state.kbnId.model,
+        this.props.bulksize 
+      );
 
-        console.log("applying mapping")
-        var elements = document.getElementsByClassName('euiSelect');
-        var mappingParameters = document.getElementsByClassName('advjsontext');
-        const properties = createMapping(elements, mappingParameters, this.props.header);
-        const resMap = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}/_mapping/doc`, properties);
-        if(resMap.data.error != undefined) {
-          this.addErrorToast(resMap.data.error.msg);
-          axios.delete(`../api/kibana-xlsx-import/${this.state.indexName}`);
-          return
-        }
+      console.log("sending documents to", this.state.indexName)
+      this.setState({uploadButton:{text:"Importing data...", loading: true}});
+      
+      let bulkPath = `../api/kibana-xlsx-import/${this.state.indexName}/_bulk`
+      if (this.state.enablePipeline && this.state.pipeline) {
+        bulkPath += "?pipeline=" + this.state.pipeline
       }
 
-      var bulk = createBulk(json, this.state.indexName, this.state.kbnId.model, this.props.bulksize);
+      for(var i = 0; i < bulk.length; i++ ) {
+        this.setState({progress:{current: (i/bulk.length)*100}});
+        
+        const response = await axios.post(bulkPath, bulk[i]);
+        
+          if (response.data.errors) {
 
-      var request = new Promise(async(resolve, reject) => {
-        console.log("sending documents to", this.state.indexName)
-        this.setState({uploadButton:{text:"Loading...", loading:true}});
-        for(var i = 0; i < bulk.length; i++ ) {
-          this.setState({progress:{current: (i/bulk.length)*100}});
-          const response = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}/doc/_bulk`, bulk[i]);
-          try {
-            if(response.data.errors) {
-              reject(response.data.items[i].index.error.reason + " " +
-                response.data.items[i].index.error.caused_by.reason);
-              return
+            const invalidItems = response.data.items    // parse all items
+              .map((item) => ({                          
+                ...item, 
+                isInvalid: item.index.status < 200 || item.index.status >= 300 }) // is the status in error ?
+              )
+              .filter((item) => item.isInvalid)         // filter only the error
+
+            throw {
+              reason: "Some lines are invalid according to the mapping index. The import will be aborted. Check browser console for full errors list",
+              items: invalidItems,
+              fullstack: invalidItems
             }
-            else if(response.data.error != undefined) {
-              this.setState({networkError : true});
-              reject(response.data.error.message);
-              return
-            }
-            else if(i === bulk.length -1){
-              resolve();
-            }
-          } catch (error) {
-            reject("Something wrong happened, check your advanced JSON");
           }
+          else if (response.data.error) {
+            this.setState({networkError : true});
+            throw{
+              reason: response.data.error.message,
+              fullstack: response.data.error
+            }
+          }
+          else if(i === bulk.length - 1){
+            break;
+          } 
+      }
+
+      // finally call the next step
+      this.props.nextStep(this.state.indexName, this.props.sheetName, this.props.fileName, json.length)
+
+    } catch (err) {
+
+      if (err.items) {
+          
+        err.items.slice(0, 5).forEach(item => {
+          // reason for first 5 errors
+          let optionalCausedBy = item.index.error && item.index.error.caused_by && item.index.error.caused_by.reason
+          this.addErrorToast(item.index.error.reason, optionalCausedBy)
+        })   
+        if (err.items.length > 5) {
+          this.addErrorToast(err.reason)
         }
-      });
+      }
+      else if (!err.skipToast) {
+        this.addErrorToast(err.message || "Something wrong happened, check browser console for more information", err.tips || false);
+      }
+    
+      console.log(err.fullstack)
 
-      request.then(() => {
-        this.props.nextStep(this.state.indexName, this.props.sheetname, this.props.indexName ,json.length);
-      },(reason) => {
-        this.addErrorToast(reason);
+      if (!err.skipDelete) {
         axios.delete(`../api/kibana-xlsx-import/${this.state.indexName}`);
-        this.setState({uploadButton:{text:"Import", loading:false}, progress:{show: false, color: "danger"}});
-      });
-
-    } catch (error) {
-        axios.delete(`../api/kibana-xlsx-import/${this.state.indexName}`);
-        this.addErrorToast(error.message, "Verify your advanced JSON or your fields name");
+      }
+      this.setState({ 
+        uploadButton: { text:"Import", loading:false }, 
+        progress: { show: false, color: "danger" 
+      }});
     }
   };
-
 
   backClick(e) {
     window.location.reload();
   }
 
-  addErrorToast = (msg) => {
+  addErrorToast = (msg, optionalTips = false) => {
     const toast = {
+      id: getUID(),
       title: "Couldn't complete the import",
       color: "danger",
       iconType: "alert",
       text: (
-        <p>
-          {msg}
-        </p>
+        <Fragment>
+          <p>
+            {msg}
+          </p>
+          { optionalTips && (
+            <p style={{fontWeight:'bold'}}>
+              {optionalTips}
+            </p>
+          )}
+        </Fragment>
       ),
     }
 
@@ -227,6 +313,7 @@ class StepTwo extends Component {
 
   addMappingToast = () => {
     const toast = {
+      id: getUID(),
       title: "Mapping change detected",
       text: (
         <p>
@@ -266,48 +353,155 @@ class StepTwo extends Component {
       );
     }
 
+    let mappingTooltipContent = (
+      <Fragment>
+        <p>
+          Mapping is the process of defining how a document, and the fields it contains, are stored and indexed. <br/>
+          Fields and mapping types do not need to be defined before being used. <br/>
+          You know more about your data than Elasticsearch can guess, so while dynamic mapping can be useful to get started, 
+          at some point you will want to specify your own explicit mappings.<br/>
+          For instance, use mappings to define:
+        </p>
+
+        <ul>
+          <li>- which string fields should be treated as full text fields.</li>
+          <li>- which fields contain numbers, dates, or geolocations.</li>
+          <li>- the format of date values.</li>
+          <li>- custom rules to control the mapping for dynamically added fields.</li>
+        </ul>
+
+        <p>See Mapping API section on elastic.co</p>
+
+      </Fragment>
+    )
+
+    let pipelineTooltipContent = (
+      <Fragment>
+        <p>
+          To pre-process documents before indexing, define a pipeline that specifies a series of processors. <br/>
+          Each processor tranforms the document in some specific way.<br/>
+          For example, a pipeline might have one processor that concatenate two fields from the document, 
+          followed by another processor that renames a field.
+        </p>
+        <p>See Pipeline API section on elastic.co</p>
+        
+
+      </Fragment>
+    )
+
     return (
       <Fragment>
           <EuiForm>
-            <EuiFormRow isInvalid={this.state.indexNameError} label="Index name" error={errors}>
+            <EuiFormRow 
+              isInvalid={this.state.indexNameError} 
+              label="Index name" 
+              error={errors}
+              helpText={"Name the elasticsearch index that will be created. If the index is already existing, " +
+                        "documents will be added or updated according to the chosen docID"}
+            >
               <EuiFieldText isInvalid={this.state.indexNameError} id="indexName" value={this.state.indexName} onChange={this.indexNameChange}/>
             </EuiFormRow>
 
             <EuiFormRow
-            label="Kibana custom ID"
-            helpText="Kibana will provide a unique identifier for each index pattern. If you do not want to use this unique ID, enter a custom one.">
+            label="Custom docID"
+            helpText={"Import will provide a unique document identifier linked to the line number " + 
+                      "of the imported file. You can customize this doc ID using special reserved variables : " +
+                      "{_uid} for an auto-generated identifier, {_importedLine} for the current line number, " +
+                      "or {<column-name>} to access a value of the imported line."}
+            >
               <EuiFlexGroup gutterSize="s" alignItems="center">
                 <EuiFlexItem grow={false}>
                   <EuiFieldText id="kbnID" value={this.state.kbnId.model} onChange={this.kbnIdChange}/>
                 </EuiFlexItem>
 
                 <EuiFlexItem grow={false}>
+                  <span style={{fontSize: "x-small", margin: "-10px auto 2px 12px"}}>example rendering</span>
                   <EuiFieldText id="previewKbnID" placeholder="Custom ID preview" value={this.state.kbnId.preview} readOnly/>
                 </EuiFlexItem>
               </EuiFlexGroup>
             </EuiFormRow>
 
-            <EuiFormRow label="Removing columns">
+            <EuiFormRow 
+              label="Removing columns"
+              helpText={"Select the columns you want to remove from the import."}
+            >
                   <EuiComboBox
-                    options={this.state.options}
+                    options={this.anonOptions}
                     selectedOptions={this.state.selectedAnonOptions}
                     onChange={this.onChangeAnonColumns} />
+            </EuiFormRow>
+
+            <EuiFormRow 
+              label="Choose your timezone"
+              helpText={"Excel does not manage timezone within date format cells. Define your file content timezone to index its date fields in a correct way."}
+            >
+              <EuiComboBox
+                singleSelection={{ asPlainText: true }}
+                options={this.tzOptions}
+                selectedOptions={this.state.selectedTzOption}
+                onChange={this.onChangeTimezone}
+                isClearable={false}
+              />
             </EuiFormRow>
 
             <EuiSpacer size="s" />
 
             <EuiFormRow fullWidth={true}>
-              <EuiAccordion id="mapping" buttonContent="Configure mapping">
+              
+              <span>
+                <EuiSwitch label="Configure your own mapping" 
+                  checked={this.state.enableCustomColumns} 
+                  onChange={this.onToggleCustomColumns}
+                />
+                &nbsp;
+                <EuiIconTip
+                  aria-label="Info about mapping"
+                  position="right"
+                  content={mappingTooltipContent}
+                />
+              </span>
 
-                <EuiSpacer size="m" />
-
-                <EuiFormRow>
-                  <EuiSwitch label="Use your own mapping?" checked={this.state.switchMap.value} onChange={this.switchChange}/>
-                </EuiFormRow>
-
-                <MappingTable items={this.props.items} onChangeMapping={this.onChangeMapping}/>
-              </EuiAccordion>
             </EuiFormRow>
+
+            { this.state.enableCustomColumns && (
+              <Fragment>
+                <MappingTable items={this.getFilteredColumns()} onChangeColumns={this.onChangeColumns}/>
+                <EuiSpacer size="m" />
+              </Fragment>
+            )}
+
+            <EuiFormRow fullWidth={true}>
+              
+              <span>
+                <EuiSwitch label="Add ingest pipeline ids" 
+                  checked={this.state.enablePipeline} 
+                  onChange={this.onTogglePipeline}
+                />
+                &nbsp;
+                <EuiIconTip
+                  aria-label="Info about pipeline"
+                  position="right"
+                  content={pipelineTooltipContent}
+                />
+              </span>
+
+            </EuiFormRow>
+
+            { this.state.enablePipeline &&
+              <EuiFormRow 
+              label="Set pipeline ids"
+              helpText={"The pipeline ids to preprocess incoming documents with, comma separated list."}
+            >
+              <EuiFieldText
+                placeholder="pipeline1,pipeline2"
+                defaultValue={this.state.pipeline}
+                onChange={this.onChangePipeline}
+                aria-label="The pipeline ids to preprocess incoming documents with, comma separated list"
+              />
+            </EuiFormRow>
+            }
+
+            <EuiSpacer size="m" />
 
             <EuiFormRow>
               <EuiFlexGroup gutterSize="s" alignItems="center">
@@ -328,7 +522,7 @@ class StepTwo extends Component {
             <EuiGlobalToastList
               toasts={this.state.toasts}
               dismissToast={this.removeToast}
-              toastLifeTimeMs={6000}
+              toastLifeTimeMs={15000}
             />
           </EuiForm>
           <EuiSpacer size="m" />

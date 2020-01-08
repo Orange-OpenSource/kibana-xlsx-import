@@ -13,7 +13,7 @@ import {
   EuiTitle,
   EuiSpacer,
   EuiButton,
-  EuiLoadingKibana,
+  EuiLoadingSpinner,
   EuiSelect,
   EuiPanel,
   EuiImage,
@@ -24,7 +24,7 @@ import PreviewTable from './previewTable.js';
 import XLSX from 'xlsx';
 
 import {
-  get_header_row,
+  getHeaderRowWithType,
   formatJSON,
   getExtension,
   setESIndexName
@@ -37,8 +37,8 @@ class StepOne extends Component {
 
     this.state = {
       workbook: {},
-      filename: "",
-      sheetname: "",
+      fileName: "",
+      sheetName: "",
       selectItem: {
         options: [{value: "", text: ""}]
       },
@@ -65,8 +65,8 @@ class StepOne extends Component {
       var reader = new FileReader();
       reader.onload = async (file) => {
 
-        if(getExtension(this.state.filename)[0] != "csv"){
-          var wb = await XLSX.read(reader.result, {type : 'array'});
+        if(getExtension(this.state.fileName)[0] != "csv"){
+          var wb = await XLSX.read(reader.result, {type : 'array', cellDates: true, cellNF:false, cellText:false});
         } else {
           var wb = await XLSX.read(reader.result, {type : 'binary'});
         }
@@ -75,7 +75,13 @@ class StepOne extends Component {
           value: s,
           text: s
         }));
-        this.setState({workbook: wb, selectItem:{options: this.state.selectItem.options.concat(options)}, loading: false});
+        this.setState({
+          workbook: wb, 
+          selectItem: { options }, 
+          loading: false
+        });
+
+        this.changeSheet(options[0].value)
       };
 
       if(getExtension(file[0].name)[0] != "csv")
@@ -83,7 +89,7 @@ class StepOne extends Component {
       else {
         reader.readAsText(file[0]);
       };
-      this.setState({filename: file[0].name});
+      this.setState({fileName: file[0].name});
     }
     else {
       this.setState({
@@ -96,25 +102,30 @@ class StepOne extends Component {
   };
 
   async onSheetChange(item) {
-    this.setState({data:{loaded: false}, sheetname: item.target.value});
+    this.changeSheet(item.target.value)
+  }
 
-    if(item.target.value === "") {
+  changeSheet(item) {
+    this.setState({data:{loaded: false}, sheetName: item});
+
+    if(item === "") {
       this.setState({data:{loaded: true, items: [], columns: []}, disableButton: true});
       return
     }
 
-    if(this.state.workbook.Sheets[item.target.value]['!ref'] != undefined) {
-      let range = XLSX.utils.decode_range(this.state.workbook.Sheets[item.target.value]['!ref']);
+    if(this.state.workbook.Sheets[item]['!ref'] != undefined) {
+      let range = XLSX.utils.decode_range(this.state.workbook.Sheets[item]['!ref']);
       if(range.e.r > 5) range.e.r = 5; //TODO : use config instead
 
-      let columns = get_header_row(this.state.workbook.Sheets[item.target.value]).map((s) => ({
-        field: s,
-        name: s,
-        truncateText: true
-      }));
+      let columns = getHeaderRowWithType(this.state.workbook.Sheets[item]);
 
-      let items = await formatJSON(XLSX.utils.sheet_to_json(this.state.workbook.Sheets[item.target.value], {range: range}));
+      let items = formatJSON(XLSX.utils.sheet_to_json(this.state.workbook.Sheets[item], {
+        range: range,
+        raw: false,
+        dateNF:'YYYY-MM-DD"T"HH:MM:SS'
+      }), columns);
       this.setState({data:{loaded: true, items: items, columns: columns}, disableButton: false});
+
     }
     else {
       this.setState({data:{loaded: true, items: [], columns: []}, disableButton: true});
@@ -122,7 +133,7 @@ class StepOne extends Component {
   };
 
   onNextClick(e) {
-    this.props.nextStep(this.state.filename, this.state.workbook, this.state.sheetname, this.state.data.items[0]);
+    this.props.nextStep(this.state.fileName, this.state.sheetName, this.state.workbook, this.state.data.items[0], this.state.data.columns);
   }
 
   render() {
@@ -137,7 +148,11 @@ class StepOne extends Component {
       previewTable = (
         <PreviewTable
           items={this.state.data.items}
-          columns={this.state.data.columns} />
+          columns={this.state.data.columns.map((c) => ({
+            field: c.name,
+            name: c.name,
+            truncateText: true
+          }))} />
       );
     }
 
@@ -145,7 +160,7 @@ class StepOne extends Component {
       renderLoading = (
         <EuiFlexGroup justifyContent="spaceAround">
           <EuiFlexItem grow={false}>
-            <EuiLoadingKibana size="xl"/>
+            <EuiLoadingSpinner size="xl"/>
           </EuiFlexItem>
         </EuiFlexGroup>
       );
