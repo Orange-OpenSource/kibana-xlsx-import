@@ -215,7 +215,11 @@ class StepOne extends Component {
 
         <EuiSpacer size="l" />
 
-        {previewTable}
+        <EuiFlexGroup gutterSize="l">
+          <EuiFlexItem grow={false}>
+            {previewTable}
+          </EuiFlexItem>
+        </EuiFlexGroup>    
 
       </Fragment>
     );
