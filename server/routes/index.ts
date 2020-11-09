@@ -1,5 +1,9 @@
 //import { schema } from '@kbn/config-schema';
-import { IRouter } from '../../../../src/core/server';
+import { schema } from '@kbn/config-schema';
+import { Router } from 'react-router-dom';
+
+
+import { IRouter, RequestHandler, RouteMethod } from '../../../../src/core/server';
 
 export function defineRoutes(router: IRouter) {
   router.get(
@@ -48,29 +52,120 @@ export function defineRoutes(router: IRouter) {
     }
   ); 
   
+
+  
+
   router.post(
     {
       path: '/api/kibana_xlsx_import/create/indice/{index}',
-      validate: false,      
+      //validate: false
+      validate: {
+        //body: schema.any(),
+        params: schema.any()
+      }
     },
-    
+ 
     async (context, request, response) => {
-      console.log('******************  create indice',request);
-      console.log((request.url.pathname)?.lastIndexOf('/'));
-      const indexName  =request.url.pathname?.substring((request.url.pathname)?.lastIndexOf('/') + 1);
-      console.log(indexName);
-      console.log('******************  create indice',request.route.options.body);
-      const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('indices.create',{'index':indexName})     
-      console.log('****************** ', data)
-      return response.ok({
-        body: {
-          //ime: Object.keys(data.status)
-          // time: new Date().toISOString(),
-        },
-      });
+      
+        console.log('******************  create indice',request);
+        const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('indices.create',{index: request.params.index}).catch((e) =>  {
+          console.error(e);
+          return {"error": e};
+        }) ;    
+        console.log('****************** ', data)
+       
+    
+        return response.ok({
+          body: {
+            //ime: Object.keys(data.status)
+            // time: new Date().toISOString(),
+          },
+        });
+
     }
   ); 
 
+    //Create a mapping for a selected index
+    router.post(
+      {
+      path: '/api/kibana-xlsx-import/{index}/_mapping',
+      validate: {
+        body: schema.any(),
+        params: schema.any()
+        }
+      },
+      async (context, request, response) => {
+        console.log('******************  create indice mapping',request);
+        const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('indices.putMapping',{index: request.params.index, body: {"properties":request.body.body}}).catch((e) =>  {
+          console.error(e);
+          return {"error": e};
+        }) ;    
+        console.log('****************** ', data)
+        return response.ok({
+          body: {
+            //ime: Object.keys(data.status)
+            // time: new Date().toISOString(),
+          },
+        });
+  });
+
+      //Create a mapping for a selected index
+      router.post(
+        {
+        path: '/api/kibana-xlsx-import/{index}/_bulk',
+        validate: {
+          body: schema.any(),
+          params: schema.any(),
+          query: schema.any()
+          }
+        },
+        async (context, request, response) => {
+          console.log('******************  bulk indice',request);
+          const pipeline = request.query.pipeline || false;
+          const data = await await context.core.elasticsearch.legacy.client.callAsInternalUser('bulk', {
+            ...(pipeline && { pipeline }),
+            body: request.body
+        }).catch((e) =>  {
+            console.error(e);
+            return {"error": e};
+          }) ;    
+          console.log('****************** ', data)
+          return response.ok({
+            body: {
+              //ime: Object.keys(data.status)
+              // time: new Date().toISOString(),
+            },
+          });
+    });
+  
+      //Perform BULK for creating / adding multiple documents to an index
+ /*     router.post({
+        path: '/api/kibana-xlsx-import/{index}/_bulk',
+        validate: 
+        {
+          body: schema.any(),
+          params: schema.any(),
+          query: schema.any()
+        }
+       
+      },
+      async (context, request, response) => {
+            try {
+                  console.log('******************  bulk indice',request);
+                  const pipeline = request.query.pipeline || false;
+                  console.log('******************  bulk indice',request);
+                  const response = await context.core.elasticsearch.legacy.client.callAsInternalUser('bulk', {
+                      ...(pipeline && { pipeline }),
+                      body: request.body
+                  })
+                  console.log('******************  bulk indice',response);
+                  return response.ok;
+              } catch(e) {
+                  console.error(e);
+                  return {"error": e};
+              }
+          }
+      );*/
 
 /*  	//GET cluster health
     router.get({

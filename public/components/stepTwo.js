@@ -198,31 +198,41 @@ class StepTwo extends Component {
      
       this.setState({uploadButton:{text:"Initializing index...", loading:true}});
       //const body = JSON.encoder.convert({indexName:this.state.indexName});
-      const requestOptions = {
+      /*const requestOptions = {
         //method: 'POST',
-        params: {'name': 'index'},
-        body: 'foo=bar&lorem=ipsum',
+        
         headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer my-token',
-            'My-Custom-Header': 'foobar'
-        },
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer my-token',
+          'My-Custom-Header': 'foobar'
         
-        
+        }
         //query: {'query':'match_all{}'},     
-    };
-    let customMapping = getMappingByColumns(this.state.customColumns)
-      //const resIndex = await axios.post(`http://localhost:5603/buw/api/kibana_xlsx_import/create/indice/${this.state.indexName}`,customMapping);
-      this.props.http.post(`/api/kibana_xlsx_import/create/indice/${this.state.indexName}`,requestOptions).then(res => {
+    };*/
+
+    let customMapping = getMappingByColumns(this.state.customColumns);
+      
+      //const resIndex = await axios.post(`../api/kibana_xlsx_import/create/indice/${this.state.indexName}`,requestOptions);
+      console.log("applying mapping")
+
+      /*this.props.http.params = {name:'user_sheet20'};
+      this.props.http.body = {name:'index'};
+      this.props.http.requestOptions = requestOptions;*/
+      
+      //this.props.http.post(`/api/kibana_xlsx_import/create/indice/${this.state.indexName}`,requestOptions).then(res => {
         //setTimestamp(res.time);
         // Use the core notifications service to display a success message.
-        this.props.notifications.toasts.addSuccess(i18n.translate('myPluginName.dataUpdated', {
-          defaultMessage: 'Data updated',
-        }));
-      });
+        //this.props.notifications.toasts.addSuccess(i18n.translate('myPluginName.dataUpdated', {
+          //defaultMessage: 'Data updated',
+       // }));
+      //});
       if (this.state.enableCustomColumns) {
-        console.log("creating index", this.state.indexName)
-        const resIndex = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}`);
+        console.log("creating index", this.state.indexName);
+        const requestOptions = {
+          body: {test:"test"}   
+        };
+        //const resIndex = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}`);
+        const resIndex = await axios.post(`../api/kibana_xlsx_import/create/indice/${this.state.indexName}`,requestOptions);
         //const resIndex = await axios.post(`/api/kibana_xlsx_import/create/indice`);
         console.log(resIndex.data)
         if(resIndex.data.error != undefined) {
@@ -241,7 +251,11 @@ class StepTwo extends Component {
             tips: "Unable to applying the mapping. Check your configuration."
           }
         }
-        const resMap = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}/_mapping`, customMapping);
+        const requestMapping = {
+          //body: {Identifier:{type:"float"}, First_name:{type:"text"}, Username:{type:"keyword"}, Last_name:{type:"text"}}  
+          body: customMapping
+        };
+        const resMap = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}/_mapping`, requestMapping);
         if (resMap.data.error != undefined) {
           throw {
             message: resMap.data.error.msg,
@@ -250,7 +264,7 @@ class StepTwo extends Component {
         }
       }
 
-      this.setState({uploadButton:{text:"Reading data...", loading:true}});
+       this.setState({uploadButton:{text:"Reading data...", loading:true}});
 
       const tz = this.state.selectedTzOption[0].label
       const ws = this.props.workbook.Sheets[this.props.sheetName];
@@ -313,7 +327,6 @@ class StepTwo extends Component {
             break;
           }
       }
-
       // finally call the next step
       this.props.nextStep(this.state.indexName, this.props.sheetName, this.props.fileName, json.length)
 
