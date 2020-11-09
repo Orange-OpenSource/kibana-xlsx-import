@@ -51,7 +51,7 @@ class StepOne extends Component {
       loading: false
     };
   }
-
+  
   onFileChange = (file) => {
     if(file.length > 0) {
       //UI reset
@@ -61,7 +61,7 @@ class StepOne extends Component {
         disableButton: true,
         loading: true,
       });
-
+      
       var reader = new FileReader();
       reader.onload = async (file) => {
 
@@ -83,12 +83,13 @@ class StepOne extends Component {
 
         this.changeSheet(options[0].value)
       };
-
+      
       if(getExtension(file[0].name)[0] != "csv")
         reader.readAsArrayBuffer(file[0]);
       else {
         reader.readAsText(file[0]);
       };
+      
       this.setState({fileName: file[0].name});
     }
     else {

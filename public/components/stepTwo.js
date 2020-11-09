@@ -37,19 +37,59 @@ import {
   getUID
 } from '../services/services.js';
 import {setESIndexName, formatJSON} from '../services/sheetServices.js';
+//import { Http2ServerRequest } from 'http2'
 
 class StepTwo extends Component {
 
   constructor(props) {
-
+    
     super(props);
-
     this.firstRow = {
       ...this.props.firstRow,
       _line: "1337",
       _uid: getUID()
     }
-
+    
+    /*const resIndex = await axios.post('/api/kibana_xlsx_import/cluster/_health');
+    this.props.http.get('/api/kibana_xlsx_import/cluster/_health').then(res => {
+      //setTimestamp(res.time);
+      // Use the core notifications service to display a success message.
+      this.props.notifications.toasts.addSuccess(i18n.translate('myPluginName.dataUpdated', {
+        defaultMessage: 'Data updated',
+      }));
+    });
+    this.props.http.get('/api/kibana_xlsx_import/cat/indices').then(res => {
+      //setTimestamp(res.time);
+      // Use the core notifications service to display a success message.
+      this.props.notifications.toasts.addSuccess(i18n.translate('myPluginName.dataUpdated', {
+        defaultMessage: 'Data updated',
+      }));
+    });*/
+   /* const requestOptions = {
+      //method: 'POST',
+      headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer my-token',
+          'My-Custom-Header': 'foobar'
+      },
+      params: {'name': 'index'},
+      body: { output: 'React POST Request Example' }
+      //query: {'query':'match_all{}'},     
+  };
+    this.props.http.post('/api/kibana_xlsx_import/create/indice/gigi',requestOptions).then(res => {
+      //setTimestamp(res.time);
+      // Use the core notifications service to display a success message.
+      this.props.notifications.toasts.addSuccess(i18n.translate('myPluginName.dataUpdated', {
+        defaultMessage: 'Data updated',
+      }));
+    });
+    axios.post(`http://localhost:5603/buw/api/kibana_xlsx_import/create/indice/gugu`,requestOptions).then(res => {
+      //setTimestamp(res.time);
+      // Use the core notifications service to display a success message.
+      this.props.notifications.toasts.addSuccess(i18n.translate('myPluginName.dataUpdated', {
+        defaultMessage: 'Data updated',
+      }));
+    });*/
     this.anonOptions = this.props.columns.map((c) => ({label: c.name}))
 
     this.tzOptions = moment.tz.names().map(tz => ({label: tz}))
@@ -95,7 +135,8 @@ class StepTwo extends Component {
     this.addMappingToast        = this.addMappingToast.bind(this);
     this.removeToast            = this.removeToast.bind(this);
     this.getFilteredColumns     = this.getFilteredColumns.bind(this);
-
+    this.http = this.props.http;
+    
     axios.defaults.headers.post['kbn-xsrf'] = "reporting";
     axios.defaults.headers.delete['kbn-xsrf'] = "reporting";
   }
@@ -156,10 +197,33 @@ class StepTwo extends Component {
     try {
      
       this.setState({uploadButton:{text:"Initializing index...", loading:true}});
-      
+      //const body = JSON.encoder.convert({indexName:this.state.indexName});
+      const requestOptions = {
+        //method: 'POST',
+        params: {'name': 'index'},
+        body: 'foo=bar&lorem=ipsum',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer my-token',
+            'My-Custom-Header': 'foobar'
+        },
+        
+        
+        //query: {'query':'match_all{}'},     
+    };
+    let customMapping = getMappingByColumns(this.state.customColumns)
+      //const resIndex = await axios.post(`http://localhost:5603/buw/api/kibana_xlsx_import/create/indice/${this.state.indexName}`,customMapping);
+      this.props.http.post(`/api/kibana_xlsx_import/create/indice/${this.state.indexName}`,requestOptions).then(res => {
+        //setTimestamp(res.time);
+        // Use the core notifications service to display a success message.
+        this.props.notifications.toasts.addSuccess(i18n.translate('myPluginName.dataUpdated', {
+          defaultMessage: 'Data updated',
+        }));
+      });
       if (this.state.enableCustomColumns) {
         console.log("creating index", this.state.indexName)
         const resIndex = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}`);
+        //const resIndex = await axios.post(`/api/kibana_xlsx_import/create/indice`);
         console.log(resIndex.data)
         if(resIndex.data.error != undefined) {
           throw {
@@ -247,7 +311,7 @@ class StepTwo extends Component {
           }
           else if(i === bulk.length - 1){
             break;
-          } 
+          }
       }
 
       // finally call the next step

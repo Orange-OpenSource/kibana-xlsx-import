@@ -1,8 +1,10 @@
 import XLSX from 'xlsx';
 import moment from 'moment-timezone';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 //Recupère le header de la feuille excel
-function getHeaderRowWithType(sheet) {
+export function getHeaderRowWithType(sheet) {
     var headers = [];
     var range = XLSX.utils.decode_range(sheet['!ref']);
     
@@ -45,7 +47,7 @@ function getHeaderRowWithType(sheet) {
 }
 
 //Replace all space in json data keys
-function formatJSON(json, columns, timezone = false){
+export function formatJSON(json, columns, timezone = false){
 
   const dateColumns = columns.filter(c => (c.type === "date"))
 
@@ -74,7 +76,7 @@ function formatJSON(json, columns, timezone = false){
 }
 
 //Transform filename to a valid ES index name
-function setESIndexName(name) {
+export function setESIndexName(name) {
 
   var name = name.split('.')[0];              //removing extension
   name = name.replace(/\s/g, '');             //removing space
@@ -88,8 +90,9 @@ function formatHeader(header){
   return header.replace(/ /g,"_");
 }
 
-function getExtension(filename) {
+export function getExtension(filename) {
+  console.log("get extension treatment");
   return (/[.]/.exec(filename)) ? /[^.]+$/.exec(filename) : undefined;
 }
 
-export default { getHeaderRowWithType, formatJSON, setESIndexName, getExtension }
+//export default { getHeaderRowWithType, formatJSON, setESIndexName, getExtension }
