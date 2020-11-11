@@ -1,9 +1,6 @@
-//import { schema } from '@kbn/config-schema';
+
 import { schema } from '@kbn/config-schema';
-import { Router } from 'react-router-dom';
-
-
-import { IRouter, RequestHandler, RouteMethod } from '../../../../src/core/server';
+import { IRouter} from '../../../../src/core/server';
 
 export function defineRoutes(router: IRouter) {
   router.get(
@@ -53,8 +50,6 @@ export function defineRoutes(router: IRouter) {
   ); 
   
 
-  
-
   router.post(
     {
       path: '/api/kibana_xlsx_import/create/indice/{index}',
@@ -64,24 +59,27 @@ export function defineRoutes(router: IRouter) {
         params: schema.any()
       }
     },
- 
-    async (context, request, response) => {
-      
-        console.log('******************  create indice',request);
-        const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('indices.create',{index: request.params.index}).catch((e) =>  {
-          console.error(e);
-          return {"error": e};
-        }) ;    
-        console.log('****************** ', data)
-       
     
+     
+     async  (context, request, response) => {
+     try {
+        console.log('******************  create indice',request);
+        const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('indices.create',{index: request.params.index});    
+        console.log('****************** ', data)
         return response.ok({
           body: {
-            //ime: Object.keys(data.status)
-            // time: new Date().toISOString(),
+            data: data,
+            time: new Date().toISOString(),
           },
         });
-
+      } catch (error) {
+        console.log('****************** ', error);
+        return response.ok({
+          body: {            
+            message: error,
+          }
+        });
+      }
     }
   ); 
 
@@ -95,18 +93,24 @@ export function defineRoutes(router: IRouter) {
         }
       },
       async (context, request, response) => {
-        console.log('******************  create indice mapping',request);
-        const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('indices.putMapping',{index: request.params.index, body: {"properties":request.body.body}}).catch((e) =>  {
-          console.error(e);
-          return {"error": e};
-        }) ;    
-        console.log('****************** ', data)
+        try {
+          console.log('******************  create indice mapping',request);
+          const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('indices.putMapping',{index: request.params.index, body: {"properties":request.body.body}});    
+          console.log('****************** ', data)
+          return response.ok({
+            body: {
+              data,
+              time: new Date().toISOString(),
+            },
+          });
+      } catch (error) {
+        console.log('****************** ', error);
         return response.ok({
-          body: {
-            //ime: Object.keys(data.status)
-            // time: new Date().toISOString(),
-          },
+          body: {            
+            message: "error",
+          }
         });
+      }
   });
 
       //Create a mapping for a selected index
@@ -120,22 +124,31 @@ export function defineRoutes(router: IRouter) {
           }
         },
         async (context, request, response) => {
+        try {
+          
+
           console.log('******************  bulk indice',request);
           const pipeline = request.query.pipeline || false;
-          const data = await await context.core.elasticsearch.legacy.client.callAsInternalUser('bulk', {
+          const data  = await await context.core.elasticsearch.legacy.client.callAsInternalUser('bulk', {
             ...(pipeline && { pipeline }),
             body: request.body
-        }).catch((e) =>  {
-            console.error(e);
-            return {"error": e};
-          }) ;    
+        });  
           console.log('****************** ', data)
           return response.ok({
             body: {
-              //ime: Object.keys(data.status)
-              // time: new Date().toISOString(),
+              data,
+              time: new Date().toISOString(),
             },
           });
+        } catch (error) {
+          console.log('****************** ', error);
+          return response.ok({
+            body: {            
+              message: error
+            }
+          });
+        }
+        
     });
   
       //Perform BULK for creating / adding multiple documents to an index
