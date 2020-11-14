@@ -22,7 +22,7 @@ export function defineRoutes(router: IRouter) {
       validate: false,
     },
     async (context, request, response) => {
-      const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('cluster.health')     
+      const data = await context.core.elasticsearch.legacy.client.callAsCurrentUser('cluster.health')     
       console.log('****************** ', data)
       return response.ok({
         body: {
@@ -38,7 +38,7 @@ export function defineRoutes(router: IRouter) {
       validate: false,
     },
     async (context, request, response) => {
-      const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('cat.indices')     
+      const data = await context.core.elasticsearch.legacy.client.callAsCurrentUser('cat.indices')     
       console.log('****************** ', data)
       return response.ok({
         body: {
@@ -64,7 +64,7 @@ export function defineRoutes(router: IRouter) {
      async  (context, request, response) => {
      try {
         console.log('******************  create indice',request);
-        const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('indices.create',{index: request.params.index});    
+        const data = await context.core.elasticsearch.legacy.client.callAsCurrentUser('indices.create',{index: request.params.index});    
         console.log('****************** ', data)
         return response.ok({
           body: {
@@ -95,7 +95,7 @@ export function defineRoutes(router: IRouter) {
       async (context, request, response) => {
         try {
           console.log('******************  create indice mapping',request);
-          const data = await context.core.elasticsearch.legacy.client.callAsInternalUser('indices.putMapping',{index: request.params.index, body: {"properties":request.body.body}});    
+          const data = await context.core.elasticsearch.legacy.client.callAsCurrentUser('indices.putMapping',{index: request.params.index, body: {"properties":request.body.body}});    
           console.log('****************** ', data)
           return response.ok({
             body: {
@@ -129,7 +129,7 @@ export function defineRoutes(router: IRouter) {
 
           console.log('******************  bulk indice',request);
           const pipeline = request.query.pipeline || false;
-          const data  = await await context.core.elasticsearch.legacy.client.callAsInternalUser('bulk', {
+          const data  = await await context.core.elasticsearch.legacy.client.callAsCurrentUser('bulk', {
             ...(pipeline && { pipeline }),
             body: request.body
         });  
