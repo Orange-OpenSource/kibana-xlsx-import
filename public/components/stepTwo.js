@@ -45,22 +45,7 @@ class StepTwo extends Component {
       _line: "1337",
       _uid: getUID()
     }
-    
-    /*const resIndex = await axios.post('/api/kibana_xlsx_import/cluster/_health');
-    this.props.http.get('/api/kibana_xlsx_import/cluster/_health').then(res => {
-      //setTimestamp(res.time);
-      // Use the core notifications service to display a success message.
-      this.props.notifications.toasts.addSuccess(i18n.translate('myPluginName.dataUpdated', {
-        defaultMessage: 'Data updated',
-      }));
-    });
-    this.props.http.get('/api/kibana_xlsx_import/cat/indices').then(res => {
-      //setTimestamp(res.time);
-      // Use the core notifications service to display a success message.
-      this.props.notifications.toasts.addSuccess(i18n.translate('myPluginName.dataUpdated', {
-        defaultMessage: 'Data updated',
-      }));
-    });*/
+
     this.anonOptions = this.props.columns.map((c) => ({label: c.name}))
 
     this.tzOptions = moment.tz.names().map(tz => ({label: tz}))
@@ -170,16 +155,8 @@ class StepTwo extends Component {
     this.setState({uploadButton:{text:"Initializing index...", loading:true}});
     let customMapping = getMappingByColumns(this.state.customColumns);
       
-      //const resIndex = await axios.post(`../api/kibana_xlsx_import/create/indice/${this.state.indexName}`,requestOptions);
       console.log("applying mapping")
       
-      //this.props.http.post(`/api/kibana_xlsx_import/create/indice/${this.state.indexName}`,requestOptions).then(res => {
-        //setTimestamp(res.time);
-        // Use the core notifications service to display a success message.
-        //this.props.notifications.toasts.addSuccess(i18n.translate('myPluginName.dataUpdated', {
-          //defaultMessage: 'Data updated',
-       // }));
-      //});
       if (this.state.enableCustomColumns) {
         console.log("creating index", this.state.indexName);              
         const resIndex = await axios.post(`../api/kibana_xlsx_import/create/indice/${this.state.indexName}`);

@@ -4,8 +4,6 @@ import { AppMountParameters, CoreStart } from '../../../src/core/public';
 import { AppPluginStartDependencies } from './types';
 import Main from './components/main.js';
 import { EuiStepsHorizontal} from '@elastic/eui';
-//import { Main } from './app';
-import StepOne from './components/stepOne.js';
 import StepTwo from './components/stepTwo.js';
 import StepThree from './components/stepThree.js';
 
@@ -43,7 +41,6 @@ export const renderApp = (
   { appBasePath, element }: AppMountParameters
 ) => {
   ReactDOM.render(
-    //Main steps={horizontalSteps} nextStep={displayStep2}/>
     <Main steps={horizontalSteps}  
       nextStep={displayStep2}
       basename={appBasePath}
@@ -55,9 +52,8 @@ export const renderApp = (
   );
   
   return () => ReactDOM.unmountComponentAtNode(element);
-
+  // omment
  function displayStep2(fileName, sheetName, workbook, firstRow, columns) {
-    //document.getElementById("progress-img").innerHTML = '<img src="../plugins/kibana-xlsx-import/ressources/progress-step2.png"/>'
     horizontalSteps[0].isSelected = false;
     horizontalSteps[0].isComplete = true;
     horizontalSteps[1].isSelected = true;
@@ -84,7 +80,6 @@ export const renderApp = (
   }
    
   function displayStep3(indexName, sheetName, fileName, nbDocument) {
-    //document.getElementById("progress-img").innerHTML = '<img src="../plugins/kibana-xlsx-import/ressources/progress-step3.png"/>'
     horizontalSteps[1].isSelected = false;
     horizontalSteps[1].isComplete = true;
     horizontalSteps[2].isSelected = true;
