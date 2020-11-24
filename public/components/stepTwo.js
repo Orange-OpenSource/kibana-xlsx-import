@@ -23,11 +23,8 @@ import {
   EuiSpacer,
 } from '@elastic/eui'
 
-
 import moment from 'moment-timezone'
-
 import MappingTable, { getMappingByColumns } from './mappingTable.js'
-
 import axios from 'axios'
 import XLSX from 'xlsx'
 
@@ -41,9 +38,8 @@ import {setESIndexName, formatJSON} from '../services/sheetServices.js';
 class StepTwo extends Component {
 
   constructor(props) {
-
+    
     super(props);
-
     this.firstRow = {
       ...this.props.firstRow,
       _line: "1337",
@@ -95,7 +91,8 @@ class StepTwo extends Component {
     this.addMappingToast        = this.addMappingToast.bind(this);
     this.removeToast            = this.removeToast.bind(this);
     this.getFilteredColumns     = this.getFilteredColumns.bind(this);
-
+    this.http = this.props.http;
+    
     axios.defaults.headers.post['kbn-xsrf'] = "reporting";
     axios.defaults.headers.delete['kbn-xsrf'] = "reporting";
   }
@@ -155,15 +152,18 @@ class StepTwo extends Component {
 
     try {
      
-      this.setState({uploadButton:{text:"Initializing index...", loading:true}});
+    this.setState({uploadButton:{text:"Initializing index...", loading:true}});
+    let customMapping = getMappingByColumns(this.state.customColumns);
+      
+      console.log("applying mapping")
       
       if (this.state.enableCustomColumns) {
-        console.log("creating index", this.state.indexName)
-        const resIndex = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}`);
-        console.log(resIndex.data)
-        if(resIndex.data.error != undefined) {
+        console.log("creating index", this.state.indexName);              
+        const resIndex = await axios.post(`../api/kibana_xlsx_import/create/indice/${this.state.indexName}`);
+        console.log("resIndex", resIndex);
+        if(resIndex.data.message != undefined) {
           throw {
-            message: resIndex.data.error.msg, 
+            message: resIndex.data.message.msg, 
             tips: "Unable to create the index.",
             skipDelete: true // index probably already exists. don't delete it
           } 
@@ -177,16 +177,19 @@ class StepTwo extends Component {
             tips: "Unable to applying the mapping. Check your configuration."
           }
         }
-        const resMap = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}/_mapping`, customMapping);
-        if (resMap.data.error != undefined) {
+        const requestMapping = {
+          body: customMapping
+        };
+        const resMap = await axios.post(`../api/kibana-xlsx-import/${this.state.indexName}/_mapping`, requestMapping);
+        if (resMap.data.message != undefined) {
           throw {
-            message: resMap.data.error.msg,
+            message: resMap.data.message.msg,
             tips: "Unable to applying the mapping. Check your configuration."
           }
         }
       }
 
-      this.setState({uploadButton:{text:"Reading data...", loading:true}});
+       this.setState({uploadButton:{text:"Reading data...", loading:true}});
 
       const tz = this.state.selectedTzOption[0].label
       const ws = this.props.workbook.Sheets[this.props.sheetName];
@@ -222,10 +225,10 @@ class StepTwo extends Component {
         this.setState({progress:{current: (i/bulk.length)*100}});
         
         const response = await axios.post(bulkPath, bulk[i]);
-        
-          if (response.data.errors) {
+          console.log("resonse_bulk", response);
+          if (response.data.data.errors) {
 
-            const invalidItems = response.data.items    // parse all items
+            const invalidItems = response.data.data.items    // parse all items
               .map((item) => ({                          
                 ...item, 
                 isInvalid: item.index.status < 200 || item.index.status >= 300 }) // is the status in error ?
@@ -247,14 +250,14 @@ class StepTwo extends Component {
           }
           else if(i === bulk.length - 1){
             break;
-          } 
+          }
       }
-
       // finally call the next step
       this.props.nextStep(this.state.indexName, this.props.sheetName, this.props.fileName, json.length)
 
     } catch (err) {
-
+      console.log("catched error");
+      console.log(err)
       if (err.items) {
           
         err.items.slice(0, 5).forEach(item => {

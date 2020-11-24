@@ -1,0 +1,22 @@
+{
+  
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./target",
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+  },
+  "include": [
+    "index.ts",
+    "common/**/*.ts",
+    "public/**/*.ts",
+    "public/**/*.tsx",
+    "server/**/*.ts",
+    "../../typings/**/*", "public/components/main.js",
+  ],
+  "exclude": [
+    "public/less/main.less",
+    "node_modules/nanoid/index.cjs",
+    "node_modules/nanoid/index.d.js" 
+  ]
+}

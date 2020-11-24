@@ -1,6 +1,12 @@
-import uuid from 'short-uuid';
+//import { nanoid } from 'nanoid';
 
-function createBulk(json, indexName, kbnCustomId = '', BULKSIZE = 1000) {
+export function broofa() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+  });
+}
+export function createBulk(json, indexName, kbnCustomId = '', BULKSIZE = 1000) {
   var bulk_request = [];
   var bulk_package = [];
 
@@ -13,7 +19,8 @@ function createBulk(json, indexName, kbnCustomId = '', BULKSIZE = 1000) {
       ...json[i],
       // or special reserved variable
       "_line": line,
-      "_uid": getUID()
+      "_uid": broofa()
+      //"_uid": 10000000
     }
 
     bulk_package.push({index: { 
@@ -37,11 +44,11 @@ function createBulk(json, indexName, kbnCustomId = '', BULKSIZE = 1000) {
   return bulk_request;
 }
 
-function getUID() {
-  return uuid.generate()
+export function getUID() {
+  return broofa()
 }
 
-function createKbnCustomId(template, obj) {
+export function createKbnCustomId(template, obj) {
   var getFromBetween = {
     results:[],
     string:"",
