@@ -6,6 +6,8 @@ const PreviewTable = (props) => {
     <EuiBasicTable
       items={props.items}
       columns={props.columns}
+      tableLayout="auto"
+      isExpandable={true}
     />
   );
 };

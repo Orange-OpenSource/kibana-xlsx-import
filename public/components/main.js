@@ -1,69 +1,100 @@
-import React, {
-  Component,
-} from 'react';
+/*
+ * Licensed to Elasticsearch B.V. under one or more contributor
+ * license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright
+ * ownership. Elasticsearch B.V. licenses this file to you under
+ * the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import React, { useState } from 'react';
+import { i18n } from '@kbn/i18n';
+import { FormattedMessage, I18nProvider } from '@kbn/i18n/react';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 import {
+  EuiButton,
+  EuiHorizontalRule,
   EuiPage,
-  EuiPageHeader,
   EuiPageBody,
   EuiPageContent,
-  EuiPageContentHeader,
   EuiPageContentBody,
+  EuiPageContentHeader,
+  EuiPageHeader,
+  EuiStepsHorizontal,
   EuiHeader,
   EuiHeaderSection,
   EuiHeaderSectionItem,
-  EuiHeaderBreadcrumbs,
-  EuiHeaderBreadcrumb,
-  EuiHeaderSectionItemButton,
-  EuiHeaderLogo,
-  EuiImage,
-  EuiIcon,
-  EuiTitle,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiStepsHorizontal
+  EuiIcon,
+  EuiTitle,
+  EuiText,
 } from '@elastic/eui';
+
+import { CoreStart } from '../../../../src/core/public';
+import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
+
+import { PLUGIN_ID, PLUGIN_NAME } from '../../common';
+
+
 
 import StepOne from './stepOne.js';
 
-//import "@elastic/eui/dist/eui_theme_k6_light.css";
 
-const Main = (props) => {
 
-  return(
+export  const Main  =  ({
+  steps,
+  nextStep,
+  basename,
+  notifications,
+  http,
+  navigation,
+}) => {
+  
+  // Render the application DOM.
+  // Note that `navigation.ui.TopNavMenu` is a stateful component exported on the `navigation` plugin's start contract.
+  return (
+   
     <EuiPage>
       <EuiPageBody>
         <EuiPageHeader>
-          <EuiHeader style={{width: "100%"}}> 
+          <EuiHeader style={{ width: "100%" }}>
             <EuiHeaderSection>
               <EuiHeaderSectionItem border="right">
-                <EuiFlexGroup justifyContent="center" style={{padding: "5px"}}>
+              <EuiFlexGroup justifyContent="center" style={{ padding: "5px" }}>
                   <EuiFlexItem grow={false}>
-                    <EuiIcon type="importAction" size="xxl"/>
+                    <EuiIcon type="importAction" size="xxl" />
                   </EuiFlexItem>
                 </EuiFlexGroup>
               </EuiHeaderSectionItem>
               <EuiHeaderSectionItem>
-                <EuiTitle style={{padding: "12px 5px 5px 15px"}}><h2>XLSX Import</h2></EuiTitle>
+                <EuiTitle style={{ padding: "12px 5px 5px 15px" }}><h2>XLSX Import</h2></EuiTitle>
               </EuiHeaderSectionItem>
 
             </EuiHeaderSection>
           </EuiHeader>
         </EuiPageHeader>
-
         <EuiPageContent>
           <EuiPageContentHeader id="step">
-            <EuiStepsHorizontal steps={props.steps} style={{backgroundColor: "white"}}/>
+                <EuiStepsHorizontal steps={steps} style={{ backgroundColor: "white" }} />
           </EuiPageContentHeader>
           <EuiPageContentBody id="main">
-            <StepOne nextStep={props.nextStep}/>
+          <StepOne nextStep={nextStep} />
           </EuiPageContentBody>
         </EuiPageContent>
       </EuiPageBody>
-
-    </EuiPage>
+       </EuiPage>
   );
-
 };
-
-export default Main
+export default Main;
