@@ -40,6 +40,11 @@ export const renderApp = (
   { navigation }: AppPluginStartDependencies,
   { appBasePath, element }: AppMountParameters
 ) => {
+  var i;
+  for (i = 0; i < horizontalSteps.length; i++) { 
+    horizontalSteps[i].isSelected = false;
+    horizontalSteps[i].isComplete = false;
+   } 
   ReactDOM.render(
     <Main steps={horizontalSteps}  
       nextStep={displayStep2}

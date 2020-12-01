@@ -14,6 +14,7 @@ export class KibanaXlsxImportPlugin
     core.application.register({
       id: 'kibanaXlsxImport',
       title: PLUGIN_NAME,
+      euiIconType: 'importAction',
       async mount(params: AppMountParameters) {
         // Load application bundle
         const { renderApp } = await import('./application');
