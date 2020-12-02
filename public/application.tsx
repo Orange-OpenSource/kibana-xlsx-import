@@ -45,6 +45,7 @@ export const renderApp = (
     horizontalSteps[i].isSelected = false;
     horizontalSteps[i].isComplete = false;
    } 
+   horizontalSteps[0].isSelected = true;
   ReactDOM.render(
     <Main steps={horizontalSteps}  
       nextStep={displayStep2}
