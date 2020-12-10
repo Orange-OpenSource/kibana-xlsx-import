@@ -151,6 +151,11 @@ ssf@~0.11.2:
   dependencies:
     frac "~1.1.2"
 
+typescript@3.9.5:
+  version "3.9.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.5.tgz#586f0dba300cde8be52dd1ac4f7e1009c1b13f36"
+  integrity sha512-hSAifV3k+i6lEoCJ2k6R2Z/rp/H3+8sdmcn5NrS3/3kE7+RyZXm9aqvxWqjEXHAd8b0pShatpcdMTvEdvAJltQ==
+
 uuid@^8.3.0, uuid@^8.3.1:
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.1.tgz#2ba2e6ca000da60fce5a196954ab241131e05a31"
