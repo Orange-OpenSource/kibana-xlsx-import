@@ -21,7 +21,7 @@ export class KibanaXlsxImportPlugin
         // Get start services as specified in kibana.json
         const [coreStart, depsStart] = await core.getStartServices();
         // Render the application
-        return renderApp(coreStart, depsStart as AppPluginStartDependencies, params);
+        return renderApp(coreStart, depsStart as AppPluginStartDependencies, params, coreStart.chrome );
       },
     });
 
