@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { AppMountParameters, ChromeStart, CoreStart } from '../../../src/core/public';
+//import { AppMountParameters, ChromeStart, CoreStart } from '../../../src/core/public';
+import { AppMountParameters,  CoreStart } from '../../../src/core/public';
 import { AppPluginStartDependencies } from './types';
 import Main from './components/main.js';
 import { EuiStepsHorizontal} from '@elastic/eui';
@@ -35,7 +36,7 @@ let horizontalSteps = [
 
 const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
 
-function setBreadcrumbs(chrome: ChromeStart) {
+/*function setBreadcrumbs(chrome: ChromeStart) {
   chrome.setBreadcrumbs([
     {
       text: i18n.translate('devTools.k7BreadcrumbsDevToolsLabel', {
@@ -44,12 +45,12 @@ function setBreadcrumbs(chrome: ChromeStart) {
       href: '#/',
     },
   ]);
-}
+}*/
 export const renderApp = (
   { notifications, http }: CoreStart,
   { navigation }: AppPluginStartDependencies,
   { appBasePath, element }: AppMountParameters,
-  chrome: ChromeStart,
+  //chrome: ChromeStart,
 ) => {
   var i;
   for (i = 0; i < horizontalSteps.length; i++) { 
@@ -57,7 +58,7 @@ export const renderApp = (
     horizontalSteps[i].isComplete = false;
    } 
    horizontalSteps[0].isSelected = true;
-  setBreadcrumbs(chrome);
+  //setBreadcrumbs(chrome);
   ReactDOM.render(
     <Main steps={horizontalSteps}  
       nextStep={displayStep2}
