@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { AppMountParameters, CoreStart } from '../../../src/core/public';
+//import { AppMountParameters, ChromeStart, CoreStart } from '../../../src/core/public';
+import { AppMountParameters,  CoreStart } from '../../../src/core/public';
 import { AppPluginStartDependencies } from './types';
 import Main from './components/main.js';
 import { EuiStepsHorizontal} from '@elastic/eui';
 import StepTwo from './components/stepTwo.js';
 import StepThree from './components/stepThree.js';
+import { i18n } from '@kbn/i18n';
 
 
 let bulkSize;                                 // Taille maximal des paquets du bulk
@@ -34,12 +36,29 @@ let horizontalSteps = [
 
 const supportedFileType = ['xlsx', 'csv'];    // Defini les extensions utilisable dans le plugin
 
-
+/*function setBreadcrumbs(chrome: ChromeStart) {
+  chrome.setBreadcrumbs([
+    {
+      text: i18n.translate('devTools.k7BreadcrumbsDevToolsLabel', {
+        defaultMessage: 'kibana-xlsx-import',
+      }),
+      href: '#/',
+    },
+  ]);
+}*/
 export const renderApp = (
   { notifications, http }: CoreStart,
   { navigation }: AppPluginStartDependencies,
-  { appBasePath, element }: AppMountParameters
+  { appBasePath, element }: AppMountParameters,
+  //chrome: ChromeStart,
 ) => {
+  var i;
+  for (i = 0; i < horizontalSteps.length; i++) { 
+    horizontalSteps[i].isSelected = false;
+    horizontalSteps[i].isComplete = false;
+   } 
+   horizontalSteps[0].isSelected = true;
+  //setBreadcrumbs(chrome);
   ReactDOM.render(
     <Main steps={horizontalSteps}  
       nextStep={displayStep2}

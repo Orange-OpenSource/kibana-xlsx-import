@@ -14,13 +14,15 @@ export class KibanaXlsxImportPlugin
     core.application.register({
       id: 'kibanaXlsxImport',
       title: PLUGIN_NAME,
+      euiIconType: 'importAction',
       async mount(params: AppMountParameters) {
         // Load application bundle
         const { renderApp } = await import('./application');
         // Get start services as specified in kibana.json
         const [coreStart, depsStart] = await core.getStartServices();
         // Render the application
-        return renderApp(coreStart, depsStart as AppPluginStartDependencies, params);
+        //return renderApp(coreStart, depsStart as AppPluginStartDependencies, params, coreStart.chrome );
+        return renderApp(coreStart, depsStart as AppPluginStartDependencies, params );
       },
     });
 
