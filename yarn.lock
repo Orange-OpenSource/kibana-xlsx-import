@@ -62,6 +62,11 @@ exit-on-epipe@~1.0.1:
   resolved "https://registry.yarnpkg.com/exit-on-epipe/-/exit-on-epipe-1.0.1.tgz#0bdd92e87d5285d267daa8171d0eb06159689692"
   integrity sha512-h2z5mrROTxce56S+pnvAV890uu7ls7f1kEvVGJbw1OlFH3/mlJ5bkXu0KRyW94v37zzHPiUd55iLn3DA7TjWpw==
 
+fflate@^0.3.8:
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.3.11.tgz#2c440d7180fdeb819e64898d8858af327b042a5d"
+  integrity sha512-Rr5QlUeGN1mbOHlaqcSYMKVpPbgLy0AWT/W0EHxA6NGI12yO1jpoui2zBBvU2G824ltM6Ut8BFgfHSBGfkmS0A==
+
 follow-redirects@^1.10.0:
   version "1.13.0"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.0.tgz#b42e8d93a2a7eea5ed88633676d6597bc8e384db"
@@ -151,6 +156,11 @@ ssf@~0.11.2:
   dependencies:
     frac "~1.1.2"
 
+typescript@3.9.5:
+  version "3.9.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.5.tgz#586f0dba300cde8be52dd1ac4f7e1009c1b13f36"
+  integrity sha512-hSAifV3k+i6lEoCJ2k6R2Z/rp/H3+8sdmcn5NrS3/3kE7+RyZXm9aqvxWqjEXHAd8b0pShatpcdMTvEdvAJltQ==
+
 uuid@^8.3.0, uuid@^8.3.1:
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.1.tgz#2ba2e6ca000da60fce5a196954ab241131e05a31"
@@ -166,10 +176,10 @@ word@~0.3.0:
   resolved "https://registry.yarnpkg.com/word/-/word-0.3.0.tgz#8542157e4f8e849f4a363a288992d47612db9961"
   integrity sha512-OELeY0Q61OXpdUfTp+oweA/vtLVg5VDOXh+3he3PNzLGG/y0oylSOC1xRVj0+l4vQ3tj/bB1HVHv1ocXkQceFA==
 
-xlsx@^0.16.8:
-  version "0.16.8"
-  resolved "https://registry.yarnpkg.com/xlsx/-/xlsx-0.16.8.tgz#5546de9b0ba15169b36770d4e43b24790d3ff1b8"
-  integrity sha512-qWub4YCn0xLEGHI7WWhk6IJ73MDu7sPSJQImxN6/LiI8wsHi0hUhICEDbyqBT+jgFgORZxrii0HvhNSwBNAPoQ==
+xlsx@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/xlsx/-/xlsx-0.17.0.tgz#028176a0140967dcee1817d221678461e47481c8"
+  integrity sha512-bZ36FSACiAyjoldey1+7it50PMlDp1pcAJrZKcVZHzKd8BC/z6TQ/QAN8onuqcepifqSznR6uKnjPhaGt6ig9A==
   dependencies:
     adler-32 "~1.2.0"
     cfb "^1.1.4"
@@ -177,6 +187,7 @@ xlsx@^0.16.8:
     commander "~2.17.1"
     crc-32 "~1.2.0"
     exit-on-epipe "~1.0.1"
+    fflate "^0.3.8"
     ssf "~0.11.2"
     wmf "~1.0.1"
     word "~0.3.0"
