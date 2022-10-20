@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "typescript": "3.9.5",
-    "axios": "^0.20.0",
+    "axios": "^0.21.2",
     "font-awesome": "^4.7.0",
     "react-dom": "^16.14.0",
     "short-uuid": "^4.1.0",
